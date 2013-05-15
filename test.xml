@@ -1,0 +1,22 @@
+<LinuxCNC-Features>
+  <feature name="Squ213are">
+    <string name="p1"/>
+    <string name="p2"/>
+    <string name="p3"/>
+  </feature>
+  <feature name="Squ213are">
+    <string name="p1"/>
+    <string name="p2"/>
+    <string name="p3"/>
+  </feature>
+  <feature name="Squ213are">
+    <string name="p1"/>
+    <string name="p2"/>
+    <string name="p3"/>
+  </feature>
+  <feature name="Squ213are">
+    <string name="p1"/>
+    <string name="p2"/>
+    <string name="p3"/>
+  </feature>
+</LinuxCNC-Features>
