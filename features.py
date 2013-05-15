@@ -74,11 +74,19 @@ class Features:
 			self.cols.append( gtk.TreeViewColumn(c[0], cell) )
 			self.cols[-1].set_cell_data_func(cell, c[1])
 			self.treeview.append_column(self.cols[-1])
+
+		self.TARGETS = [('MY_TREE_MODEL_ROW', gtk.TARGET_SAME_WIDGET, 0),]		
+		self.treeview.enable_model_drag_source( gtk.gdk.BUTTON1_MASK,
+												self.TARGETS,
+												gtk.gdk.ACTION_DEFAULT|
+												gtk.gdk.ACTION_MOVE)
+		self.treeview.enable_model_drag_dest(self.TARGETS,
+									gtk.gdk.ACTION_DEFAULT)
+
+		self.treeview.connect("drag_data_get", self.drag_data_get_data)		
+		self.treeview.connect("drag_data_received", self.drag_data_received_data)
 			
-		f = self.treestore.append(None, [Feature("Square","feature")])
-		self.treestore.append(f, [Feature("p1", type="string", value="abc")])
-		self.treestore.append(f, [Feature("p2", type="string", value="123")])
-		self.treestore.append(f, [Feature("p3", type="string", value="ABC")])
+		self.load(None,"test.xml")
 
 		self.tree_root = self.treestore.get_iter_root()
 
@@ -93,6 +101,32 @@ class Features:
 		self.test_button = self.glade.get_object("open")
 		self.test_button.connect("clicked", self.load)
 	
+
+	def drag_data_get_data(self, treeview, context, selection, target_id, etime):
+		treeselection = treeview.get_selection()
+		model, iter = treeselection.get_selected()
+		data = model.get_value(iter, 0)
+		selection.set(selection.target, 8, data)
+	
+	def drag_data_received_data(self, treeview, context, x, y, selection, info, etime) :
+		model = treeview.get_model()
+		data = selection.data
+		drop_info = treeview.get_dest_row_at_pos(x, y)
+		if drop_info:
+				path, position = drop_info
+				iter = model.get_iter(path)
+				print iter
+				if (position == gtk.TREE_VIEW_DROP_BEFORE
+					or position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
+					model.insert_before(iter, [data])
+				else:
+					model.insert_after(iter, [data])
+		else:
+			model.append([data])
+		if context.action == gtk.gdk.ACTION_MOVE:
+			context.finish(True, True, etime)
+		return
+
 		
 	def get_col_name(self, column, cell, model, iter) :	
 		cell.set_property('text', model.get_value(iter, 0).name )
@@ -149,15 +183,19 @@ class Features:
 				filename += ".xml"
 			etree.ElementTree(xml).write(filename, pretty_print=True)
 		filechooserdialog.destroy()
-        
-	def load(self, callback) :
-		filechooserdialog = gtk.FileChooserDialog("Open", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
-		response = filechooserdialog.run()
-		if response == gtk.RESPONSE_OK:
-			filename = filechooserdialog.get_filename() 
+		
+	def load(self, callback, filename=None) :
+		if filename != None :
 			xml = etree.parse(filename)
-		filechooserdialog.destroy()
-		self.treestore_from_xml(xml.getroot())
+		else :	
+			filechooserdialog = gtk.FileChooserDialog("Open", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+			response = filechooserdialog.run()
+			if response == gtk.RESPONSE_OK:
+				filename = filechooserdialog.get_filename() 
+				xml = etree.parse(filename)
+			filechooserdialog.destroy()
+		if filename != None :
+			self.treestore_from_xml(xml.getroot())
 		
 		
 		

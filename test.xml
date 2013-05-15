@@ -1,20 +1,20 @@
 <LinuxCNC-Features>
-  <feature name="Squ213are">
+  <feature name="Square 0001">
     <string name="p1"/>
     <string name="p2"/>
     <string name="p3"/>
   </feature>
-  <feature name="Squ213are">
+  <feature name="Square 0002">
     <string name="p1"/>
     <string name="p2"/>
     <string name="p3"/>
   </feature>
-  <feature name="Squ213are">
+  <feature name="Square 0003">
     <string name="p1"/>
     <string name="p2"/>
     <string name="p3"/>
   </feature>
-  <feature name="Squ213are">
+  <feature name="Square 0004">
     <string name="p1"/>
     <string name="p2"/>
     <string name="p3"/>
