@@ -9,12 +9,12 @@
     <string path="1:1" expanded="False" name="p2" value="None"/>
     <string path="1:2" expanded="False" name="p3" value="None"/>
   </feature>
-  <feature path="2" expanded="False" name="Square 0003" value="None">
+  <feature path="2" expanded="True" name="Square 0003" value="None">
     <string path="2:0" expanded="False" name="p1" value="None"/>
     <string path="2:1" expanded="False" name="p2" value="None"/>
     <string path="2:2" expanded="False" name="p3" value="None"/>
   </feature>
-  <feature path="3" expanded="False" name="Square 0004" value="None">
+  <feature path="3" expanded="True" name="Square 0004" value="None">
     <string path="3:0" expanded="False" name="p1" value="None"/>
     <string path="3:1" expanded="False" name="p2" value="None"/>
     <string path="3:2" expanded="False" name="p3" value="None"/>

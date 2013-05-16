@@ -27,6 +27,7 @@ class FeatureParameter :
 		
 
 PARAMETERS = ["string", "float", "int"]	
+UNDO_MAX_LEN = 200
 	
 class Feature(): 
 	def __init__(self, name="Feature", type="int", value="",  icon = "") :
@@ -58,6 +59,8 @@ class Feature():
 class Features:
 
 	def __init__(self):
+		self.undo_list = []
+		self.undo_pointer = []
 		self.glade = gtk.Builder()
 		self.glade.add_from_file("features.glade")
 		self.glade.connect_signals(self)
@@ -104,6 +107,33 @@ class Features:
 		self.test_button.connect("clicked", self.save)
 		self.test_button = self.glade.get_object("open")
 		self.test_button.connect("clicked", self.load)
+
+		self.test_button = self.glade.get_object("undo")
+		self.test_button.connect("clicked", self.undo)
+		self.test_button = self.glade.get_object("redo")
+		self.test_button.connect("clicked", self.redo)
+		
+		
+	def action(self, *arg) :
+		xml = self.treestore_to_xml()
+		self.undo_list = self.undo_list[:min(self.undo_pointer, UNDO_MAX_LEN-1)]
+		self.undo_list.append(etree.tostring(xml))
+		self.undo_pointer = len(self.undo_list)-1
+		
+	def undo(self, *arg) :
+		if self.undo_pointer>0 :
+			self.undo_pointer -= 1
+			self.treestore_from_xml(etree.xml(self.undo_list[self.undo_pointer]))
+			
+	def redo(self, *arg) :
+		if self.undo_pointer < len(self.undo_list)-1 :
+			self.undo_pointer += 1
+			self.treestore_from_xml(etree.xml(self.undo_list[self.undo_pointer]))
+		
+		
+	def clear_undo(self, *arg) :
+		self.undo_list = []
+		self.undo_pointer = 0
 	
 	def test(self, *arg) :
 		xml = self.treestore_to_xml()
