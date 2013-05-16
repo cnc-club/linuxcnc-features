@@ -1,22 +1,22 @@
 <LinuxCNC-Features>
-  <feature name="Square 0001" >
-    <string name="p1"/>
-    <string name="p2"/>
-    <string name="p3"/>
+  <feature path="0" expanded="True" name="Square 0001" value="None">
+    <string path="0:0" expanded="False" name="p1" value="None"/>
+    <string path="0:1" expanded="False" name="p2" value="None"/>
+    <string path="0:2" expanded="False" name="p3" value="None"/>
   </feature>
-  <feature name="Square 0002">
-    <string name="p1"/>
-    <string name="p2"/>
-    <string name="p3"/>
+  <feature path="1" expanded="False" name="Square 0002" value="None">
+    <string path="1:0" expanded="False" name="p1" value="None"/>
+    <string path="1:1" expanded="False" name="p2" value="None"/>
+    <string path="1:2" expanded="False" name="p3" value="None"/>
   </feature>
-  <feature name="Square 0003">
-    <string name="p1"/>
-    <string name="p2"/>
-    <string name="p3"/>
+  <feature path="2" expanded="False" name="Square 0003" value="None">
+    <string path="2:0" expanded="False" name="p1" value="None"/>
+    <string path="2:1" expanded="False" name="p2" value="None"/>
+    <string path="2:2" expanded="False" name="p3" value="None"/>
   </feature>
-  <feature name="Square 0004">
-    <string name="p1"/>
-    <string name="p2"/>
-    <string name="p3"/>
+  <feature path="3" expanded="False" name="Square 0004" value="None">
+    <string path="3:0" expanded="False" name="p1" value="None"/>
+    <string path="3:1" expanded="False" name="p2" value="None"/>
+    <string path="3:2" expanded="False" name="p3" value="None"/>
   </feature>
 </LinuxCNC-Features>

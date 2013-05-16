@@ -22,8 +22,9 @@ class FeatureParameter :
 		return self.value
 
 		
-	def to_xml(self, path) :
+	def to_xml(self, xmlpath, path='') :
 		etree.SubElement(path, "parameter", name=self.name)
+		
 
 PARAMETERS = ["string", "float", "int"]	
 	
@@ -36,20 +37,22 @@ class Feature():
 	def get_value(self):
 		return self.value
 	
-	def to_xml(self, path) :
-		path = etree.SubElement(path, self.type, name = self.name)
+	def to_xml(self, xmlpath, path, expanded=False) :
+		print path 
+		path = etree.SubElement(xmlpath, 
+									self.type, 
+									name = self.name, 
+									path=str(path), 
+									value=str(self.value),
+									expanded = str(expanded) )
+		
 		return path
 
-	def from_xml(self, path) :
-		self.name = path.get("name")
-		self.value = path.get("value")
-		self.type =  path.tag.lower()
-
-
-
-#		for p in self.param :
-#			p.to_xml(path)
-
+	def from_xml(self, xmlpath) :
+		self.name = xmlpath.get("name")
+		self.value = xmlpath.get("value")
+		self.type =  xmlpath.tag.lower()
+		self.expanded = xmlpath.get("expanded").lower()=="true"
 
 
 class Features:
@@ -95,13 +98,16 @@ class Features:
 		self.tree_root = self.treestore.get_iter_root()
 
 		self.test_button = self.glade.get_object("test")
-		self.test_button.connect("clicked", self.treestore_to_xml)
+		self.test_button.connect("clicked", self.test)
 		
 		self.test_button = self.glade.get_object("save")
 		self.test_button.connect("clicked", self.save)
 		self.test_button = self.glade.get_object("open")
 		self.test_button.connect("clicked", self.load)
 	
+	def test(self, *arg) :
+		xml = self.treestore_to_xml()
+		print etree.tostring(xml, pretty_print=True)
 
 	def drag_data_get_data(self, treeview, context, selection, target_id, etime):
 		treeselection = treeview.get_selection()
@@ -109,43 +115,54 @@ class Features:
 		feature = self.treestore.get(iter,0)[0]
 		print iter
 		selection.set('textn', 8, "1" )
-		if feature.type in PARAMETERS :	
+		if feature.type in PARAMETERS and False:	
 			print feature.type,"!!!!!!!!!!!!!!!!!!!"
 			context.drag_abort(0)
 			context.finish(True, True, etime)
 			return 
-	
+
+	def move_before(self, src, dst, before = True) :
+		src = self.treestore.get_string_from_iter(src)
+		dst = self.treestore.get_string_from_iter(dst)		
+		xml = self.treestore_to_xml()
+		src = xml.find(".//*[@path='%s']"%src)		
+		dst = xml.find(".//*[@path='%s']"%dst)
+		if dst==None or src==None :		
+			print "Error in dst, or src wile moving subtrees! (dst %s) (src %s)"%(dst,src)
+			return
+		if before :
+			dst.getparent().insert(dst.getparent().index(dst), src) 
+		else : 
+			dst.getparent().insert(dst.getparent().index(dst)+1, src) 
+		self.treestore_from_xml(xml)	
+
 		
+	
+	
+	def move_after(self, src, dst) :
+		self.move_before(src, dst, before = False) 
 	
 	def drag_data_received_data(self, treeview, context, x, y, selection, info, etime) :
-	
-
-		# sourse
 		treeselection = treeview.get_selection()
-		s_model, s_iter = treeselection.get_selected()
-		
-		#s_model, s_iter = selection.get_selected()
-		# target
-		model = treeview.get_model()
+		model, src = treeselection.get_selected()
 		drop_info = treeview.get_dest_row_at_pos(x, y)
 		if drop_info :
-				path, position = drop_info
-				iter = model.get_iter(path)
-				if (position == gtk.TREE_VIEW_DROP_BEFORE or position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE) :
-					model.move_before(s_iter,iter)
-				else:
-					model.move_after(s_iter, iter)
-		else:
+			dst, position = drop_info
+			dst = self.treestore.get_iter(dst)
+			if (position == gtk.TREE_VIEW_DROP_BEFORE or position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE) :
+				self.move_before(src, dst)
+			else:
+				self.move_after(src, dst)
+		else :
+			# pop to root
 			root = model.get_iter_root()
 			n = model.iter_n_children(root)
-			model.move_after(s_iter,model.iter_nth_child(n-1))
+			dst = model.iter_nth_child(root,n-1)
+			self.move_after(src,dst)
 			
-		if context.action == gtk.gdk.ACTION_MOVE:
-			pass
-			#context.finish(True, True, etime)
-		return
+		#context.finish(True, True, etime)	
+		return True
 
-		
 	def get_col_name(self, column, cell, model, iter) :	
 		cell.set_property('text', model.get_value(iter, 0).name )
 		
@@ -153,42 +170,49 @@ class Features:
 		cell.set_property('text', model.get_value(iter, 0).get_value() )
 
 
-	def treestore_to_xml_recursion(self, path, xmlpath):
-		while path : 
-			el = self.treestore.get(path,0)[0]	
-			
-			xmlpath_ = el.to_xml(xmlpath)
+	def treestore_to_xml_recursion(self, iter, xmlpath):
+		while iter : 
+			el = self.treestore.get(iter,0)[0]	
+			path = self.treestore.get_path(iter)
+			xmlpath_ = el.to_xml(xmlpath, self.treestore.get_string_from_iter(iter), self.treeview.row_expanded(path))
 			# check for the childrens
-			cpath = self.treestore.iter_children(path)
-			if cpath :
-				self.treestore_to_xml_recursion(cpath, xmlpath_)
+			citer = self.treestore.iter_children(iter)
+			if citer :
+				self.treestore_to_xml_recursion(citer, xmlpath_)
 			# check for next items
-			path = self.treestore.iter_next(path)
-
+			iter = self.treestore.iter_next(iter)
 				
 	def treestore_to_xml(self, callback=None):
 		xml = etree.Element("LinuxCNC-Features")
 		self.treestore_to_xml_recursion(self.treestore.get_iter_root(), xml)
-		print etree.tostring(xml, pretty_print=True)
+		#print etree.tostring(xml, pretty_print=True)
 		return xml
 
 
-	def treestore_from_xml_recursion(self, treestore, path, xmlpath):
+	def treestore_from_xml_recursion(self, treestore, iter, xmlpath):
 		for p in xmlpath :
 			f = Feature()
 			f.from_xml(p)
-			cpath = treestore.append(path, [f])
+			citer = treestore.append(iter, [f])
 			if len(p) :
-				self.treestore_from_xml_recursion(treestore, cpath, p)
+				self.treestore_from_xml_recursion(treestore, citer, p)
 
-		
-
-	def treestore_from_xml(self, xml):
+	def treestore_from_xml(self, xml, expand = True):
 		treestore = gtk.TreeStore(object)
 		self.treestore_from_xml_recursion(treestore, treestore.get_iter_root(), xml)		
 		self.treestore = treestore
 		self.treeview.set_model(self.treestore)
+		if expand :
+			def treestore_expand(model, path, iter, self) :
+				if model.get(iter,0)[0].expanded :
+					self.treeview.expand_row(path, False)
+			self.treestore.foreach(treestore_expand, self)
+			
+			
 
+		###				path = treestore.get_path(iter)
+		#		print path, iter
+		#		if f.expanded and path!=None : self.treeview.expand_row(path, False)
 
 
 	def save(self, callback) :
