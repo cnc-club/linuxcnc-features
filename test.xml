@@ -1,5 +1,5 @@
 <LinuxCNC-Features>
-  <feature name="Square 0001">
+  <feature name="Square 0001" >
     <string name="p1"/>
     <string name="p2"/>
     <string name="p3"/>

@@ -9,7 +9,7 @@ pygtk.require('2.0')
 import gtk
 import gtk.glade
 from lxml import etree
-
+import time
 import gobject
 
 class FeatureParameter :
@@ -24,7 +24,8 @@ class FeatureParameter :
 		
 	def to_xml(self, path) :
 		etree.SubElement(path, "parameter", name=self.name)
-	
+
+PARAMETERS = ["string", "float", "int"]	
 	
 class Feature(): 
 	def __init__(self, name="Feature", type="int", value="",  icon = "") :
@@ -42,7 +43,7 @@ class Feature():
 	def from_xml(self, path) :
 		self.name = path.get("name")
 		self.value = path.get("value")
-		self.type = path.get("type")
+		self.type =  path.tag.lower()
 
 
 
@@ -105,26 +106,43 @@ class Features:
 	def drag_data_get_data(self, treeview, context, selection, target_id, etime):
 		treeselection = treeview.get_selection()
 		model, iter = treeselection.get_selected()
-		data = model.get_value(iter, 0)
-		selection.set(selection.target, 8, data)
+		feature = self.treestore.get(iter,0)[0]
+		print iter
+		selection.set('textn', 8, "1" )
+		if feature.type in PARAMETERS :	
+			print feature.type,"!!!!!!!!!!!!!!!!!!!"
+			context.drag_abort(0)
+			context.finish(True, True, etime)
+			return 
+	
+		
 	
 	def drag_data_received_data(self, treeview, context, x, y, selection, info, etime) :
+	
+
+		# sourse
+		treeselection = treeview.get_selection()
+		s_model, s_iter = treeselection.get_selected()
+		
+		#s_model, s_iter = selection.get_selected()
+		# target
 		model = treeview.get_model()
-		data = selection.data
 		drop_info = treeview.get_dest_row_at_pos(x, y)
-		if drop_info:
+		if drop_info :
 				path, position = drop_info
 				iter = model.get_iter(path)
-				print iter
-				if (position == gtk.TREE_VIEW_DROP_BEFORE
-					or position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
-					model.insert_before(iter, [data])
+				if (position == gtk.TREE_VIEW_DROP_BEFORE or position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE) :
+					model.move_before(s_iter,iter)
 				else:
-					model.insert_after(iter, [data])
+					model.move_after(s_iter, iter)
 		else:
-			model.append([data])
+			root = model.get_iter_root()
+			n = model.iter_n_children(root)
+			model.move_after(s_iter,model.iter_nth_child(n-1))
+			
 		if context.action == gtk.gdk.ACTION_MOVE:
-			context.finish(True, True, etime)
+			pass
+			#context.finish(True, True, etime)
 		return
 
 		
