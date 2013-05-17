@@ -1,0 +1,54 @@
+
+[SUBROUTINE]
+name = Simple subroutine
+icon = icons/circle.svg
+
+[PARAM]
+type = float
+call = #1
+name = R1
+icon = icons/circle.svg
+hint = Radius #1
+
+[PARAM]
+type = float
+call = #2
+name = R2
+icon = icons/circle.svg
+hint = Radius #2
+
+[PARAM]
+type = float
+call = #3
+name = Feed Rate
+icon = icons/feed.svg
+hint = Feed Rate
+
+[PARAM]
+type = image
+src = images/simp.png
+
+[DEFENITIONS]
+content = 
+	(DEFENITIONS)
+	o<simp> sub
+	  #<ra>       = #1 (=.6 Radius A) ;Example parm with    comment
+	  #<radius_b> = #2 (=0.4)         ;Example parm with no comment
+	  #<feedrate> = #3 (=100)
+	  g0x0y0z1
+	  g3 i#<ra> f#<feedrate>
+	  g3 i[0-#<radius_b>]
+	o<simp> endsub
+
+
+[CALL]
+content = 
+	(Call)
+
+[BEFORE]
+content = 
+	(Before sub)
+	
+[AFTER]
+content = 
+	(After sub)
