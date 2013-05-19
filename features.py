@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
+#
+# Copyright (c) 2012 Nick Drobchenko aka Nick from cnc-club.ru
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
 import sys
 import os
 
@@ -23,6 +36,7 @@ SUBROUTINES_PATH = "subroutines/"
 
 ADD_ICON_SIZE = 100
 
+datadir = os.path.abspath(os.path.dirname(__file__))
 
 def get_int(s) :
 	try :
@@ -204,13 +218,16 @@ class Feature():
 		return call
 
 	
-class Features:
-
+class Features(gtk.Box):
+	__gtype_name__ = "Features"
+	__gproperties__ = {}
+	__gproperties = __gproperties__ 
+	
 	def __init__(self):
 		self.undo_list = []
 		self.undo_pointer = 0
 		self.glade = gtk.Builder()
-		self.glade.add_from_file("features.glade")
+		self.glade.add_from_file(datadir + "features.glade")
 		self.glade.connect_signals(self)
 		self.window = self.glade.get_object("MainWindow")
 
@@ -303,10 +320,16 @@ class Features:
 		button.connect("clicked", self.collapse, PARAMETERS+FEATURES)
 		button = self.glade.get_object("collapse_all")
 		button.connect("clicked", self.collapse, PARAMETERS+FEATURES+GROUPS)
-	
+		self.reparent(self)
 		self.window.show_all()	
 		self.window.connect("destroy", gtk.main_quit)
 
+	def do_get_property(self, property) :
+		return None
+			
+	def do_set_property(self, property) :
+		pass
+	
 	def show_help(self, callback, treeview) :
 		treeselection = treeview.get_selection()
 		model, iter = treeselection.get_selected()
@@ -379,9 +402,10 @@ class Features:
 	def remove(self, call) :
 		treeselection = self.treeview.get_selection()
 		model, iter = treeselection.get_selected()
-		f = self.treestore.get(iter,0)[0]
-		if f.__class__ == Feature : 
-			self.treestore.remove(iter)
+		if iter != None :
+			f = self.treestore.get(iter,0)[0]
+			if f.__class__ == Feature : 
+				self.treestore.remove(iter)
 
 	def add_feature(self, src) :
 		xml = self.treestore_to_xml()
@@ -579,8 +603,24 @@ class Features:
 		if filename != None :
 			self.treestore_from_xml(xml.getroot())
 		
-		
-		
+
+# for testing without glade editor:
+def main():
+    window = gtk.Dialog("My dialog",
+                   None,
+                   gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                   (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                    gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+    features = Features()
+    
+    window.vbox.add(features)
+    window.connect("destroy", gtk.main_quit)
+    window.show_all()
+    response = window.run()
+
+if __name__ == "__main__":	
+	main()
+			
 if __name__ == "__main__":
 	features = Features()
 	gtk.main()
