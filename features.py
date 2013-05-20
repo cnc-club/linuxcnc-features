@@ -218,20 +218,19 @@ class Feature():
 		return call
 
 	
-class Features(gtk.Box):
+class Features(gtk.VBox):
 	__gtype_name__ = "Features"
 	__gproperties__ = {}
 	__gproperties = __gproperties__ 
 	
-	def __init__(self):
+	def __init__(self, *a, **kw):
+		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
 		self.undo_pointer = 0
 		self.glade = gtk.Builder()
-		self.glade.add_from_file(datadir + "features.glade")
+		self.glade.add_from_file(os.path.join(datadir, "features.glade"))
+		self.main_box = self.glade.get_object("FeaturesBox")
 		self.glade.connect_signals(self)
-		self.window = self.glade.get_object("MainWindow")
-
-		
 
 		# create features catalog
 		self.add_iconview = gtk.IconView()		
@@ -243,6 +242,7 @@ class Features(gtk.Box):
 		
 		self.get_features()
    		
+		self.help_box = self.glade.get_object("help_box")
    		self.help_image = self.glade.get_object("feature_image")	
    		self.help_text = self.glade.get_object("feature_help")	
 		
@@ -320,9 +320,29 @@ class Features(gtk.Box):
 		button.connect("clicked", self.collapse, PARAMETERS+FEATURES)
 		button = self.glade.get_object("collapse_all")
 		button.connect("clicked", self.collapse, PARAMETERS+FEATURES+GROUPS)
-		self.reparent(self)
-		self.window.show_all()	
-		self.window.connect("destroy", gtk.main_quit)
+		self.main_box.reparent(self)
+		self.main_box.show_all()
+
+
+		paned = self.glade.get_object("vpaned1")	
+		w,h = paned.get_size_request()		
+		paned.set_size_request(w,200)	
+		paned.set_position(100)
+		paned = self.glade.get_object("vpaned2")	
+		w,h = paned.get_size_request()		
+		paned.set_size_request(w,400)	
+		
+	
+		w,h = self.treeview.get_size_request()		
+		self.treeview.set_size_request(w,200)	
+		w,h = self.help_box.get_size_request()		
+		self.help_box.set_size_request(w,100)	
+		w,h = self.add_iconview.get_size_request()		
+		self.add_iconview.set_size_request(w,100)	
+
+
+				
+		self.main_box.connect("destroy", gtk.main_quit)
 
 	def do_get_property(self, property) :
 		return None
@@ -611,6 +631,7 @@ def main():
                    gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                    (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                     gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+    
     features = Features()
     
     window.vbox.add(features)
@@ -620,7 +641,5 @@ def main():
 
 if __name__ == "__main__":	
 	main()
-			
-if __name__ == "__main__":
-	features = Features()
-	gtk.main()
+	
+	
