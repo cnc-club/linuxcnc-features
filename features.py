@@ -446,7 +446,7 @@ class Features(gtk.VBox):
 			gcode += g
 			gcode_def += d
 			iter = self.treestore.iter_next(iter)
-		return gcode_def+"(End definitions)\n\n\n"+gcode
+		return gcode_def+"(End definitions)\n\n\n"+gcode + "\n\nM02"
 
 	def to_file(self, *arg) :
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
