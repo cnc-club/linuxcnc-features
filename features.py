@@ -14,7 +14,6 @@
 # GNU General Public License for more details.
 
 import sys
-import os
 
 import pygtk
 pygtk.require('2.0')
@@ -27,14 +26,15 @@ import gobject
 
 import ConfigParser
 import re, os
+import  pango
+
 
 PARAMETERS = ["string", "float", "int", "image"]	
 FEATURES = ["feature"]
 GROUPS = ["group"]
 UNDO_MAX_LEN = 200
 SUBROUTINES_PATH = "subroutines/"
-
-ADD_ICON_SIZE = 100
+ADD_ICON_SIZE = 60
 
 datadir = os.path.abspath(os.path.dirname(__file__))
 
@@ -49,21 +49,23 @@ FEATURE_DICT = {}
 
 
 class Parameter() :
-	def __init__(self, ini=None, xml=None) :
+	def __init__(self, ini=None, ini_id = None, xml=None) :
 		self.attr = {}
 		self.pixbuf = {}
-		if ini != None : self.from_ini(ini)
+		if ini != None : self.from_ini(ini, ini_id)
 		if xml != None : self.from_xml(xml)
 
 	def __repr__(self) :
 		return etree.tostring(self.to_xml(), pretty_print=True)
 
-	def from_ini(self,ini)	:
+	def from_ini(self,ini, ini_id)	:
 		self.attr = {}
 		ini = dict(ini)
 		for i in ini :
 			self.attr[i] = ini[i]
 		self.set_pixbufs()
+		if "type" in self.attr : self.attr["type"] = self.attr["type"].lower()
+		if "call" not in self.attr : self.attr["call"] = "#"+ini_id.lower()
 		
 	def from_xml(self, xml) :
 		for i in xml.keys() :
@@ -88,14 +90,17 @@ class Parameter() :
 	def get_icon(self) : return self.get_pixbuf("icon")
 	def get_image(self) : return self.get_pixbuf("image")
 
-	def get_value(self, ptype):
+	def get_value(self, ptype) :
 		if self.attr["type"] in ptype :
 			return self.attr["value"] if "value" in self.attr else ""
 
-	def get_name(self):
+	def get_name(self) :
 		return self.attr["name"] if "name" in self.attr else ""
-
-
+	
+	def get_attr(self, name) :
+		return self.attr[name] if name in self.attr else None
+		
+		
 class Feature():
 	def __init__(self, src=None, xml = None) :
 		self.attr = {}
@@ -139,12 +144,13 @@ class Feature():
 		if src in  FEATURE_DICT : self.from_xml(FEATURE_DICT[src])
 		config = ConfigParser.ConfigParser()
 		config.read(SUBROUTINES_PATH+src)
+		#print src
 		self.attr = dict(config.items("SUBROUTINE"))
 		self.attr["src"] = src
 		self.param = []
 		for s in config.sections() :		
 			if s[:5]== "PARAM" :
-				self.param.append( Parameter(ini=config.items(s)) )
+				self.param.append( Parameter(ini=config.items(s), ini_id=s) )
 		# get gcode parameters		
 		try :
 			self.attr["definitions"] = config.get("DEFINITIONS","content")	
@@ -201,22 +207,26 @@ class Feature():
 			l = xml.findall(".//feature[@type='%s']"%self.attr["type"])		
 			num = max([ get_int(i.get("name")[-4:]) for i in l ]+[0])+1
 		self.attr["name"] = self.attr["type"]+" %04d"%num
-		
+		self.attr["id"] = re.sub("[^a-zA-Z0-9\-]","-",self.attr["name"])
 		
 	def get_definitions(self,definitions) :
 		if self.attr["type"] not in definitions : 	
 			definitions.append(self.attr["type"])
-			return self.attr["definitions"]
+			return self.process(self.attr["definitions"])
 		else :
 			return ""
-			
-	def get_call(self) :
-		call = self.attr["call"]
+	
+
+	def process(self, s) :
+		def process_callback(m) :
+			return eval(m.group(2), {"self":self})
+		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", process_callback, s)
+
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
-				call = re.sub(r"%s"%(re.escape(p.attr["call"])),"%s"%p.attr["value"],call)
-		return call
+				s = re.sub(r"%s"%(re.escape(p.attr["call"])),"%s"%p.attr["value"], s)
 
+		return s
 	
 class Features(gtk.VBox):
 	__gtype_name__ = "Features"
@@ -242,7 +252,7 @@ class Features(gtk.VBox):
 		
 		self.get_features()
    		
-		self.help_box = self.glade.get_object("help_box")
+		self.help_viewport = self.glade.get_object("help_viewport")
    		self.help_image = self.glade.get_object("feature_image")	
    		self.help_text = self.glade.get_object("feature_help")	
 		
@@ -300,8 +310,6 @@ class Features(gtk.VBox):
 
 		#self.load(None,"test.xml")
 
-		f = self.add_feature("simp.ini")
-		
 		button = self.glade.get_object("test")
 		button.connect("clicked", self.test)
 		button = self.glade.get_object("save")
@@ -312,14 +320,16 @@ class Features(gtk.VBox):
 		button.connect("clicked", self.undo)
 		button = self.glade.get_object("redo")
 		button.connect("clicked", self.redo)
+		button = self.glade.get_object("add")
+		button.connect("clicked", self.add)
 		button = self.glade.get_object("remove")
 		button.connect("clicked", self.remove)
 		button = self.glade.get_object("refresh")
 		button.connect("clicked", self.refresh)
 		button = self.glade.get_object("collapse_param")
-		button.connect("clicked", self.collapse, PARAMETERS+FEATURES)
+		button.connect("clicked", self.collapse, [Parameter])
 		button = self.glade.get_object("collapse_all")
-		button.connect("clicked", self.collapse, PARAMETERS+FEATURES+GROUPS)
+		button.connect("clicked", self.collapse, [Parameter, Feature])
 		self.main_box.reparent(self)
 		self.main_box.show_all()
 
@@ -329,20 +339,36 @@ class Features(gtk.VBox):
 		paned.set_size_request(w,200)	
 		paned.set_position(100)
 		paned = self.glade.get_object("vpaned2")	
-		w,h = paned.get_size_request()		
-		paned.set_size_request(w,400)	
+		w,h = paned.get_size_request()
+		paned.set_size_request(w,500)	
+		paned.set_position(300)
 		
 	
 		w,h = self.treeview.get_size_request()		
 		self.treeview.set_size_request(w,200)	
-		w,h = self.help_box.get_size_request()		
-		self.help_box.set_size_request(w,100)	
-		w,h = self.add_iconview.get_size_request()		
-		self.add_iconview.set_size_request(w,100)	
+		w,h = self.help_viewport.get_size_request()		
+		self.help_viewport.set_size_request(w,100)	
 
-
-				
 		self.main_box.connect("destroy", gtk.main_quit)
+		
+		self.add_dialog = None
+
+	def add(self, *arg) :
+		if self.add_dialog == None :
+			self.add_dialog = gtk.Dialog("Add feature", self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
+			#self.add_container.reparent(self.add_dialog)
+			add_iconview = gtk.IconView()		
+			add_iconview.set_model(self.icon_liststore)
+			add_iconview.set_pixbuf_column(0)
+			add_iconview.set_text_column(1)
+			add_iconview.connect("item-activated", self.add_feature_from_cat)
+			scroll = gtk.ScrolledWindow()
+			scroll.add_with_viewport(add_iconview)
+			self.add_dialog.vbox.pack_start(scroll)
+			self.add_dialog.show_all()
+			self.add_dialog.set_size_request(600,500)
+		response = self.add_dialog.run()
+		self.add_dialog.hide()
 
 	def do_get_property(self, property) :
 		return None
@@ -357,7 +383,7 @@ class Features(gtk.VBox):
 			f = model.get(iter,0)[0]
 			if f.__class__ == Feature :
 				self.help_image.set_from_pixbuf(f.get_image())
-				self.help_text.set_text(f.get_attr("help"))
+				self.help_text.set_markup(f.get_attr("help"))
 				break
 			iter = model.iter_parent(iter)	
 
@@ -384,50 +410,58 @@ class Features(gtk.VBox):
 	def collapse(self, call, l) :
 		def treestore_collapse(model, path, iter, data) :
 			self, l = data[0],data[1]
-			p = model.get(iter,0)[0].param
-			if p["type"] in l :
+			p = model.get(iter,0)[0]
+			if p.__class__ in l :
 				self.treeview.collapse_row(path)
-	
 		self.treestore.foreach(treestore_collapse, [self, l])
 
 	def refresh_recursive(self, iter) :
+		gcode_def = ""
 		gcode = ""
 		f = self.treestore.get(iter,0)[0]
 		if f.__class__ == Feature : 
-			gcode += f.get_definitions(self.definitions)
-			gcode += f.attr["before"]
-			gcode += f.get_call() 
+			gcode_def += f.get_definitions(self.definitions)
+			gcode += f.process(f.attr["before"]) 
+			gcode += f.process(f.attr["call"]) 
 		iter = self.treestore.iter_children(iter)
 		while iter :
-			gcode += self.refresh_recursive(iter)
+			g,d = self.refresh_recursive(iter)
+			gcode += g
+			gcode_def += d
 			iter = self.treestore.iter_next(iter)
 		if f.__class__ ==	 Feature : 
-			gcode += f.attr["after"]
+			gcode += f.process(f.attr["after"]) 
 
-		return gcode
+		return gcode,gcode_def
 					
 	def refresh(self, call) :
 		gcode = ""
+		gcode_def = ""
 		self.definitions = []
 		iter = self.treestore.get_iter_root()
 		while iter != None :
-			gcode +=  self.refresh_recursive(iter)
+			g,d =  self.refresh_recursive(iter)
+			gcode += g
+			gcode_def += d
 			iter = self.treestore.iter_next(iter)
-		print gcode
+		print gcode_def+"(End definitions)\n\n\n"+gcode
 
 	def edit_value(self, cellrenderertext, path, new_text) :
+		self.action()		
 		iter = self.treestore.get_iter(path)
 		self.treestore.get(iter,0)[0].attr["value"] = new_text
-		
+				
 	def remove(self, call) :
+		self.action()
 		treeselection = self.treeview.get_selection()
 		model, iter = treeselection.get_selected()
 		if iter != None :
 			f = self.treestore.get(iter,0)[0]
 			if f.__class__ == Feature : 
 				self.treestore.remove(iter)
-
+		
 	def add_feature(self, src) :
+		self.action()
 		xml = self.treestore_to_xml()
 		f = Feature(src = src)
 		f.get_id(xml)
@@ -436,29 +470,31 @@ class Features(gtk.VBox):
 		self.treestore_from_xml(xml)
 		xml = self.treestore_to_xml(xml)
 
-
 	def add_feature_from_cat(self, iconview, path) :
+		if self.add_dialog != None : self.add_dialog.response(gtk.RESPONSE_REJECT) 
+		self.action()		
 		model = iconview.get_model()
 		iter = model.get_iter(path) 
 		src = model.get(iter, 2)[0]
 		self.add_feature(src)
 		
-		
 	def action(self, *arg) :
 		xml = self.treestore_to_xml()
-		self.undo_list = self.undo_list[:min(self.undo_pointer, UNDO_MAX_LEN-1)]
+		self.undo_list = self.undo_list[:self.undo_pointer+1]
+		self.undo_list = self.undo_list[max(0,len(self.undo_list)-UNDO_MAX_LEN):]
 		self.undo_list.append(etree.tostring(xml))
 		self.undo_pointer = len(self.undo_list)-1
 		
 	def undo(self, *arg) :
-		if self.undo_pointer>0 :
+		if self.undo_pointer>=0 :
+			print "12",self.undo_list
+			self.treestore_from_xml(etree.fromstring(self.undo_list[self.undo_pointer]))
 			self.undo_pointer -= 1
-			self.treestore_from_xml(etree.xml(self.undo_list[self.undo_pointer]))
-			
+						
 	def redo(self, *arg) :
 		if self.undo_pointer < len(self.undo_list)-1 :
 			self.undo_pointer += 1
-			self.treestore_from_xml(etree.xml(self.undo_list[self.undo_pointer]))
+			self.treestore_from_xml(etree.fromstring(self.undo_list[self.undo_pointer]))
 		
 	def clear_undo(self, *arg) :
 		self.undo_list = []
@@ -469,13 +505,13 @@ class Features(gtk.VBox):
 		print etree.tostring(xml, pretty_print=True)
 
 	def move_before(self, src, dst, after = False, append = False) :
+		self.action()
 		src = self.treestore.get_string_from_iter(src)
 		dst = self.treestore.get_string_from_iter(dst)		
 		xml = self.treestore_to_xml()
 		src = xml.find(".//*[@path='%s']"%src)		
 		dst = xml.find(".//*[@path='%s']"%dst)
-		print dst
-		
+		#print dst
 		parent = dst.getparent()
 		while parent != None:
 			if parent == src : return # can not move element inside itself
@@ -490,11 +526,10 @@ class Features(gtk.VBox):
 		else : 
 			dst.getparent().insert(dst.getparent().index(dst), src) 
 		self.treestore_from_xml(xml)	
-
 		
 	def move_after(self, src, dst) :
 		self.move_before(src, dst, after = True)
-
+		
 	def append_node(self, src, dst, append = True) :
 		self.move_before(src, dst, append = True)
 		 
@@ -515,15 +550,15 @@ class Features(gtk.VBox):
 		if self.treestore.get(src,0)[0].__class__ == Feature : # we can move only features
 			if drop_info :
 				dst, position = drop_info
-				print dst
 				dst = self.treestore.get_iter(dst)
-				print dst
-				if position == gtk.TREE_VIEW_DROP_BEFORE :
-					self.move_before(src, dst)
-				elif  position == gtk.TREE_VIEW_DROP_AFTER:
-					self.move_after(src, dst)
-				else :	## drop inside
-					self.append_node(src, dst)
+				dst_ = self.treestore.get(dst,0)[0]
+				if dst_.__class__ == Feature : # Drop before and after only for features 
+					if position == gtk.TREE_VIEW_DROP_BEFORE  :
+						self.move_before(src, dst)
+					elif  position == gtk.TREE_VIEW_DROP_AFTER:
+						self.move_after(src, dst)
+				elif dst_.__class__ == Parameter and dst_.get_attr("type") == "items" : # Drop inside only for Group's items 
+						self.append_node(src, dst)
 			else :
 				# pop to root
 				root = model.get_iter_root()
@@ -531,7 +566,7 @@ class Features(gtk.VBox):
 				dst = model.iter_nth_child(root,n-1)
 				self.move_after(src,dst)
 			
-		return True
+		return False # cancel drag 
 
 	def get_col_name(self, column, cell, model, iter) :	
 		cell.set_property('text', model.get_value(iter, 0).get_name() )
@@ -547,11 +582,14 @@ class Features(gtk.VBox):
 			f = self.treestore.get(iter,0)[0]	
 			if f.__class__ == Feature :
 				xmlpath.append(f.to_xml())
-				xmlpath_ = xmlpath[-1]
-				# check for the childrens
+			# check for the childrens
 			citer = self.treestore.iter_children(iter)
-			if citer :
-				self.treestore_to_xml_recursion(citer, xmlpath_)
+			while citer :
+				p = self.treestore.get(citer, 0)[0]
+				if p.get_attr("type") == "items" :
+					xmlpath_ = xmlpath.find(".//param[@type='items']")
+					self.treestore_to_xml_recursion(self.treestore.iter_children(citer), xmlpath_)
+				citer = self.treestore.iter_next(citer)
 			# check for next items
 			iter = self.treestore.iter_next(iter)
 				
@@ -571,9 +609,14 @@ class Features(gtk.VBox):
 				citer = treestore.append(iter, [f, tool_tip])
 				for p in f.param :
 					tool_tip = p.attr["tool_tip"] if "tool_tip" in p.attr else None
-					treestore.append(citer, [p, tool_tip])
-			if len(xml) :
-				self.treestore_from_xml_recursion(treestore, citer, xml)
+					piter = treestore.append(citer, [p, tool_tip])
+					if p.get_attr("type") == "items" :
+						xmlpath_ = xml.find(".//param[@type='items']")
+						self.treestore_from_xml_recursion(treestore, piter, xmlpath_)
+				
+
+			#if len(xml) :
+			#	self.treestore_from_xml_recursion(treestore, citer, xml)
 				
 
 	def treestore_from_xml(self, xml, expand = True):
