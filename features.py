@@ -316,6 +316,8 @@ class Features(gtk.VBox):
 		button.connect("clicked", self.save)
 		button = self.glade.get_object("open")
 		button.connect("clicked", self.load)
+		button = self.glade.get_object("to_file")
+		button.connect("clicked", self.to_file)
 		button = self.glade.get_object("undo")
 		button.connect("clicked", self.undo)
 		button = self.glade.get_object("redo")
@@ -434,7 +436,7 @@ class Features(gtk.VBox):
 
 		return gcode,gcode_def
 					
-	def refresh(self, call) :
+	def refresh(self, *arg ) :
 		gcode = ""
 		gcode_def = ""
 		self.definitions = []
@@ -444,8 +446,22 @@ class Features(gtk.VBox):
 			gcode += g
 			gcode_def += d
 			iter = self.treestore.iter_next(iter)
-		print gcode_def+"(End definitions)\n\n\n"+gcode
+		return gcode_def+"(End definitions)\n\n\n"+gcode
 
+	def to_file(self, *arg) :
+		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+		response = filechooserdialog.run()
+		if response == gtk.RESPONSE_OK:
+			gcode = self.refresh()
+			filename = filechooserdialog.get_filename() 
+			if filename[-4]!=".ngc" not in filename :
+				filename += ".ngc"
+			f = open(filename,"w")
+			f.write(gcode)
+			f.close()
+		filechooserdialog.destroy()
+		
+		
 	def edit_value(self, cellrenderertext, path, new_text) :
 		self.action()		
 		iter = self.treestore.get_iter(path)
@@ -502,7 +518,7 @@ class Features(gtk.VBox):
 	
 	def test(self, *arg) :
 		xml = self.treestore_to_xml()
-		print etree.tostring(xml, pretty_print=True)
+		print self.refresh()
 
 	def move_before(self, src, dst, after = False, append = False) :
 		self.action()
