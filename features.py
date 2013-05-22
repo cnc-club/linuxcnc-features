@@ -82,7 +82,10 @@ class Parameter() :
 		for i in self.attr : 
 			if i in ["icon","image"] :
 				if self.attr[i] not in PIXBUF_DICT :
-					PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+self.attr[i])
+					try :
+						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+self.attr[i])
+					except :
+						print "Warning: problem with image %s "%(SUBROUTINES_PATH+self.attr[i])
 				self.pixbuf[i] = PIXBUF_DICT[self.attr[i]]
 	
 	def get_pixbuf(self, t) :
@@ -406,9 +409,9 @@ class Features(gtk.VBox):
 					else : 
 						pixbuf = none
 					self.icon_liststore.append([pixbuf,f.attr["name"],s])
-				except :
+				except Exception, e :
 					print "Warning: Error while parsing %s..."%s
-
+					print e
 	def collapse(self, call, l) :
 		def treestore_collapse(model, path, iter, data) :
 			self, l = data[0],data[1]
