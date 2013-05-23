@@ -29,15 +29,36 @@ import re, os
 import  pango
 
 if len(sys.argv)>1:
-	w =  sys.argv[1]
+	width = float(sys.argv[1])
 else :
-	w = 28	
+	width = 28.	
 xml = etree.parse("icons.svg")
+if not os.path.isdir("subroutines"):
+	os.mkdir("subroutines")
+	
+if not os.path.isdir("subroutines/icons"):
+	os.mkdir("subroutines/icons")
+	
+
 #print etree.tostring(xml, pretty_print=True)
 for x in xml.findall(".//{http://www.w3.org/2000/svg}title") :
-	s = "inkscape icons.svg --export-png=subroutines/icons/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx"%(x.text,x.getparent().get("id"),w) 
-	os.popen(s)
-	print s
+	try :
+		id_ = x.getparent().get("id")
+		w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
+		h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
+
+		if w>h :
+			w,h = width, width*h/w
+		else :
+			h,w = width, width*w/h
+		s = "inkscape icons.svg --export-png=subroutines/icons/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(x.text,id_,w,h) 
+		print os.popen(s).read()
+	except Exception,e :
+		print  
+		print "Error with the file subroutines/icons/%s.png!"%(x.text)
+		print "w=%s h=%s"%(w,h)
+		print e
+		print		
 	print
 	
 

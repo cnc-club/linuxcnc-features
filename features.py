@@ -151,7 +151,9 @@ class Feature():
 		self.attr = dict(config.items("SUBROUTINE"))
 		self.attr["src"] = src
 		self.param = []
-		for s in config.sections() :		
+		conf = config.sections()
+		conf.sort()
+		for s in conf :		
 			if s[:5]== "PARAM" :
 				self.param.append( Parameter(ini=config.items(s), ini_id=s) )
 		# get gcode parameters		
