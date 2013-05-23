@@ -217,7 +217,7 @@ class Feature():
 	def get_definitions(self,definitions) :
 		if self.attr["type"] not in definitions : 	
 			definitions.append(self.attr["type"])
-			return self.process(self.attr["definitions"])
+			return self.process(self.attr["definitions"])+"\n"
 		else :
 			return ""
 	
@@ -230,7 +230,6 @@ class Feature():
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
 				s = re.sub(r"%s"%(re.escape(p.attr["call"])),"%s"%p.attr["value"], s)
-
 		return s
 	
 class Features(gtk.VBox):
@@ -437,7 +436,7 @@ class Features(gtk.VBox):
 			gcode_def += d
 			iter = self.treestore.iter_next(iter)
 		if f.__class__ ==	 Feature : 
-			gcode += f.process(f.attr["after"]) 
+			gcode += f.process(f.attr["after"])+"\n" 
 
 		return gcode,gcode_def
 					

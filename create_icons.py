@@ -27,38 +27,47 @@ import gobject
 import ConfigParser
 import re, os
 import  pango
+import getopt
 
-if len(sys.argv)>1:
-	width = float(sys.argv[1])
+optlist, args = getopt.getopt(sys.argv[1:], 'w:f')
+
+optlist = dict(optlist)
+if "-w" in optlist:
+	width = float(optlist("-w"))
 else :
-	width = 28.	
+	width = 28.
+	
+print optlist
+renew_all = "-f" in optlist
+		
 xml = etree.parse("icons.svg")
 if not os.path.isdir("subroutines"):
 	os.mkdir("subroutines")
 	
 if not os.path.isdir("subroutines/icons"):
 	os.mkdir("subroutines/icons")
-	
+
 
 #print etree.tostring(xml, pretty_print=True)
 for x in xml.findall(".//{http://www.w3.org/2000/svg}title") :
 	try :
 		id_ = x.getparent().get("id")
-		w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
-		h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
+		if not os.path.isfile("subroutines/icons/%s.png"%(x.text)) or renew_all :
+			w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
+			h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
 
-		if w>h :
-			w,h = width, width*h/w
-		else :
-			h,w = width, width*w/h
-		s = "inkscape icons.svg --export-png=subroutines/icons/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(x.text,id_,w,h) 
-		print os.popen(s).read()
+			if w>h :
+				w,h = width, width*h/w
+			else :
+				h,w = width, width*w/h
+			s = "inkscape icons.svg --export-png=subroutines/icons/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(x.text,id_,w,h) 
+			print os.popen(s).read()
+		else : print "Skiping %s."%x.text
 	except Exception,e :
 		print  
 		print "Error with the file subroutines/icons/%s.png!"%(x.text)
-		print "w=%s h=%s"%(w,h)
 		print e
 		print		
 	print
-	
+
 
