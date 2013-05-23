@@ -215,7 +215,7 @@ class Feature():
 		self.attr["id"] = re.sub("[^a-zA-Z0-9\-]","-",self.attr["name"])
 		
 	def get_definitions(self,definitions) :
-		if self.attr["type"] not in definitions : 	
+		if self.attr["type"] not in definitions and self.process(self.attr["definitions"]) != "" : 	
 			definitions.append(self.attr["type"])
 			return self.process(self.attr["definitions"])+"\n"
 		else :
