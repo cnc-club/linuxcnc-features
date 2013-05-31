@@ -1,0 +1,20 @@
+<xml>
+
+<group Name="Cutting">
+	<group name="Rectangles" icon="images/rect.png"> 
+		<sub name="Rectangle" icon="images/rect.png" sub="rect.ini"/>
+		<sub name="Rectangle from Center" icon="images/rect.png" sub="rect-center.ini"/>
+	</group>
+	
+	<group name="Circles" icon="images/circle.png"> 
+		<sub name="Circle" icon="images/circle.png" sub="circle.ini"/>
+	</group>
+</group>
+
+<group Name="Pocketing" icon="">
+</group>
+
+<group Name="Misc" icon="">
+</group>
+
+</xml>

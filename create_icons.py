@@ -29,30 +29,34 @@ import re, os
 import  pango
 import getopt
 
-optlist, args = getopt.getopt(sys.argv[1:], 'w:f')
+optlist, args = getopt.getopt(sys.argv[1:], 'w:f', ["images"])
 
 optlist = dict(optlist)
+renew_all = "-f" in optlist
+images = "--images" in optlist		
+
 if "-w" in optlist:
 	width = float(optlist("-w"))
 else :
-	width = 28.
+	width = 28. if not images else 60
+	
+d = "subroutines/icons" if not images else "subroutines/images"
 	
 print optlist
-renew_all = "-f" in optlist
-		
 xml = etree.parse("icons.svg")
 if not os.path.isdir("subroutines"):
 	os.mkdir("subroutines")
 	
-if not os.path.isdir("subroutines/icons"):
-	os.mkdir("subroutines/icons")
+if not os.path.isdir(d):
+	os.mkdir(d)
 
+ 
 
 #print etree.tostring(xml, pretty_print=True)
 for x in xml.findall(".//{http://www.w3.org/2000/svg}title") :
 	try :
 		id_ = x.getparent().get("id")
-		if not os.path.isfile("subroutines/icons/%s.png"%(x.text)) or renew_all :
+		if not os.path.isfile("%s/%s.png"%(d,x.text)) or renew_all :
 			w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
 			h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
 
@@ -60,12 +64,12 @@ for x in xml.findall(".//{http://www.w3.org/2000/svg}title") :
 				w,h = width, width*h/w
 			else :
 				h,w = width, width*w/h
-			s = "inkscape icons.svg --export-png=subroutines/icons/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(x.text,id_,w,h) 
+			s = "inkscape icons.svg --export-png=%s/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(d,x.text,id_,w,h) 
 			print os.popen(s).read()
 		else : print "Skiping %s."%x.text
 	except Exception,e :
 		print  
-		print "Error with the file subroutines/icons/%s.png!"%(x.text)
+		print "Error with the file %s/%s.png!"%(d,x.text)
 		print e
 		print		
 	print

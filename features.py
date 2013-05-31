@@ -27,6 +27,7 @@ import gobject
 import ConfigParser
 import re, os
 import  pango
+import getopt
 
 
 PARAMETERS = ["string", "float", "int", "image"]	
@@ -238,6 +239,16 @@ class Features(gtk.VBox):
 	__gproperties = __gproperties__ 
 	
 	def __init__(self, *a, **kw):
+		
+		optlist, args = getopt.getopt(sys.argv[1:], 'c:', ["catalog="])
+		optlist = dict(optlist)
+		
+		catalog_src = "catalog.xml"
+		if "-c" in optlist :
+			catalog_src = optlist("-c")
+		if "--catalog" in optlist :
+			catalog_src = optlist("--catalog")
+		
 		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
 		self.undo_pointer = 0
@@ -247,12 +258,8 @@ class Features(gtk.VBox):
 		self.glade.connect_signals(self)
 
 		# create features catalog
-		self.add_iconview = gtk.IconView()		
-		self.icon_liststore = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
-		self.add_iconview.set_model(self.icon_liststore)
-		self.add_iconview.set_pixbuf_column(0)
-		self.add_iconview.set_text_column(1)
-		self.add_iconview.connect("item-activated", self.add_feature_from_cat)
+		xml = etree.parse(SUBROUTINES_PATH+catalog_src)
+		self.create_catalog(xml.getroot())
 		
 		self.get_features()
    		
@@ -261,8 +268,8 @@ class Features(gtk.VBox):
    		self.help_text = self.glade.get_object("feature_help")	
 		
 		 
-		self.add_container = self.glade.get_object("add_feature_container")	
-		self.add_container.add_with_viewport(self.add_iconview)
+		#self.add_container = self.glade.get_object("add_feature_container")	
+		#self.add_container.add_with_viewport(self.add_iconview)
 		
 		# create treeview
 		self.treeview = self.glade.get_object("treeview1")
@@ -360,19 +367,6 @@ class Features(gtk.VBox):
 		self.add_dialog = None
 
 	def add(self, *arg) :
-		if self.add_dialog == None :
-			self.add_dialog = gtk.Dialog("Add feature", self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
-			#self.add_container.reparent(self.add_dialog)
-			add_iconview = gtk.IconView()		
-			add_iconview.set_model(self.icon_liststore)
-			add_iconview.set_pixbuf_column(0)
-			add_iconview.set_text_column(1)
-			add_iconview.connect("item-activated", self.add_feature_from_cat)
-			scroll = gtk.ScrolledWindow()
-			scroll.add_with_viewport(add_iconview)
-			self.add_dialog.vbox.pack_start(scroll)
-			self.add_dialog.show_all()
-			self.add_dialog.set_size_request(600,500)
 		response = self.add_dialog.run()
 		self.add_dialog.hide()
 
@@ -393,6 +387,66 @@ class Features(gtk.VBox):
 				break
 			iter = model.iter_parent(iter)	
 
+	def treestore_from_xml_recursion(self, treestore, iter, xmlpath):
+		for xml in xmlpath :
+			if xml.tag == "feature" :
+				f = Feature(xml = xml)
+				tool_tip = f.attr["tool_tip"] if "tool_tip" in f.attr else None
+				citer = treestore.append(iter, [f, tool_tip])
+				for p in f.param :
+					tool_tip = p.attr["tool_tip"] if "tool_tip" in p.attr else None
+					piter = treestore.append(citer, [p, tool_tip])
+					if p.get_attr("type") == "items" :
+						xmlpath_ = xml.find(".//param[@type='items']")
+						self.treestore_from_xml_recursion(treestore, piter, xmlpath_)
+				
+
+			#if len(xml) :
+			#	self.treestore_from_xml_recursion(treestore, citer, xml)
+				
+
+	def treestore_from_xml(self, xml, expand = True):
+		treestore = gtk.TreeStore(object, str)
+		self.treestore_from_xml_recursion(treestore, treestore.get_iter_root(), xml)		
+		self.treestore = treestore
+		self.treeview.set_model(self.treestore)
+		if expand : self.set_expand()
+
+
+	def create_catalog_recursion(self, xml, iter) :
+		for p in xml :
+			print p.tag
+			try :
+				pixbuf = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+p.get("icon")) if "icon" in p.keys() else None
+			except Exception, e:
+				pixbuf = None 
+				print "Warning! Failed to load catalog icon from: %s!" % ( SUBROUTINES_PATH+p.get("icon") )
+			name = p.get("name") if "name" in p.keys() else None 
+			sub = p.get("sub") if "sub" in p.keys() else None 
+			iter1 = self.icon_treestore.append(iter,[pixbuf,name,sub])
+			if len(p) :
+				self.create_catalog_recursion(p, iter1)
+		
+		
+	def create_catalog(self, xml) :
+		
+		self.add_iconview = gtk.IconView()		
+		self.icon_treestore = gtk.TreeStore(gtk.gdk.Pixbuf, str, str)
+		self.add_iconview.set_model(self.icon_treestore)
+		self.add_iconview.set_pixbuf_column(0)
+		self.add_iconview.set_text_column(1)
+		#self.add_iconview.connect("item-activated", self.add_feature_from_cat)
+		
+		self.create_catalog_recursion(xml, self.icon_treestore.get_iter_root())
+
+		self.add_dialog = gtk.Dialog("Add feature", self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
+		scroll = gtk.ScrolledWindow()
+		scroll.add_with_viewport(self.add_iconview)
+		self.add_dialog.vbox.pack_start(scroll)
+		self.add_dialog.show_all()
+		self.add_dialog.set_size_request(600,500)
+
+
 	def get_features(self) :
 		for s in os.listdir(SUBROUTINES_PATH):
 			if s[-4:] == ".ini" :
@@ -409,7 +463,7 @@ class Features(gtk.VBox):
 							pixbuf = pixbuf.scale_simple(w*ADD_ICON_SIZE/h, ADD_ICON_SIZE, gtk.gdk.INTERP_BILINEAR)
 					else : 
 						pixbuf = none
-					self.icon_liststore.append([pixbuf,f.attr["name"],s])
+					#self.icon_liststore.append([pixbuf,f.attr["name"],s])
 				except Exception, e :
 					print "Warning: Error while parsing %s..."%s
 					print e
