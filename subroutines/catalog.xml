@@ -1,20 +1,32 @@
 <xml>
 
-<group Name="Cutting">
-	<group name="Rectangles" icon="images/rect.png"> 
-		<sub name="Rectangle" icon="images/rect.png" sub="rect.ini"/>
-		<sub name="Rectangle from Center" icon="images/rect.png" sub="rect-center.ini"/>
-	</group>
+	<group name="Cutting" icon="images/rect.png">
+		<group name="Rectangles" icon="images/rect.png"> 
+			<sub name="Rectangle" icon="images/rect.png" sub="rect.ini"/>
+			<sub name="Rectangle from Center" icon="images/rect.png" sub="rect-center.ini"/>
+		</group>
 	
-	<group name="Circles" icon="images/circle.png"> 
-		<sub name="Circle" icon="images/circle.png" sub="circle.ini"/>
+		<group name="Circles" icon="images/circle.png"> 
+			<sub name="Circle" icon="images/circle.png" sub="circle.ini"/>
+		</group>
+
+		<group name="Polygon" icon="images/hexagon.png">
+			<sub name="Hexagon" icon="images/hexagon.png" sub="hexagon.ini"/>
+			<sub name="n-gon" icon="images/n-gon.png" sub="n-gon.ini"/>
+		</group>
+	</group> 	
+
+	<group name="Pocketing" icon="images/rect-pocket.png">
+	
 	</group>
-</group>
 
-<group Name="Pocketing" icon="">
-</group>
-
-<group Name="Misc" icon="">
-</group>
+	<group name="Misc" icon="images/tool.png">
+		<sub name="Tool" icon="images/tool.png" sub="set_tool.ini"/>
+		<sub name="Depth" icon="images/dz.png" sub="set_depth.ini"/>
+		<sub name="Depth step" icon="images/dz.png" sub="set_depth_step.ini"/>
+		<sub name="Rappid" icon="images/dz.png" sub="set_rappid.ini"/>
+		<sub name="Surface origin" icon="images/dz.png" sub="set_surface.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" sub="set_cutting_params.ini"/>
+	</group>
 
 </xml>

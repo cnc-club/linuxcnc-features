@@ -1,0 +1,8 @@
+<LinuxCNC-Features>
+  <feature src="set_cutting_params.ini" expanded="False" help="Sets global cutting depth, depth step, surface origin, and rappid distance." icon="icons/tool.png" image="images/simp.png" after="" call="&#10;#&lt;_global_surface&gt; = [#param_1]&#10;#&lt;_global_depth&gt; = [#param_2]&#10;#&lt;_global_depth_step&gt; = [#param_3]&#10;#&lt;_global_rappid&gt; = [#param_4]" path="0" definitions="" before="" type="Set cutting params" id="Set-cutting-params-0001" name="Set cutting params 0001">
+    <param tool_tip="Surface" name="Surface" expanded="False" value="0" call="#param_1" path="0:0" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Depth" name="Depth" expanded="False" value="-10" call="#param_2" path="0:1" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Depth step" name="Depth step" expanded="False" value="1" call="#param_3" path="0:2" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Rappid distance" name="Rappid" expanded="False" value="10" call="#param_4" path="0:3" type="float" icon="icons/dz.png"/>
+  </feature>
+</LinuxCNC-Features>

@@ -1,0 +1,14 @@
+LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
+
+
+	1.	Install
+--------------------------------------------------------------------------------
+
+1. Move everything to /usr/share/pyshared/gladevcp/
+
+2. Create links into /usr/lib/pymodules/python2.6/gladevcp
+
+3. Change hal_pythonplugin.py in /usr/share/pyshared/gladevcp/hal_pythonplugin.py
+
+4. Change hal_python.xml in /usr/share/glade3/catalogs glade3 can be glade2
+

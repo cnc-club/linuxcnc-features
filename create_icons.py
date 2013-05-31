@@ -38,7 +38,7 @@ images = "--images" in optlist
 if "-w" in optlist:
 	width = float(optlist("-w"))
 else :
-	width = 28. if not images else 60
+	width = 28. if not images else 160
 	
 d = "subroutines/icons" if not images else "subroutines/images"
 	
