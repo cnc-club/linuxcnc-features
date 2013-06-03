@@ -5,7 +5,7 @@
   <object class="GtkAdjustment" id="adjustment1">
     <property name="value">1</property>
     <property name="lower">0.10000000000000001</property>
-    <property name="upper">100</property>
+    <property name="upper">99</property>
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">1</property>
   </object>
@@ -237,14 +237,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="refresh_spin">
+              <object class="GtkSpinButton" id="autorefresh_timeout">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">•</property>
+                <property name="width_chars">4</property>
                 <property name="invisible_char_set">True</property>
                 <property name="primary_icon_sensitive">True</property>
                 <property name="secondary_icon_sensitive">True</property>
                 <property name="adjustment">adjustment1</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">False</property>

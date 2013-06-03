@@ -29,16 +29,16 @@ import re, os
 import  pango
 import getopt
 import linuxcnc
+import subprocess
+from threading import Timer
 
 PARAMETERS = ["string", "float", "int", "image"]	
 FEATURES = ["feature"]
 GROUPS = ["group"]
 UNDO_MAX_LEN = 200
-SUBROUTINES_PATH = "/home/nick/Design/cnc-club.ru/linuxcnc/features/subroutines/"
-PROGRAM_PREFIX = ""
 ADD_ICON_SIZE = 60
 
-datadir = os.path.abspath(os.path.dirname(__file__))
+
 
 def get_int(s) :
 	try :
@@ -49,6 +49,14 @@ def get_int(s) :
 PIXBUF_DICT = {}
 FEATURE_DICT = {}
 
+
+def search_path(path, f) :
+	for s in path.split(":") :
+		if os.path.isfile(s+"/"+f) :
+			return s+"/"+f
+	return None		
+		
+	
 
 class Parameter() :
 	def __init__(self, ini=None, ini_id = None, xml=None) :
@@ -85,9 +93,9 @@ class Parameter() :
 			if i in ["icon","image"] :
 				if self.attr[i] not in PIXBUF_DICT :
 					try :
-						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+self.attr[i])
+						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,self.attr[i]) )
 					except :
-						print "Warning: problem with image %s "%(SUBROUTINES_PATH+self.attr[i])
+						print "Warning: problem with image %s at path %s"%(self.attr[i], SUBROUTINES_PATH)
 				self.pixbuf[i] = PIXBUF_DICT[self.attr[i]]
 	
 	def get_pixbuf(self, t) :
@@ -148,7 +156,10 @@ class Feature():
 	def from_src(self, src) :
 		if src in  FEATURE_DICT : self.from_xml(FEATURE_DICT[src])
 		config = ConfigParser.ConfigParser()
-		config.read(SUBROUTINES_PATH+src)
+		path_src = search_path(SUBROUTINES_PATH,src) 
+		if path_src == None :
+			print "Warning! Can not find subroutine %s at path %s"%(src, SUBROUTINES_PATH)
+		config.read(path_src)
 		#print src
 		self.attr = dict(config.items("SUBROUTINE"))
 		self.attr["src"] = src
@@ -183,7 +194,10 @@ class Feature():
 		for i in self.attr : 
 			if i in ["icon","image"] :
 				if self.attr[i] not in PIXBUF_DICT :
-					PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+self.attr[i])
+					try :
+						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,self.attr[i]) )
+					except :
+						print "Warning: problem with image %s at path %s \n\n"%(self.attr[i], SUBROUTINES_PATH)
 				self.pixbuf[i] = PIXBUF_DICT[self.attr[i]]
 		
 	def from_xml(self, xml) :
@@ -242,13 +256,12 @@ class Features(gtk.VBox):
 	def __init__(self, *a, **kw):
 		self.linuxcnc = linuxcnc.command()
 
-		
 		inifile = linuxcnc.ini(os.getenv("INI_FILE_NAME"))
+		global SUBROUTINES_PATH
+		SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
+		global PROGRAM_PREFIX
+		PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
 		
-		SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or "unknown"
-		PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or "unknown"
-
-
 		optlist, args = getopt.getopt(sys.argv[1:], 'c:x:', ["catalog="])
 		optlist = dict(optlist)
 		
@@ -261,12 +274,17 @@ class Features(gtk.VBox):
 		self.undo_list = []
 		self.undo_pointer = 0
 		self.glade = gtk.Builder()
-		self.glade.add_from_file(os.path.join(datadir, "features.glade"))
+		self.glade.add_from_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "features.glade"))
 		self.main_box = self.glade.get_object("FeaturesBox")
 		self.glade.connect_signals(self)
-
+		self.timeout = None
 		# create features catalog
-		xml = etree.parse(SUBROUTINES_PATH+catalog_src)
+		catalog_src = search_path(SUBROUTINES_PATH, catalog_src)
+		if catalog_src == None :
+			print "Error! Fatal! Cannot find features catalog %s at %s!" % (catalog_src ,SUBROUTINES_PATH)
+			sys.exit()
+		xml = etree.parse(catalog_src)
+		
 		self.catalog = xml.getroot()
 		self.catalog_path = self.catalog
 		
@@ -383,7 +401,10 @@ class Features(gtk.VBox):
 		self.main_box.reparent(self)
 		self.main_box.show_all()
 
-
+		self.autorefresh = self.glade.get_object("autorefresh")
+		self.autorefresh_timeout = self.glade.get_object("autorefresh_timeout")
+		if self.autorefresh_timeout.get_value() == 0 :
+			self.autorefresh_timeout.set_value(1)  # hack to glade default value=0 bug
 		paned = self.glade.get_object("vpaned2")	
 		w,h = paned.get_size_request()
 		paned.set_size_request(w,500)	
@@ -396,8 +417,8 @@ class Features(gtk.VBox):
 		self.help_viewport.set_size_request(w,100)	
 
 		self.main_box.connect("destroy", gtk.main_quit)
-		
-		self.load(filename=SUBROUTINES_PATH+"template.xml")
+		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
+
 
 	def add(self, *arg) :
 		response = self.add_dialog.run()
@@ -463,10 +484,10 @@ class Features(gtk.VBox):
 				if icon != "" and icon != None :
 					if icon not in PIXBUF_DICT :
 						try :
-							PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+icon) 
+							PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
 						except Exception, e:
 							PIXBUF_DICT[icon] = None 
-							print "Warning! Failed to load catalog icon from: %s!" % ( SUBROUTINES_PATH+p.get("icon") )
+							print "Warning! Failed to load catalog icon from: %s at path %s!" % (p.get("icon"), SUBROUTINES_PATH)
 					pixbuf = PIXBUF_DICT[icon]
 			name = p.get("name") if "name" in p.keys() else None 
 			sub = p.get("sub") if "sub" in p.keys() else None 
@@ -474,25 +495,31 @@ class Features(gtk.VBox):
 		
 
 	def get_features(self) :
-		for s in os.listdir(SUBROUTINES_PATH):
-			if s[-4:] == ".ini" :
-				try :   # TODO make better catalog 
-						# if there's an error parsing ini - just skip it
-					f = Feature(s)
-					if "image" in f.attr :
-						image = gtk.Image() 
-						pixbuf = gtk.gdk.pixbuf_new_from_file(SUBROUTINES_PATH+f.attr["image"])
-						w,h = pixbuf.get_width(), pixbuf.get_height()
-						if w > h :
-							pixbuf = pixbuf.scale_simple(ADD_ICON_SIZE, h*ADD_ICON_SIZE/w, gtk.gdk.INTERP_BILINEAR)
-						else :	
-							pixbuf = pixbuf.scale_simple(w*ADD_ICON_SIZE/h, ADD_ICON_SIZE, gtk.gdk.INTERP_BILINEAR)
-					else : 
-						pixbuf = None
-					#self.icon_liststore.append([pixbuf,f.attr["name"],s])
-				except Exception, e :
-					print "Warning: Error while parsing %s..."%s
-					print e
+		l = self.catalog.findall(".//sub")		
+		
+		for s in l:
+			if "sub" not in s.keys() : 
+				print "Warning there's now sub key in %s" %	etree.tostring(s, pretty_print=True)
+				return 
+			src = s.get("sub")
+			try :   # TODO make better catalog 
+					# if there's an error parsing ini - just skip it
+				f = Feature(src)
+				if "image" in f.attr :
+					image = gtk.Image() 
+					pixbuf = gtk.gdk.pixbuf_new_from_file(search_path(SUBROUTINES_PATH, f.attr["image"]))
+					w,h = pixbuf.get_width(), pixbuf.get_height()
+					if w > h :
+						pixbuf = pixbuf.scale_simple(ADD_ICON_SIZE, h*ADD_ICON_SIZE/w, gtk.gdk.INTERP_BILINEAR)
+					else :	
+						pixbuf = pixbuf.scale_simple(w*ADD_ICON_SIZE/h, ADD_ICON_SIZE, gtk.gdk.INTERP_BILINEAR)
+						
+				else : 
+					pixbuf = None
+				#self.icon_liststore.append([pixbuf,f.attr["name"],s])
+			except Exception, e :
+				print "Warning: Error while parsing %s..."%s
+				print e
 	def collapse(self, call, l) :
 		def treestore_collapse(model, path, iter, data) :
 			self, l = data[0],data[1]
@@ -519,8 +546,8 @@ class Features(gtk.VBox):
 			gcode += f.process(f.attr["after"])+"\n" 
 
 		return gcode,gcode_def
-					
-	def refresh(self, *arg ) :
+	
+	def to_gcode(self, *arg) :
 		gcode = ""
 		gcode_def = ""
 		self.definitions = []
@@ -532,8 +559,27 @@ class Features(gtk.VBox):
 			iter = self.treestore.iter_next(iter)
 			
 		return gcode_def+"(End definitions)\n\n\n"+gcode + "\n\nM02"
-		f = open()
-		self.linuxcnc.program_open()
+		
+					
+	def refresh(self, *arg ) :
+		print "!!!refresh start"
+		f = open(PROGRAM_PREFIX + "/features.ngc","w")
+		f.write(self.to_gcode())
+		f.close()
+		#print "!!!refresh1"
+		self.linuxcnc.reset_interpreter()
+		self.linuxcnc.mode(linuxcnc.MODE_AUTO)
+		self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
+		print "!!!refresh call"
+		subprocess.call(["axis-remote","--reload"])
+		print "!!!refresh end"		
+		#self.linuxcnc.abort()
+		#self.linuxcnc.wait_complete()			
+		
+
+		#self.linuxcnc.reset_interpreter()
+		
+		
 
 	def to_file(self, *arg) :
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
@@ -550,21 +596,20 @@ class Features(gtk.VBox):
 		
 		
 	def edit_value(self, cellrenderertext, path, new_text) :
-		self.action()		
 		iter = self.treestore.get_iter(path)
 		self.treestore.get(iter,0)[0].attr["value"] = new_text
+		self.action()
 				
 	def remove(self, call) :
-		self.action()
 		treeselection = self.treeview.get_selection()
 		model, iter = treeselection.get_selected()
 		if iter != None :
 			f = self.treestore.get(iter,0)[0]
 			if f.__class__ == Feature : 
 				self.treestore.remove(iter)
+				self.action()
 		
 	def add_feature(self, src) :
-		self.action()
 		xml = self.treestore_to_xml()
 		f = Feature(src = src)
 		f.get_id(xml)
@@ -572,6 +617,8 @@ class Features(gtk.VBox):
 		xml.append(fxml)
 		self.treestore_from_xml(xml)
 		xml = self.treestore_to_xml(xml)
+		self.action()
+
 	
 	def catalog_activate(self, iconview, path) : 
 		iter = self.icon_store.get_iter(path)
@@ -582,6 +629,9 @@ class Features(gtk.VBox):
 		else : 	# it's a group
 			self.update_catalog(xml=self.catalog_path[path[0]]) 
 		
+	def autorefresh_call(self) :
+		self.refresh()
+		return False
 		
 	def action(self, *arg) :
 		xml = self.treestore_to_xml()
@@ -589,6 +639,14 @@ class Features(gtk.VBox):
 		self.undo_list = self.undo_list[max(0,len(self.undo_list)-UNDO_MAX_LEN):]
 		self.undo_list.append(etree.tostring(xml))
 		self.undo_pointer = len(self.undo_list)-1
+		
+		if self.autorefresh.get_active() :
+			if self.timeout != None :
+				gobject.source_remove(self.timeout)
+			self.timeout = gobject.timeout_add(self.autorefresh_timeout.get_value()*1000, self.autorefresh_call)
+			print "auto refresh in %s sec"%self.autorefresh_timeout.get_value()
+		
+		
 		
 	def undo(self, *arg) :
 		if self.undo_pointer>=0 :
@@ -610,7 +668,6 @@ class Features(gtk.VBox):
 		print self.refresh()
 
 	def move_before(self, src, dst, after = False, append = False) :
-		self.action()
 		src = self.treestore.get_string_from_iter(src)
 		dst = self.treestore.get_string_from_iter(dst)		
 		xml = self.treestore_to_xml()
@@ -631,6 +688,7 @@ class Features(gtk.VBox):
 		else : 
 			dst.getparent().insert(dst.getparent().index(dst), src) 
 		self.treestore_from_xml(xml)	
+		self.action()	
 		
 	def move_after(self, src, dst) :
 		self.move_before(src, dst, after = True)
