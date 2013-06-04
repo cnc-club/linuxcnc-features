@@ -374,7 +374,7 @@ class Features(gtk.VBox):
 		self.treeview.connect("drag_data_get", self.drag_data_get_data)		
 		self.treeview.connect("drag_data_received", self.drag_data_received_data)
 		self.treeview.connect("cursor-changed", self.show_help, self.treeview)
-
+		self.treeview.connect('key_press_event' , self.treeview_keypress)
 
 		button = self.glade.get_object("test")
 		button.connect("clicked", self.test)
@@ -418,7 +418,32 @@ class Features(gtk.VBox):
 
 		self.main_box.connect("destroy", gtk.main_quit)
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
-
+		
+	def treeview_keypress(self, widget, event) :
+		#Key Left (65361) was pressed
+		#Key Up (65362) was pressed
+		#Key Right (65363) was pressed
+		#Key Down (65364) was pressed
+		keyname = gtk.gdk.keyval_name(event.keyval)
+		if keyname == "Up" : 
+			selection = self.treeview.get_selection()
+			(model, pathlist) = selection.get_selected_rows()
+			if len(pathlist) > 0 :
+				iter = model.get_iter(pathlist[0])
+			else :
+				iter = model.get_iter_from_string( "(0,)" )
+			self.treeview.emit("move-cursor",1,1)
+			
+			return True
+		if keyname == "Down" : 
+			return False
+		if keyname == "Left" : 
+			return False
+		if keyname == "Right" : 
+			return False
+			
+		print "Key %s (%d) was pressed" % (keyname, event.keyval)
+	   
 
 	def add(self, *arg) :
 		response = self.add_dialog.run()
