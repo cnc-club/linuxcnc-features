@@ -1,6 +1,7 @@
 <xml>
 
-	<group name="Cutting" icon="images/rect.png">
+	<group name="Cutting
+	" icon="images/rect.png">
 		<group name="Rectangles" icon="images/rect.png"> 
 			<sub name="Rectangle" icon="images/rect.png" sub="rect.ini"/>
 			<sub name="Rectangle from Center" icon="images/rect.png" sub="rect-center.ini"/>
@@ -35,6 +36,11 @@
 		<sub name="Surface origin" icon="images/dz.png" sub="set_surface.ini"/>
 		<sub name="Set cuting params" icon="images/tool.png" sub="set_cutting_params.ini"/>
 	</group>
+
+	<group name="Gcode" icon="images/gcode.png">
+		<sub name="Custom Gcode" sub="gcode.ini" icon="images/gcode.png"/>
+	</group>
+
 
 </xml>
 

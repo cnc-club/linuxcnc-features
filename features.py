@@ -255,12 +255,19 @@ class Features(gtk.VBox):
 	
 	def __init__(self, *a, **kw):
 		self.linuxcnc = linuxcnc.command()
-
-		inifile = linuxcnc.ini(os.getenv("INI_FILE_NAME"))
+		
 		global SUBROUTINES_PATH
-		SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
+		SUBROUTINES_PATH = ""
 		global PROGRAM_PREFIX
-		PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
+		PROGRAM_PREFIX = ""
+		try : 
+			inifile = linuxcnc.ini(os.getenv("INI_FILE_NAME"))
+			SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
+			global PROGRAM_PREFIX
+			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
+		except :
+			print "Warning! Problem while loading ini file!"
+		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines"
 		
 		optlist, args = getopt.getopt(sys.argv[1:], 'c:x:', ["catalog="])
 		optlist = dict(optlist)
@@ -524,7 +531,7 @@ class Features(gtk.VBox):
 		
 		for s in l:
 			if "sub" not in s.keys() : 
-				print "Warning there's now sub key in %s" %	etree.tostring(s, pretty_print=True)
+				print "Warning there's no 'sub' key in %s" %	etree.tostring(s, pretty_print=True)
 				return 
 			src = s.get("sub")
 			try :   # TODO make better catalog 
