@@ -29,47 +29,53 @@ import re, os
 import  pango
 import getopt
 
-optlist, args = getopt.getopt(sys.argv[1:], 'w:f', ["images"])
+optlist, args = getopt.getopt(sys.argv[1:], 'w:f', ["images","icons"])
 
 optlist = dict(optlist)
 renew_all = "-f" in optlist
 images = "--images" in optlist		
+icons = "--icons" in optlist		
+if not (icons or images) : 
+	icons = images = True
+	
+width = {}
+d = {}
 
 if "-w" in optlist:
-	width = float(optlist("-w"))
+	width["icons"] = width["images"] = float(optlist("-w"))
 else :
-	width = 28. if not images else 160
+	width["icons"] = 28. 
+	width["images"] = 160.
 	
-d = "subroutines/icons" if not images else "subroutines/images"
+d["icons"] = "subroutines/icons"
+d["images"] = "subroutines/images"
 	
 print optlist
+
 xml = etree.parse("icons.svg")
-if not os.path.isdir("subroutines"):
-	os.mkdir("subroutines")
+if not os.path.isdir(d["icons"]) : 
+	os.makedirs(d["icons"])
+if not os.path.isdir(d["images"]) : 
+	os.makedirs(d["images"])
 	
-if not os.path.isdir(d):
-	os.mkdir(d)
-
- 
-
-#print etree.tostring(xml, pretty_print=True)
 for x in xml.findall(".//{http://www.w3.org/2000/svg}title") :
 	try :
 		id_ = x.getparent().get("id")
-		if not os.path.isfile("%s/%s.png"%(d,x.text)) or renew_all :
-			w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
-			h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
+		for i in ["icons","images"]	:
+			if not os.path.isfile("%s/%s.png"%(d[i],x.text)) or renew_all :
+				w = float(os.popen("inkscape icons.svg --query-id=%s --query-width "%id_).read())
+				h = float(os.popen("inkscape icons.svg --query-id=%s --query-height"%id_).read())
 
-			if w>h :
-				w,h = width, width*h/w
-			else :
-				h,w = width, width*w/h
-			s = "inkscape icons.svg --export-png=%s/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(d,x.text,id_,w,h) 
-			print os.popen(s).read()
-		else : print "Skiping %s."%x.text
+				if w>h :
+					w,h = width[i], width[i]*h/w
+				else :
+					h,w = width[i], width[i]*w/h
+				s = "inkscape icons.svg --export-png=%s/%s.png --export-id-only --export-id=%s --export-area-snap --export-width=%spx --export-height=%spx "%(d[i],x.text,id_,w,h) 
+				print os.popen(s).read()
+			else : print "Skiping %s."%x.text
 	except Exception,e :
 		print  
-		print "Error with the file %s/%s.png!"%(d,x.text)
+		print "Error with the file %s/%s.png!"%(d[i],x.text)
 		print e
 		print		
 	print

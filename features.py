@@ -361,7 +361,10 @@ class Features(gtk.VBox):
 		cell.connect('edited', self.edit_value)		
 		col.pack_start(cell, expand=False)
 		col.set_cell_data_func(cell, self.get_col_value, ["string","float","int"])
-		
+		self.cell_value = cell
+
+		self.cell_value.connect("editing-started", self.test)
+		self.col_value	= col
 		#cell = gtk.CellRendererSpin()
 		#adjustment = gtk.Adjustment(value=0, lower=0, upper=0, step_incr=0.1, page_incr=10, page_size=0)
 		#cell.set_property("adjustment", adjustment)
@@ -382,6 +385,7 @@ class Features(gtk.VBox):
 		self.treeview.connect("drag_data_received", self.drag_data_received_data)
 		self.treeview.connect("cursor-changed", self.show_help, self.treeview)
 		self.treeview.connect('key_press_event' , self.treeview_keypress)
+		self.treeview.connect("key-release-event" , self.treeview_release)
 
 		button = self.glade.get_object("test")
 		button.connect("clicked", self.test)
@@ -426,6 +430,11 @@ class Features(gtk.VBox):
 		self.main_box.connect("destroy", gtk.main_quit)
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
 		
+	def treeview_release(self, widget, event) :
+		print "Release"
+		return False
+		#return True
+		
 	def treeview_keypress(self, widget, event) :
 		#Key Left (65361) was pressed
 		#Key Up (65362) was pressed
@@ -433,24 +442,28 @@ class Features(gtk.VBox):
 		#Key Down (65364) was pressed
 		keyname = gtk.gdk.keyval_name(event.keyval)
 		if keyname == "Up" : 
+			self.treeview.emit("move-cursor", gtk.MOVEMENT_DISPLAY_LINES, -1)
+			print "!!!"
+			return True
+		if keyname == "Down" :
+			self.treeview.emit("move-cursor", gtk.MOVEMENT_DISPLAY_LINES, 1)		 
+			return True
+		if keyname == "Left" : 
+			self.treeview.emit("expand-collapse-cursor-row", True, False, False)
+			return True			
+		if keyname == "Right" : 
+			self.treeview.emit("expand-collapse-cursor-row", True, True, False)
+			return True
+		if keyname == "Return" : 
 			selection = self.treeview.get_selection()
 			(model, pathlist) = selection.get_selected_rows()
 			if len(pathlist) > 0 :
 				iter = model.get_iter(pathlist[0])
-			else :
-				iter = model.get_iter_from_string( "(0,)" )
-			self.treeview.emit("move-cursor",1,1)
-			
+				self.treeview.set_cursor_on_cell(pathlist[0], focus_column=self.col_value, focus_cell=self.cell_value, start_editing=True)
 			return True
-		if keyname == "Down" : 
-			return False
-		if keyname == "Left" : 
-			return False
-		if keyname == "Right" : 
-			return False
 			
 		print "Key %s (%d) was pressed" % (keyname, event.keyval)
-	   
+		return False
 
 	def add(self, *arg) :
 		response = self.add_dialog.run()
@@ -594,7 +607,6 @@ class Features(gtk.VBox):
 		
 					
 	def refresh(self, *arg ) :
-		print "!!!refresh start"
 		f = open(PROGRAM_PREFIX + "/features.ngc","w")
 		f.write(self.to_gcode())
 		f.close()
@@ -602,9 +614,7 @@ class Features(gtk.VBox):
 		self.linuxcnc.reset_interpreter()
 		self.linuxcnc.mode(linuxcnc.MODE_AUTO)
 		self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
-		print "!!!refresh call"
-		subprocess.call(["axis-remote","--reload"])
-		print "!!!refresh end"		
+		subprocess.call(["axis-remote",PROGRAM_PREFIX + "/features.ngc"])
 		#self.linuxcnc.abort()
 		#self.linuxcnc.wait_complete()			
 		
@@ -696,8 +706,7 @@ class Features(gtk.VBox):
 		self.undo_pointer = 0
 	
 	def test(self, *arg) :
-		xml = self.treestore_to_xml()
-		print self.refresh()
+		print arg
 
 	def move_before(self, src, dst, after = False, append = False) :
 		src = self.treestore.get_string_from_iter(src)
@@ -863,6 +872,8 @@ class Features(gtk.VBox):
 		
 
 # for testing without glade editor:
+def t(*arg) :
+	return False
 def main():
     window = gtk.Dialog("My dialog",
                    None,
@@ -871,7 +882,7 @@ def main():
                     gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
     
     features = Features()
-    
+    window.connect("key_press_event", t)
     window.vbox.add(features)
     window.connect("destroy", gtk.main_quit)
     window.show_all()
