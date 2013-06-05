@@ -18,8 +18,7 @@
 	</group> 	
 
 	<group name="Pocketing" icon="images/rect-pocket.png">
-		<sub name="Rectangular pocket" icon="images/rect-pocket.png" />
-			
+		<sub name="Rectangular pocket" icon="images/rect-pocket.png" sub="rect-pocket.ini" />
 	</group>
 
 	<group name="Grouping" icon="images/array.png"> 
@@ -29,12 +28,12 @@
 	</group>
 	
 	<group name="Misc" icon="images/tool.png">
-		<sub name="Tool" icon="images/tool.png" sub="set_tool.ini"/>
-		<sub name="Depth" icon="images/dz.png" sub="set_depth.ini"/>
-		<sub name="Depth step" icon="images/dz.png" sub="set_depth_step.ini"/>
-		<sub name="Rappid" icon="images/dz.png" sub="set_rappid.ini"/>
-		<sub name="Surface origin" icon="images/dz.png" sub="set_surface.ini"/>
-		<sub name="Set cuting params" icon="images/tool.png" sub="set_cutting_params.ini"/>
+		<sub name="Tool" icon="images/tool.png" sub="set-tool.ini"/>
+		<sub name="Depth" icon="images/dz.png" sub="set-depth.ini"/>
+		<sub name="Depth step" icon="images/dz.png" sub="set-depth-step.ini"/>
+		<sub name="Rappid" icon="images/dz.png" sub="set-rappid.ini"/>
+		<sub name="Surface origin" icon="images/dz.png" sub="set-surface.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">

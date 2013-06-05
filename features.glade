@@ -20,10 +20,11 @@
             <property name="homogeneous">True</property>
             <child>
               <object class="GtkButton" id="add">
-                <property name="label" translatable="yes">Add</property>
+                <property name="label">gtk-add</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -31,35 +32,14 @@
             </child>
             <child>
               <object class="GtkButton" id="remove">
-                <property name="label" translatable="yes">Remove</property>
+                <property name="label">gtk-remove</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button3">
-                <property name="label" translatable="yes">Up</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">Down</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -70,7 +50,7 @@
                 <property name="receives_default">True</property>
               </object>
               <packing>
-                <property name="position">4</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -85,10 +65,11 @@
             <property name="homogeneous">True</property>
             <child>
               <object class="GtkButton" id="undo">
-                <property name="label" translatable="yes">Undo</property>
+                <property name="label">gtk-undo</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -96,57 +77,26 @@
             </child>
             <child>
               <object class="GtkButton" id="redo">
-                <property name="label" translatable="yes">Redo</property>
+                <property name="label">gtk-redo</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="collapse_param">
-                <property name="label" translatable="yes">Close param</property>
+              <object class="GtkButton" id="copy">
+                <property name="label">gtk-copy</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="collapse_all">
-                <property name="label" translatable="yes">Close all</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="copy">
-                <property name="label" translatable="yes">Copy</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="paste">
-                <property name="label" translatable="yes">Paste</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="position">5</property>
               </packing>
             </child>
           </object>
@@ -237,10 +187,11 @@
             <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="refresh">
-                <property name="label" translatable="yes">Refresh</property>
+                <property name="label">gtk-refresh</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -287,10 +238,11 @@
             <property name="homogeneous">True</property>
             <child>
               <object class="GtkButton" id="save">
-                <property name="label" translatable="yes">Save</property>
+                <property name="label">gtk-save</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -298,10 +250,11 @@
             </child>
             <child>
               <object class="GtkButton" id="open">
-                <property name="label" translatable="yes">Open</property>
+                <property name="label">gtk-open</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -309,20 +262,15 @@
             </child>
             <child>
               <object class="GtkButton" id="to_file">
-                <property name="label" translatable="yes">To file</property>
+                <property name="label">gtk-save-as</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="position">2</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
             </child>
           </object>
           <packing>
