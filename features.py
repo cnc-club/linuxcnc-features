@@ -33,13 +33,13 @@ import subprocess
 from threading import Timer
 from copy import deepcopy 
 
-PARAMETERS = ["string", "float", "int", "image"]	
+PARAMETERS = ["string", "float", "int", "image", "bool"]	
 FEATURES = ["feature"]
 GROUPS = ["group"]
 UNDO_MAX_LEN = 200
 ADD_ICON_SIZE = 60
 UNIQUE_ID = [10000]
-
+INCLUDE = []
 
 def get_int(s) :
 	try :
@@ -242,9 +242,18 @@ class Feature():
 			return ""
 
 	def include(self, src) :
-		f = Feature(src=src)
-		s = f.get_definitions()
+		f = open(search_path(SUBROUTINES_PATH,src))
+		s = f.read()
+		f.close()
 		return s
+
+	def include_once(self, src) :
+		global INCLUDE
+		if src not in INCLUDE : 
+			INCLUDE.append(src)
+			return self.include(src)
+		return ""	
+
 
 	def process(self, s) :
 		def process_callback(m) :
@@ -339,8 +348,6 @@ class Features(gtk.VBox):
 		self.add_dialog.set_size_request(600,500)
 		self.add_dialog.hide()
 	
-		
-				
 		self.get_features()
    		
 		self.help_viewport = self.glade.get_object("help_viewport")
@@ -377,7 +384,7 @@ class Features(gtk.VBox):
 		cell.set_property("editable",True)
 		cell.connect('edited', self.edit_value)		
 		col.pack_start(cell, expand=False)
-		col.set_cell_data_func(cell, self.get_col_value, ["string","float","int"])
+		col.set_cell_data_func(cell, self.get_col_value, ["string","float","int", "bool"])
 		self.cell_value = cell
 		self.col_value	= col
 		
@@ -422,6 +429,14 @@ class Features(gtk.VBox):
 
 		button = self.glade.get_object("copy")
 		button.connect("clicked", self.copy)
+		button = self.glade.get_object("up")
+		button.connect("clicked", self.move, -1)
+		button = self.glade.get_object("down")
+		button.connect("clicked", self.move,  2)
+		button = self.glade.get_object("indent")
+		button.connect("clicked", self.indent)
+		button = self.glade.get_object("unindent")
+		button.connect("clicked", self.unindent)
 
 		self.main_box.reparent(self)
 		self.main_box.show_all()
@@ -443,36 +458,88 @@ class Features(gtk.VBox):
 
 		self.main_box.connect("destroy", gtk.main_quit)
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
-		
-	def copy(self, *arg) :
+	
+	def move(self, call, i) :
+		f,iter = self.get_selected_feature()
+		if f :
+			path = self.treestore.get_string_from_iter(iter)
+			xml = self.treestore_to_xml()
+			src = xml.find(".//*[@path='%s']"%path)		
+			parent = src.getparent()
+			i = parent.index(src)+i
+			if i<0 : return
+			parent.insert(i , src) 
+			self.treestore_from_xml(xml)	
+			self.action(xml)	
+
+	def get_selected_feature(self) :
 		selection = self.treeview.get_selection()
 		(model, pathlist) = selection.get_selected_rows()
 		if len(pathlist) > 0 :
 			iter = model.get_iter(pathlist[0])
 			f = self.treestore.get(iter,0)[0] 
 			if f.__class__ == Feature : 
-				path = self.treestore.get_string_from_iter(iter)
-				xml = self.treestore_to_xml()
-				src = xml.find(".//*[@path='%s']"%path)		
-				cp = deepcopy(src)
-				parent = src.getparent()
-				parent.insert(parent.index(src)+1, cp) 
-				self.treestore_from_xml(xml)	
-				self.action()	
-			
-			
+				return f,iter
+		return None, None
 		
+	def indent(self, call) :
+		f,iter = self.get_selected_feature()
+		if f : 
+			next = self.treestore.iter_next(iter)
+			if next :
+				f1 = self.treestore.get(next,0)[0] 
+				if f1.__class__ == Feature : 
+					path = self.treestore.get_string_from_iter(iter)
+					path_next = self.treestore.get_string_from_iter(next)
+					xml = self.treestore_to_xml()
+					src = xml.find(".//*[@path='%s']"%path)
+					dst = xml.find(".//*[@path='%s']/param[@type='items']"%path_next)
+					if dst != None :
+						dst.insert(0,src)
+						dst.set("expanded","True")
+						dst = xml.find(".//*[@path='%s']"%path_next)
+						dst.set("expanded","True")							
+						self.treestore_from_xml(xml)	
+						self.action(xml)	
+
+	def unindent(self, call) : 
+		f,iter = self.get_selected_feature()
+		if f : 
+			xml = self.treestore_to_xml()
+			path = self.treestore.get_string_from_iter(iter)
+			src = xml.find(".//*[@path='%s']"%path)
+			parent = src.getparent().getparent()
+			n = None
+			while parent != xml and not (parent.tag=="param" and parent.get("type") == "items") and parent is not None :
+				p = parent
+				parent = parent.getparent()
+				n = parent.index(p)
+				print p, n
+			print parent != xml , not (parent.tag=="param" and parent.get("type") == "items") , parent is not None 
+			print parent
+			if parent is not None and n != None:	
+				parent.insert(n, src)
+				self.treestore_from_xml(xml)	
+				self.action(xml)	
+					
+		
+	def copy(self, *arg) :
+		f,iter = self.get_selected_feature()
+		if f :
+			path = self.treestore.get_string_from_iter(iter)
+			xml = self.treestore_to_xml()
+			src = xml.find(".//*[@path='%s']"%path)		
+			cp = deepcopy(src)
+			parent = src.getparent()
+			parent.insert(parent.index(src)+1, cp) 
+			self.treestore_from_xml(xml)	
+			self.action(xml)	
+			
 	def treeview_release(self, widget, event) :
 		return False
 		
 	def treeview_keypress(self, widget, event) :
-		#Key Left (65361) was pressed
-		#Key Up (65362) was pressed
-		#Key Right (65363) was pressed
-		#Key Down (65364) was pressed
 		keyname = gtk.gdk.keyval_name(event.keyval)
-		
-		#self.treeview.emit("expand-collapse-cursor-row", True, True, False)
 		selection = self.treeview.get_selection()
 		(model, pathlist) = selection.get_selected_rows()
 		path = pathlist[0] if len(pathlist) > 0 else None 
@@ -665,7 +732,7 @@ class Features(gtk.VBox):
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
 		response = filechooserdialog.run()
 		if response == gtk.RESPONSE_OK:
-			gcode = self.refresh()
+			gcode = self.to_gcode()
 			filename = filechooserdialog.get_filename() 
 			if filename[-4]!=".ngc" not in filename :
 				filename += ".ngc"
@@ -698,7 +765,7 @@ class Features(gtk.VBox):
 		xml.append(fxml)
 		self.treestore_from_xml(xml)
 		xml = self.treestore_to_xml(xml)
-		self.action()
+		self.action(xml)
 
 	
 	def catalog_activate(self, iconview, path) : 
@@ -714,8 +781,9 @@ class Features(gtk.VBox):
 		self.refresh()
 		return False
 		
-	def action(self, *arg) :
-		xml = self.treestore_to_xml()
+	def action(self, xml = None) :
+		if xml==None :
+			xml = self.treestore_to_xml()
 		self.undo_list = self.undo_list[:self.undo_pointer+1]
 		self.undo_list = self.undo_list[max(0,len(self.undo_list)-UNDO_MAX_LEN):]
 		self.undo_list.append(etree.tostring(xml))
@@ -744,13 +812,15 @@ class Features(gtk.VBox):
 		self.undo_pointer = 0
 	
 	def test(self, *arg) :
-	
+		global FEATURE_DICT 
+		FEATURE_DICT = {}
+		print 		FEATURE_DICT
+		self.get_features()
 		#gobject.timeout_add(1000, self.test)
-		print	gtk.window_list_toplevels(),gtk.window_list_toplevels()[0].get_focus()
-		for i in gtk.window_list_toplevels() :
-			handler_id = i.connect("event", self.drag_get_motion)
-
-		print arg
+		#print	gtk.window_list_toplevels(),gtk.window_list_toplevels()[0].get_focus()
+		#for i in gtk.window_list_toplevels() :
+		#handler_id = i.connect("event", self.drag_get_motion)
+		#print arg
 
 	def move_before(self, src, dst, after = False, append = False) :
 		src = self.treestore.get_string_from_iter(src)
@@ -773,7 +843,7 @@ class Features(gtk.VBox):
 		else : 
 			dst.getparent().insert(dst.getparent().index(dst), src) 
 		self.treestore_from_xml(xml)	
-		self.action()	
+		self.action(xml)	
 		
 	def move_after(self, src, dst) :
 		self.move_before(src, dst, after = True)
@@ -792,16 +862,15 @@ class Features(gtk.VBox):
 	def drag_get_motion(self,  c, e ):#drag_context, x, y, timestamp) :
 		#self.drag_motion_x = x
 		#self.drag_motion_y = y
-		print e,c
+		#print e,c
 		#print dir(e) 
 		pass
 		
 	def drag_drop(self, *arg) :
 		print "!"
-		#treeview, context, x, y, selection, info, etime
 		treeselection = self.treeview.get_selection()
 		model, src = treeselection.get_selected()
-		drop_info = treeview.get_dest_row_at_pos(x, y)
+		drop_info = self.treeview.get_dest_row_at_pos(x, y)
 		
 		if self.treestore.get(src,0)[0].__class__ == Feature : # we can move only features
 			if drop_info :
@@ -848,7 +917,9 @@ class Features(gtk.VBox):
 				citer = self.treestore.iter_next(citer)
 			# check for next items
 			iter = self.treestore.iter_next(iter)
-				
+
+
+		
 	def treestore_to_xml(self, *arg):
 		xml = etree.Element("LinuxCNC-Features")
 		self.get_expand()
@@ -888,13 +959,24 @@ class Features(gtk.VBox):
 			p = model.get(iter,0)[0].attr
 			if "expanded" in p and p["expanded"] == "True":
 				self.treeview.expand_row(path, False)
+			if "selected" in p and p["selected"] == "True":
+				self.selection.select_path(path)
+		self.selected_pathlist = []
+		self.selection = self.treeview.get_selection()
+		self.selection.unselect_all()
 		self.treestore.foreach(treestore_set_expand, self)
+		
 
 	def get_expand(self) :
 		def treestore_get_expand(model, path, iter, self) :
 			p = model.get(iter,0)[0]
 			p.attr["path"] = model.get_string_from_iter(iter)
 			p.attr["expanded"] = self.treeview.row_expanded(path)
+			path = self.treestore.get_path(iter)
+			p.attr["selected"] = path in self.selected_pathlist
+		self.selection = self.treeview.get_selection()
+		(model, pathlist) = self.selection.get_selected_rows()
+		self.selected_pathlist = pathlist
 		self.treestore.foreach(treestore_get_expand, self)
 		
 

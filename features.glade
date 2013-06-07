@@ -15,42 +15,146 @@
       <object class="GtkVBox" id="FeaturesBox">
         <property name="visible">True</property>
         <child>
-          <object class="GtkHBox" id="hbox1">
+          <object class="GtkToolbar" id="toolbar1">
             <property name="visible">True</property>
-            <property name="homogeneous">True</property>
+            <property name="toolbar_style">icons</property>
+            <property name="show_arrow">False</property>
             <child>
-              <object class="GtkButton" id="add">
-                <property name="label">gtk-add</property>
+              <object class="GtkToolButton" id="add">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
+                <property name="label" translatable="yes">Add</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-add</property>
               </object>
               <packing>
-                <property name="position">0</property>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="remove">
-                <property name="label">gtk-remove</property>
+              <object class="GtkToolButton" id="remove">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
+                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-remove</property>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="test">
+              <object class="GtkToolButton" id="test">
+                <property name="visible">True</property>
                 <property name="label" translatable="yes">Test</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-execute</property>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="toolbutton8">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="undo">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Undo</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-undo</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="redo">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Redo</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-redo</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="copy">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Copy</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-copy</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="toolbutton9">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="up">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Up</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-go-up</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="down">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Down</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-go-down</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="indent">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Indent</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-indent</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="unindent">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Unindent</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-unindent</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
           </object>
@@ -60,55 +164,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hbox4">
-            <property name="visible">True</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkButton" id="undo">
-                <property name="label">gtk-undo</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="redo">
-                <property name="label">gtk-redo</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="copy">
-                <property name="label">gtk-copy</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-              </object>
-              <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkVPaned" id="vpaned2">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="position">79</property>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
@@ -179,7 +238,7 @@
             </child>
           </object>
           <packing>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -229,7 +288,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="position">3</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -266,6 +325,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Save as Gcodes</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>

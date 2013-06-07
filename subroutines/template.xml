@@ -1,9 +1,16 @@
 <LinuxCNC-Features>
-  <feature src="set-cutting-params.ini" after="" help="Sets global cutting depth, depth step, surface origin, and rappid distance." image="images/simp.png" expanded="False" name="Set cutting params 0001" call="&#10;#&lt;_global_surface&gt; = [#param_1]&#10;#&lt;_global_depth&gt; = [#param_2]&#10;#&lt;_global_depth_step&gt; = [#param_3]&#10;#&lt;_global_rappid&gt; = [#param_4]&#10;#&lt;_global_final&gt; = [#param_5]" definitions="" path="0" before="" type="Set cutting params" id="Set-cutting-params-0001" icon="icons/tool.png">
-    <param tool_tip="Surface" name="Surface" expanded="False" value="0" call="#param_1" path="0:0" type="float" icon="icons/dz.png"/>
-    <param tool_tip="Depth" name="Depth" expanded="False" value="-10" call="#param_2" path="0:1" type="float" icon="icons/dz.png"/>
-    <param tool_tip="Depth step" name="Depth step" expanded="False" value="2." call="#param_3" path="0:2" type="float" icon="icons/dz.png"/>
-    <param tool_tip="Rappid distance" name="Rappid" expanded="False" value="10" call="#param_4" path="0:3" type="float" icon="icons/dz.png"/>
-    <param tool_tip="Final cut depth" name="Final cut" expanded="False" value=".1" call="#param_5" path="0:4" type="float" icon="icons/dz.png"/>
+  <feature src="gcode.ini" after="" help="Flat Gcode&#10;\n can be used to split lines&#10;lines will be parsed as usual so you can use &amp;lt;eval&amp;gt;&amp;lt;/eval&amp;gt;" image="images/simp.png" expanded="False" name="Gcode 0001" call="&#10;(Gcode lines)&#10;#param_1&#10;#param_2&#10;#param_3&#10;#param_4&#10;#param_5" selected="True" definitions="" path="0" before="" type="Gcode" id="Gcode-0001" icon="icons/gcode.png">
+    <param tool_tip="Gcode line" expanded="False" name="Line 1" selected="False" value="G92.1" call="#param_1" path="0:0" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 2" selected="False" value="" call="#param_2" path="0:1" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 3" selected="False" value="" call="#param_3" path="0:2" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 4" selected="False" value="" call="#param_4" path="0:3" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 5" selected="False" value="" call="#param_5" path="0:4" type="string"/>
+  </feature>
+  <feature src="set-cutting-params.ini" after="" help="Sets global cutting depth, depth step, surface origin, and rappid distance." image="images/simp.png" expanded="False" name="Set cutting params 0001" call="&#10;#&lt;_global_surface&gt; = [#param_1]&#10;#&lt;_global_depth&gt; = [#param_2]&#10;#&lt;_global_depth_step&gt; = [#param_3]&#10;#&lt;_global_rappid&gt; = [#param_4]&#10;#&lt;_global_final&gt; = [#param_5]" selected="False" definitions="" path="1" before="" type="Set cutting params" id="Set-cutting-params-0001" icon="icons/tool.png">
+    <param tool_tip="Surface" expanded="False" name="Surface" selected="False" value="0" call="#param_1" path="1:0" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Depth" expanded="False" name="Depth" selected="False" value="-10" call="#param_2" path="1:1" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Depth step" expanded="False" name="Depth step" selected="False" value="2." call="#param_3" path="1:2" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Rappid distance" expanded="False" name="Rappid" selected="False" value="10" call="#param_4" path="1:3" type="float" icon="icons/dz.png"/>
+    <param tool_tip="Final cut depth" expanded="False" name="Final cut" selected="False" value=".4" call="#param_5" path="1:4" type="float" icon="icons/dz.png"/>
   </feature>
 </LinuxCNC-Features>
