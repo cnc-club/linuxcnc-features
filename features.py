@@ -263,6 +263,8 @@ class Feature():
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
 				s = re.sub(r"%s"%(re.escape(p.attr["call"])),"%s"%p.attr["value"], s)
+		s = re.sub(r"#self_id","%s"%self.get_attr("id"), s)
+				
 		return s
 	
 	
