@@ -32,6 +32,7 @@ import linuxcnc
 import subprocess
 from threading import Timer
 from copy import deepcopy 
+import io
 
 PARAMETERS = ["string", "float", "int", "image", "bool"]	
 FEATURES = ["feature"]
@@ -160,15 +161,17 @@ class Feature():
 		config = ConfigParser.ConfigParser()
 		path_src = search_path(SUBROUTINES_PATH,src) 
 		f = open(path_src).read()
+
 		# add "." in the begining of multiline parameters to save indents
-		f = re.sub(r"^(\s)",r"\1.",f) 
+		f = re.sub(r"(?m)^(\ |\t)",r"\1.",f)
 		if path_src == None :
 			print "Warning! Can not find subroutine %s at path %s"%(src, SUBROUTINES_PATH)
-		config.read(path_src)
+			
+		config.readfp(io.BytesIO(f))
 		self.attr = dict(config.items("SUBROUTINE"))
 		# remove "." in the begining of multiline parameters to save indents
 		for key in self.attr :
-			self.attr[key] = re.sub("^\s.", "", self.attr[key])
+			self.attr[key] = re.sub("r(?m)\r?\n\r?\.","\n", self.attr[key])
 		self.attr["src"] = src
 		self.param = []
 		
@@ -188,27 +191,19 @@ class Feature():
 				p = Parameter(ini=config.items(s), ini_id=s.lower())
 				param_[p.id] = p
 
-		# sort params		
+		# sort params
+		conf = [s.lower() for s in conf]			
 		self.param = [param_[id] for id in self.attr["order"]  if id in param_ ] 
-		self.param += [param_[id] for id in param_ if id not in self.attr["order"] ]		
+		self.param += [param_[id] for id in conf if ((id in param_) and (id not in self.attr["order"])) ]		
 
 		# get gcode parameters		
-		try :
-			self.attr["definitions"] = config.get("DEFINITIONS","content")	
-		except: 
-			self.attr["definitions"] = ""
-		try :
-			self.attr["before"] = config.get("BEFORE","content")	
-		except: 
-			self.attr["before"] = ""
-		try :
-			self.attr["call"] = config.get("CALL","content")	
-		except: 
-			self.attr["call"] = ""
-		try :
-			self.attr["after"] = config.get("AFTER","content")	
-		except: 
-			self.attr["after"] = ""
+		for l in ["definitions","before","call","after"] :
+			try :
+				s = config.get(l.upper(),"content")	
+				self.attr[l] = re.sub(r"(?m)\r?\n\r?\.","\n",s)
+			except: 
+				self.attr[l] = ""
+
 		self.set_pixbufs()	
 		#print etree.tostring(self.to_xml(), pretty_print=True)
 		if self.attr["src"] not in 	FEATURE_DICT : FEATURE_DICT[self.attr["src"]] = self.to_xml()
@@ -473,16 +468,20 @@ class Features(gtk.VBox):
 		paned = self.glade.get_object("vpaned2")	
 		w,h = paned.get_size_request()
 		paned.set_size_request(w,500)	
-		paned.set_position(300)
-		
+		w,h = paned.get_size_request()
+		paned.set_position(max(300,h-200))
+
 	
 		w,h = self.treeview.get_size_request()		
 		self.treeview.set_size_request(w,200)	
 		w,h = self.help_viewport.get_size_request()		
 		self.help_viewport.set_size_request(w,100)	
-
+		
+		
 		self.main_box.connect("destroy", gtk.main_quit)
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
+	
+	
 	
 	def move(self, call, i) :
 		f,iter = self.get_selected_feature()
@@ -709,6 +708,7 @@ class Features(gtk.VBox):
 		if f.__class__ == Feature : 
 			gcode_def += f.get_definitions()
 			gcode += f.process(f.attr["before"]) 
+			print f.attr["before"]
 			gcode += f.process(f.attr["call"]) 
 		iter = self.treestore.iter_children(iter)
 		while iter :
