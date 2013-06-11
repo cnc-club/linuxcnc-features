@@ -77,6 +77,7 @@ class Parameter() :
 		self.set_pixbufs()
 		if "type" in self.attr : self.attr["type"] = self.attr["type"].lower()
 		if "call" not in self.attr : self.attr["call"] = "#"+ini_id.lower()
+		self.id = ini_id
 		
 	def from_xml(self, xml) :
 		for i in xml.keys() :
@@ -158,18 +159,39 @@ class Feature():
 		if src in  FEATURE_DICT : self.from_xml(FEATURE_DICT[src])
 		config = ConfigParser.ConfigParser()
 		path_src = search_path(SUBROUTINES_PATH,src) 
+		f = open(path_src).read()
+		# add "." in the begining of multiline parameters to save indents
+		f = re.sub(r"^(\s)",r"\1.",f) 
 		if path_src == None :
 			print "Warning! Can not find subroutine %s at path %s"%(src, SUBROUTINES_PATH)
 		config.read(path_src)
-		#print src
 		self.attr = dict(config.items("SUBROUTINE"))
+		# remove "." in the begining of multiline parameters to save indents
+		for key in self.attr :
+			self.attr[key] = re.sub("^\s.", "", self.attr[key])
 		self.attr["src"] = src
 		self.param = []
+		
+		# get order
+		if "order" not in self.attr :
+			self.attr["order"] = []
+		else :
+			self.attr["order"] = self.attr["order"].lower().split()
+		self.attr["order"] = [s if s[:6]=="param_" else "param_"+s for s in self.attr["order"]]		 
+
+		# get params
 		conf = config.sections()
 		conf.sort()
+		param_ = {}
 		for s in conf :		
-			if s[:5]== "PARAM" :
-				self.param.append( Parameter(ini=config.items(s), ini_id=s) )
+			if s[:5].lower() == "param" :
+				p = Parameter(ini=config.items(s), ini_id=s.lower())
+				param_[p.id] = p
+
+		# sort params		
+		self.param = [param_[id] for id in self.attr["order"]  if id in param_ ] 
+		self.param += [param_[id] for id in param_ if id not in self.attr["order"] ]		
+
 		# get gcode parameters		
 		try :
 			self.attr["definitions"] = config.get("DEFINITIONS","content")	
@@ -258,13 +280,14 @@ class Feature():
 	def process(self, s) :
 		def process_callback(m) :
 			return str( eval(m.group(2), {"self":self}) )
+		
 		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", process_callback, s)
 
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
-				s = re.sub(r"%s"%(re.escape(p.attr["call"])),"%s"%p.attr["value"], s)
+				s = re.sub( r"%s([^A-Za-z0-9_])" % (re.escape(p.attr["call"])), r"%s\1" % (p.attr["value"]), s)
 		s = re.sub(r"#self_id","%s"%self.get_attr("id"), s)
-				
+
 		return s
 	
 	
