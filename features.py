@@ -302,26 +302,32 @@ class Features(gtk.VBox):
 		
 		settings = gtk.settings_get_default()
 		settings.props.gtk_button_images = True
-		
-		global SUBROUTINES_PATH
-		SUBROUTINES_PATH = ""
-		global PROGRAM_PREFIX
-		PROGRAM_PREFIX = ""
-		try : 
-			inifile = linuxcnc.ini(os.getenv("INI_FILE_NAME"))
-			SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
-			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
-		except :
-			print "Warning! Problem while loading ini file!"
-		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines"
-		
-		optlist, args = getopt.getopt(sys.argv[1:], 'c:x:', ["catalog="])
+
+		optlist, args = getopt.getopt(sys.argv[1:], 'c:x:i:', ["catalog=","ini="])
 		optlist = dict(optlist)
 		
 		catalog_src = "catalog.xml"
 	
 		if "--catalog" in optlist :
 			catalog_src = optlist["--catalog"]
+		ini = os.getenv("INI_FILE_NAME")
+		if "-i" in optlist : 
+			ini = optlist["-i"]
+		if "--ini" in optlist : 
+			ini = optlist["--ini"]
+
+		global SUBROUTINES_PATH
+		SUBROUTINES_PATH = ""
+		global PROGRAM_PREFIX
+		PROGRAM_PREFIX = ""
+		try : 
+			inifile = linuxcnc.ini(ini)
+			SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
+			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
+		except :
+			print "Warning! Problem while loading ini file!"
+		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines"
+			
 
 		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
@@ -726,6 +732,8 @@ class Features(gtk.VBox):
 		gcode_def = ""
 		global DEFINITIONS
 		DEFINITIONS = []
+		global INCLUDE
+		INCLUDE = []		
 		iter = self.treestore.get_iter_root()
 		while iter != None :
 			g,d =  self.refresh_recursive(iter)
