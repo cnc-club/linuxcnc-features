@@ -58,7 +58,19 @@ def search_path(path, f) :
 			return s+"/"+f
 	return None		
 		
-	
+
+def get_icon(icon) :
+	if icon != "" and icon != None :
+		if icon not in PIXBUF_DICT :
+			try :
+				PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
+			except Exception, e:
+				PIXBUF_DICT[icon] = None 
+				print "Warning! Failed to load catalog icon from: %s at path %s!" % (icon, SUBROUTINES_PATH)
+		pixbuf = PIXBUF_DICT[icon]
+		return PIXBUF_DICT[icon]
+	else :
+		return None
 
 class Parameter() :
 	def __init__(self, ini=None, ini_id = None, xml=None) :
@@ -651,7 +663,7 @@ class Features(gtk.VBox):
 		self.treeview.set_model(self.treestore)
 		if expand : self.set_expand()
 
-
+	 
 		
 		
 	def update_catalog(self, call=None, xml=None) :
@@ -662,18 +674,13 @@ class Features(gtk.VBox):
 		if 	self.catalog_path == None : self.catalog_path = self.catalog
 		self.icon_store.clear()
 		
+		# add link to upper level
+		if self.catalog_path != self.catalog :
+			self.icon_store.append([get_icon("images/upper-level.png"),"","parent"])
+			
 		for p in self.catalog_path :
-			pixbuf = None
-			if "icon" in p.keys() :
-				icon = p.get("icon") if "icon" in p.keys() else None
-				if icon != "" and icon != None :
-					if icon not in PIXBUF_DICT :
-						try :
-							PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
-						except Exception, e:
-							PIXBUF_DICT[icon] = None 
-							print "Warning! Failed to load catalog icon from: %s at path %s!" % (p.get("icon"), SUBROUTINES_PATH)
-					pixbuf = PIXBUF_DICT[icon]
+			icon = p.get("icon") if "icon" in p.keys() else None
+			pixbuf = get_icon(icon)
 			name = p.get("name") if "name" in p.keys() else None 
 			sub = p.get("sub") if "sub" in p.keys() else None 
 			self.icon_store.append([pixbuf,name,sub])
@@ -805,8 +812,11 @@ class Features(gtk.VBox):
 		iter = self.icon_store.get_iter(path)
 		src = self.icon_store.get(iter,2)[0]
 		if src != None :
-			self.add_feature(src)
-			self.add_dialog.hide()
+			if src == "parent" :
+				self.update_catalog(xml="parent")
+			else :
+				self.add_feature(src)
+				self.add_dialog.hide()
 		else : 	# it's a group
 			self.update_catalog(xml=self.catalog_path[path[0]]) 
 		
