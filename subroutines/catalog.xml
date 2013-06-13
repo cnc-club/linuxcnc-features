@@ -40,6 +40,11 @@
 		<sub name="Custom Gcode" sub="gcode.ini" icon="images/gcode.png"/>
 	</group>
 
+	<group name="Probing" icon="images/probe.png">
+		<sub name="Probe down" sub="probe-down.ini" icon="images/probe-down.png"/>
+		<sub name="Probe hole" sub="probe-hole.ini" icon="images/probe-hole.png"/>
+		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
+	</group>
 
 </xml>
 

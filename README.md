@@ -35,9 +35,14 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	#param_name can be used to substitude parameters from the feature. 
 	#self_id - unique id made of feature Name + smallest integer id. 
 
-2. Eval
-	<eval>print "hello world!" </eval> everything inside <eval> tag will be passed
-	trought python's eval function.
+2. Eval and exec
+	<eval>"hello world!"</eval> everything inside <eval> tag will be passed
+	trought python's eval function. 
+	
+	<exec>print "hello world"</exec> allmost the same but will take all printed data.
+	
+	you can use self as feature's self.
+	
 	
 3. Including Gcode
 	G-code ngc files can be included by using one of the following functions: 

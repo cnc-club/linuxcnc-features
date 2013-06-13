@@ -45,7 +45,7 @@ if "-w" in optlist:
 	width["icons"] = width["images"] = float(optlist("-w"))
 else :
 	width["icons"] = 28. 
-	width["images"] = 160.
+	width["images"] = 120.
 	
 d["icons"] = "subroutines/icons"
 d["images"] = "subroutines/images"

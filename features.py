@@ -33,6 +33,7 @@ import subprocess
 from threading import Timer
 from copy import deepcopy 
 import io
+from cStringIO import StringIO
 
 PARAMETERS = ["string", "float", "int", "image", "bool"]	
 FEATURES = ["feature"]
@@ -138,7 +139,9 @@ class Feature():
 			self.from_src(src)
 		if xml != None :
 			self.from_xml(xml)
-
+		
+		
+		
 	def __repr__(self) :
 		return etree.tostring(self.to_xml(), pretty_print=True)
 		
@@ -283,13 +286,46 @@ class Feature():
 			return self.include(src)
 		return ""	
 
-
+	def get_param_value(self, call) :
+		call = "#"+call.lower()
+		for p in self.param :
+			if "call" in p.attr and "value" in p.attr :
+				if call == p.attr["call"] :
+					return p.attr['value']
+		return None
+				
 	def process(self, s) :
-		def process_callback(m) :
+		def eval_callback(m) :
 			return str( eval(m.group(2), {"self":self}) )
-		
-		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", process_callback, s)
+			
+		def exec_callback(m) :
+			s = m.group(2) 
+			
+			#strip starting spaces 
+			s = s.replace("\t","    ")
+			i = 1e10
+			for l in s.split("\n") : 
+				if l.strip() != "" :
+					i = min(i, len(l)-len(l.lstrip()))
+			if i<1e10 :
+				res = "" 	
+				for l in s.split("\n") : 	
+					res += l[i:]+"\n"
+				s = res			
 
+			old_stdout = sys.stdout
+			redirected_output = StringIO()
+			sys.stdout = redirected_output
+			exec(s) in {"self":self}
+			sys.stdout = old_stdout			
+			redirected_output.reset()
+			out = str(redirected_output.read())
+			return out
+			
+			
+			
+		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", eval_callback, s)
+		s = re.sub(r"(?ims)(<exec>(.*?)</exec>)", exec_callback, s)
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
 				s = re.sub( r"%s([^A-Za-z0-9_])" % (re.escape(p.attr["call"])), r"%s\1" % (p.attr["value"]), s)
@@ -360,7 +396,7 @@ class Features(gtk.VBox):
 		self.catalog_path = self.catalog
 		
 		self.add_iconview = gtk.IconView()		
-		self.icon_store = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
+		self.icon_store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, int)
 		self.add_iconview.set_model(self.icon_store)
 		self.add_iconview.set_pixbuf_column(0)
 		self.add_iconview.set_text_column(1)
@@ -663,28 +699,6 @@ class Features(gtk.VBox):
 		self.treeview.set_model(self.treestore)
 		if expand : self.set_expand()
 
-	 
-		
-		
-	def update_catalog(self, call=None, xml=None) :
-		if xml == "parent" : 
-			self.catalog_path = self.catalog_path.getparent()
-		else :	
-			self.catalog_path = xml
-		if 	self.catalog_path == None : self.catalog_path = self.catalog
-		self.icon_store.clear()
-		
-		# add link to upper level
-		if self.catalog_path != self.catalog :
-			self.icon_store.append([get_icon("images/upper-level.png"),"","parent"])
-			
-		for p in self.catalog_path :
-			icon = p.get("icon") if "icon" in p.keys() else None
-			pixbuf = get_icon(icon)
-			name = p.get("name") if "name" in p.keys() else None 
-			sub = p.get("sub") if "sub" in p.keys() else None 
-			self.icon_store.append([pixbuf,name,sub])
-		
 
 	def get_features(self) :
 		l = self.catalog.findall(".//sub")		
@@ -755,16 +769,10 @@ class Features(gtk.VBox):
 		f = open(PROGRAM_PREFIX + "/features.ngc","w")
 		f.write(self.to_gcode())
 		f.close()
-		#print "!!!refresh1"
 		self.linuxcnc.reset_interpreter()
 		self.linuxcnc.mode(linuxcnc.MODE_AUTO)
 		self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
 		subprocess.call(["axis-remote",PROGRAM_PREFIX + "/features.ngc"])
-		#self.linuxcnc.abort()
-		#self.linuxcnc.wait_complete()			
-		
-
-		#self.linuxcnc.reset_interpreter()
 		
 		
 
@@ -807,6 +815,27 @@ class Features(gtk.VBox):
 		xml = self.treestore_to_xml(xml)
 		self.action(xml)
 
+
+	def update_catalog(self, call=None, xml=None) :
+		if xml == "parent" : 
+			self.catalog_path = self.catalog_path.getparent()
+		else :	
+			self.catalog_path = xml
+		if 	self.catalog_path == None : self.catalog_path = self.catalog
+		self.icon_store.clear()
+		
+		# add link to upper level
+		if self.catalog_path != self.catalog :
+			self.icon_store.append([get_icon("images/upper-level.png"),"","parent",0])
+		
+		for path in range(len(self.catalog_path)) :
+			p = self.catalog_path[path]
+			icon = p.get("icon") if "icon" in p.keys() else None
+			pixbuf = get_icon(icon)
+			name = p.get("name") if "name" in p.keys() else None 
+			sub = p.get("sub") if "sub" in p.keys() else None 
+			self.icon_store.append([pixbuf,name,sub, path])
+		
 	
 	def catalog_activate(self, iconview, path) : 
 		iter = self.icon_store.get_iter(path)
@@ -818,7 +847,8 @@ class Features(gtk.VBox):
 				self.add_feature(src)
 				self.add_dialog.hide()
 		else : 	# it's a group
-			self.update_catalog(xml=self.catalog_path[path[0]]) 
+			path = self.icon_store.get(iter,3)[0]		
+			self.update_catalog(xml=self.catalog_path[path]) 
 		
 	def autorefresh_call(self) :
 		self.refresh()
@@ -1067,5 +1097,9 @@ def main():
 
 if __name__ == "__main__":	
 	main()
+	#import cProfile
+	#command = """main()"""
+	#cProfile.runctx( command, globals(), locals(), filename="test.profile" )
+	
 	
 	
