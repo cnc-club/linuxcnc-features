@@ -14,7 +14,7 @@
    height="1052.3622"
    id="svg27697"
    version="1.1"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="icons.svg">
   <defs
      id="defs27699">
@@ -9904,9 +9904,9 @@
      inkscape:document-units="px"
      inkscape:current-layer="id10:id17:layer1-9"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="947"
-     inkscape:window-x="0"
+     inkscape:window-width="1301"
+     inkscape:window-height="744"
+     inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:object-paths="true"
@@ -11430,7 +11430,7 @@
          id="g7658"
          transform="translate(4.9737935,-3.8608303)">
         <title
-           id="title7660">probe</title>
+           id="title7660">probe-cube</title>
         <g
            id="g7662">
           <g
