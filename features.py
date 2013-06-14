@@ -321,9 +321,19 @@ class Feature():
 			redirected_output.reset()
 			out = str(redirected_output.read())
 			return out
+		
+		def import_callback(m) :
+			fname = m.group(2)
+			f = search_path(SUBROUTINES_PATH, fname)
+			if f != None :
+				return str( open(f).read() )
+			else :
+				print "Error! Can not find file %s in %s, wile processing <import> tag in feature %s!"	
+				raise IOError, "File not found"
+
 			
-			
-			
+		s = re.sub(r"(?i)(<import>(.*?)</import>)", import_callback, s)
+					
 		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", eval_callback, s)
 		s = re.sub(r"(?ims)(<exec>(.*?)</exec>)", exec_callback, s)
 		for p in self.param :
@@ -724,7 +734,7 @@ class Features(gtk.VBox):
 					pixbuf = None
 				#self.icon_liststore.append([pixbuf,f.attr["name"],s])
 			except Exception, e :
-				print "Warning: Error while parsing %s..."%s
+				print "Warning: Error while parsing %s..."%etree.tostring(s, pretty_print=True)
 				print e
 
 

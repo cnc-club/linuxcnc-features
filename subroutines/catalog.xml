@@ -1,5 +1,4 @@
 <xml>
-
 	<group name="Cutting" icon="images/rect.png">
 		<group name="Rectangles" icon="images/rect.png"> 
 			<sub name="Rectangle" icon="images/rect-corner.png" sub="rect.ini"/>
@@ -27,13 +26,13 @@
 		<sub name="Circular array" icon="images/circular-array.png" sub="circular-array.ini"/>
 	</group>
 	
-	<group name="Misc" icon="images/tool.png">
-		<sub name="Tool" icon="images/tool.png" sub="set-tool.ini"/>
-		<sub name="Depth" icon="images/dz.png" sub="set-depth.ini"/>
-		<sub name="Depth step" icon="images/dz.png" sub="set-depth-step.ini"/>
-		<sub name="Rappid" icon="images/dz.png" sub="set-rappid.ini"/>
-		<sub name="Surface origin" icon="images/dz.png" sub="set-surface.ini"/>
+	<group name="Tool" icon="images/mill-tool.png">
+		<sub name="Tool change" icon="images/tool-change.png" sub="tool-change.ini"/>
+		<sub name="Tool" icon="images/mill-tool.png" sub="set-tool.ini"/>
 		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
+		<sub name="Measure tool length" icon="images/probe-tool-l.png" sub="probe-tool-l.ini"/> 
+		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" sub="probe-tool-d.ini"/> 
+		<sub name="Set tool probing params" icon="images/tool-probe.png" sub="set-tool-probing-params.ini"/> 
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
@@ -46,7 +45,6 @@
 		<sub name="Probe cube" sub="probe-cube.ini" icon="images/probe-cube.png"/>
 		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
 	</group>
-
 </xml>
 
-
+<!-- Do not forget to close <sub /> tags! -->

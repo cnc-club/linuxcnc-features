@@ -42,7 +42,9 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	<exec>print "hello world"</exec> allmost the same but will take all printed data.
 	
 	you can use self as feature's self.
-	
+
+3. Import 
+	<import>filename<import> will import file into feature text before proceccing.	
 	
 3. Including Gcode
 	G-code ngc files can be included by using one of the following functions: 
