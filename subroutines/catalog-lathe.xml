@@ -1,0 +1,30 @@
+<xml>
+	
+	<sub name="Line" icon="images/group.png" sub="lathe/line.ini"/>
+	<sub name="Arc" icon="images/group.png" sub="lathe/arc.ini"/>
+	<sub name="G90" icon="images/group.png" sub="lathe/g91-group.ini"/>
+		
+	<group name="Grouping" icon="images/array.png"> 
+		<sub name="Group" icon="images/group.png" sub="group.ini"/>
+		<sub name="Array" icon="images/array.png" sub="array.ini"/>
+		<sub name="Circular array" icon="images/circular-array.png" sub="circular-array.ini"/>
+	</group>
+	
+	<group name="Tool" icon="images/lathe-tool.png">
+		<sub name="Tool" icon="images/mill-tool.png" sub="set-tool.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
+	</group>
+
+	<group name="Gcode" icon="images/gcode.png">
+		<sub name="Custom Gcode" sub="gcode.ini" icon="images/gcode.png"/>
+	</group>
+
+	<group name="Probing" icon="images/probe-cube.png">
+		<sub name="Probe down" sub="probe-down.ini" icon="images/probe-down.png"/>
+		<sub name="Probe hole" sub="probe-hole.ini" icon="images/probe-hole.png"/>
+		<sub name="Probe cube" sub="probe-cube.ini" icon="images/probe-cube.png"/>
+		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
+	</group>
+</xml>
+
+<!-- Do not forget to close <sub /> tags! -->

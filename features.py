@@ -161,8 +161,7 @@ class Feature():
 	def get_image(self) : return self.get_pixbuf("image")
 
 	def get_value(self, ptype):
-		if self.attr["type"] in ptype :
-			return self.attr["value"] if "value" in self.attr else ""
+		return self.attr["value"] if "value" in self.attr else ""
 	
 	def get_attr(self, attr) :
 		return self.attr[attr] if attr in self.attr else None
@@ -175,7 +174,11 @@ class Feature():
 		if src in  FEATURE_DICT : self.from_xml(FEATURE_DICT[src])
 		config = ConfigParser.ConfigParser()
 		path_src = search_path(SUBROUTINES_PATH,src) 
+		if path_src == None :
+			print "Feature file %s not fount in %s"%(src,SUBROUTINES_PATH)
+			raise IOError, "File not found"
 		f = open(path_src).read()
+			
 
 		# add "." in the begining of multiline parameters to save indents
 		f = re.sub(r"(?m)^(\ |\t)",r"\1.",f)
@@ -328,17 +331,18 @@ class Feature():
 			if f != None :
 				return str( open(f).read() )
 			else :
-				print "Error! Can not find file %s in %s, wile processing <import> tag in feature %s!"	
+				print "Error! Can not find file %s in %s, wile processing <import> tag in feature!"%(fname, SUBROUTINES_PATH)
 				raise IOError, "File not found"
 
 			
 		s = re.sub(r"(?i)(<import>(.*?)</import>)", import_callback, s)
-					
 		s = re.sub(r"(?i)(<eval>(.*?)</eval>)", eval_callback, s)
 		s = re.sub(r"(?ims)(<exec>(.*?)</exec>)", exec_callback, s)
+		
 		for p in self.param :
 			if "call" in p.attr and "value" in p.attr :
-				s = re.sub( r"%s([^A-Za-z0-9_])" % (re.escape(p.attr["call"])), r"%s\1" % (p.attr["value"]), s)
+				s = re.sub( r"%s([^A-Za-z0-9_]|$)" % (re.escape(p.attr["call"])), r"%s\1" % (p.attr["value"]), s)
+				
 		s = re.sub(r"#self_id","%s"%self.get_attr("id"), s)
 
 		return s
@@ -361,9 +365,12 @@ class Features(gtk.VBox):
 		settings = gtk.settings_get_default()
 		settings.props.gtk_button_images = True
 
-		optlist, args = getopt.getopt(sys.argv[1:], 'c:x:i:', ["catalog=","ini="])
+		opt, optl = 'U:c:x:i:', ["catalog=","ini="]
+		optlist, args = getopt.getopt(sys.argv[1:], opt, optl)
 		optlist = dict(optlist)
-		
+		if "-U" in optlist :
+			optlist_, args = getopt.getopt(optlist["-U"].split(), opt, optl)
+			optlist.update(optlist_)
 		catalog_src = "catalog.xml"
 	
 		if "--catalog" in optlist :
@@ -373,6 +380,8 @@ class Features(gtk.VBox):
 			ini = optlist["-i"]
 		if "--ini" in optlist : 
 			ini = optlist["--ini"]
+		
+		print catalog_src
 
 		global SUBROUTINES_PATH
 		SUBROUTINES_PATH = ""
@@ -384,8 +393,9 @@ class Features(gtk.VBox):
 			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
 		except :
 			print "Warning! Problem while loading ini file!"
-		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines"
-			
+		if len(SUBROUTINES_PATH)>0 and SUBROUTINES_PATH[-1]!=":" : SUBROUTINES_PATH+=":"
+		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines:"
+		self.file_dialogs_folder = SUBROUTINES_PATH.split(":")[0]
 
 		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
@@ -492,12 +502,15 @@ class Features(gtk.VBox):
 		self.treeview.connect("key-release-event" , self.treeview_release)
 
 
-		button = self.glade.get_object("test")
-		button.connect("clicked", self.test)
+		#button = self.glade.get_object("test")
+		#button.connect("clicked", self.test)
 		button = self.glade.get_object("save")
 		button.connect("clicked", self.save)
 		button = self.glade.get_object("open")
 		button.connect("clicked", self.load)
+		button = self.glade.get_object("import")
+		button.connect("clicked", self.import_file)		
+
 		button = self.glade.get_object("to_file")
 		button.connect("clicked", self.to_file)
 		button = self.glade.get_object("undo")
@@ -784,12 +797,19 @@ class Features(gtk.VBox):
 		self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
 		subprocess.call(["axis-remote",PROGRAM_PREFIX + "/features.ngc"])
 		
-		
-
+	
 	def to_file(self, *arg) :
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+		filter = gtk.FileFilter()
+		filter.set_name("NGC")
+		filter.add_mime_type("text/ngc")
+		filter.add_pattern("*.ngc")
+		filechooserdialog.add_filter(filter)
+		filechooserdialog.set_current_folder(self.file_dialogs_folder)		
+		
 		response = filechooserdialog.run()
 		if response == gtk.RESPONSE_OK:
+			self.file_dialogs_folder = filechooserdialog.get_current_folder()		
 			gcode = self.to_gcode()
 			filename = filechooserdialog.get_filename() 
 			if filename[-4]!=".ngc" not in filename :
@@ -814,6 +834,29 @@ class Features(gtk.VBox):
 			if f.__class__ == Feature : 
 				self.treestore.remove(iter)
 				self.action()
+
+	def import_xml(self, xml_) :
+		xml = self.treestore_to_xml()
+		print etree.tostring(xml_, pretty_print=True)		
+		
+		if xml_.tag != "LinuxCNC-Features":
+			xml_ = xml_.find(".//LinuxCNC-Features")
+			
+		if xml_ != None :	
+			for x in xml_ :
+				xml.append(x)
+				l = x.findall(".//feature")
+				if x.tag == "feature" :
+					l = [x]+l
+				for xf in l :
+					f=Feature(xml=xf)
+					f.get_id(xml)
+					xf.set("name", f.attr["name"])
+					print f.attr["name"]
+					xf.set("id", f.attr["id"])
+			self.treestore_from_xml(xml)
+			self.action(xml)
+
 		
 	def add_feature(self, src) :
 		xml = self.treestore_to_xml()
@@ -822,7 +865,6 @@ class Features(gtk.VBox):
 		fxml = f.to_xml()
 		xml.append(fxml)
 		self.treestore_from_xml(xml)
-		xml = self.treestore_to_xml(xml)
 		self.action(xml)
 
 
@@ -1061,12 +1103,41 @@ class Features(gtk.VBox):
 		(model, pathlist) = self.selection.get_selected_rows()
 		self.selected_pathlist = pathlist
 		self.treestore.foreach(treestore_get_expand, self)
+
+	def import_file(self, calback) :
+		filechooserdialog = gtk.FileChooserDialog("Import", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+		filter = gtk.FileFilter()
+		filter.set_name("XML")
+		filter.add_mime_type("text/xml")
+		filter.add_pattern("*.xml")
+		filechooserdialog.add_filter(filter)
+		filter = gtk.FileFilter()
+		filter.set_name("All files")
+		filter.add_pattern("*")
+		filechooserdialog.add_filter(filter)
+		filechooserdialog.set_current_folder(self.file_dialogs_folder)
 		
+		response = filechooserdialog.run()		
+		if response == gtk.RESPONSE_OK:
+			self.file_dialogs_folder = filechooserdialog.get_current_folder()		
+			filename = filechooserdialog.get_filename() 
+			xml = etree.parse(filename).getroot()
+			self.import_xml(xml)
+		
+		filechooserdialog.destroy()
 
 	def save(self, callback) :
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+		filter = gtk.FileFilter()
+		filter.set_name("XML")
+		filter.add_mime_type("text/xml")
+		filter.add_pattern("*.xml")
+		filechooserdialog.add_filter(filter)
+		filechooserdialog.set_current_folder(self.file_dialogs_folder)
+		
 		response = filechooserdialog.run()
 		if response == gtk.RESPONSE_OK:
+			self.file_dialogs_folder = filechooserdialog.get_current_folder()
 			xml = self.treestore_to_xml()
 			filename = filechooserdialog.get_filename() 
 			if filename[-4]!=".xml" not in filename :
@@ -1079,8 +1150,15 @@ class Features(gtk.VBox):
 			xml = etree.parse(filename)
 		else :	
 			filechooserdialog = gtk.FileChooserDialog("Open", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
+			filter.set_name("XML")
+			filter.add_mime_type("text/xml")
+			filter.add_pattern("*.xml")
+			filechooserdialog.add_filter(filter)
+			filechooserdialog.set_current_folder(self.file_dialogs_folder)
+			
 			response = filechooserdialog.run()
 			if response == gtk.RESPONSE_OK:
+				self.file_dialogs_folder = filechooserdialog.get_current_folder()			
 				filename = filechooserdialog.get_filename() 
 				xml = etree.parse(filename)
 			filechooserdialog.destroy()

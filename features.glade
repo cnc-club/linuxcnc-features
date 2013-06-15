@@ -34,7 +34,7 @@
             <child>
               <object class="GtkToolButton" id="remove">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">toolbutton1</property>
+                <property name="label" translatable="yes">Remove</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-remove</property>
               </object>
@@ -44,11 +44,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolButton" id="test">
+              <object class="GtkToolButton" id="import">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Test</property>
+                <property name="label" translatable="yes">Import</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-execute</property>
+                <property name="stock_id">gtk-revert-to-saved</property>
               </object>
               <packing>
                 <property name="expand">False</property>
