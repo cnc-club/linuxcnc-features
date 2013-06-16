@@ -1,1 +1,17 @@
-<LinuxCNC-Features/>
+<LinuxCNC-Features>
+  <feature src="gcode.ini" expanded="True" help="Flat Gcode&#10;&#9;\n can be used to split lines&#10;&#9;lines will be parsed as usual so you can use &amp;lt;eval&amp;gt;&amp;lt;/eval&amp;gt;" icon="icons/gcode.png" image="images/simp.png" after="" order="[]" call="&#10;(Gcode lines)&#10; #param_1&#10; #param_2&#10; #param_3&#10; #param_4&#10; #param_5&#10;(Gcode lines end)" selected="False" path="0" definitions="&#10;" before="&#10;" type="Gcode" id="Gcode-0001" name="Gcode 0001">
+    <param tool_tip="Gcode line" expanded="False" name="Line 5" selected="False" value="G18" call="#param_5" path="0:0" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 4" selected="False" value="F100" call="#param_4" path="0:1" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 1" selected="False" value="" call="#param_1" path="0:2" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 3" selected="False" value="" call="#param_3" path="0:3" type="string"/>
+    <param tool_tip="Gcode line" expanded="False" name="Line 2" selected="False" value="" call="#param_2" path="0:4" type="string"/>
+  </feature>
+  <feature src="lathe/line.ini" expanded="True" help="&lt;big&gt;Create line&lt;/big&gt;" icon="icons/line.png" image="images/line.png" after="" order="['PARAM_DX', 'PARAM_DZ']" call="&#10;&lt;eval&gt;self.include_once(&quot;get-offsets.ngc&quot;)&lt;/eval&gt;&#10;&lt;eval&gt;self.include_once(&quot;lathe/get-move-params.ngc&quot;)&lt;/eval&gt;&#10;O&lt;alpha_at_move_end&gt; CALL [1] [#param_dx] [#param_dz]&#10;G01 X#param_dx Z#param_dz&#10;&#10;" selected="False" path="1" definitions="" before="&#10;" type="Line" id="Line-0002" name="Line 0002">
+    <param tool_tip="X of array center" expanded="False" name="dX" selected="False" value="2" call="#param_dx" path="1:0" type="float" icon="icons/line.png"/>
+    <param tool_tip="Y of array center" expanded="False" name="dZ" image="images/line.png" selected="False" value="2" call="#param_dz" path="1:1" type="float" icon="icons/line.png"/>
+  </feature>
+  <feature src="lathe/line.ini" after="" help="&lt;big&gt;Create line&lt;/big&gt;" name="Line 0001" image="images/line.png" expanded="True" id="Line-0001" call="&#10;&lt;eval&gt;self.include_once(&quot;get-offsets.ngc&quot;)&lt;/eval&gt;&#10;&lt;eval&gt;self.include_once(&quot;lathe/get-move-params.ngc&quot;)&lt;/eval&gt;&#10;O&lt;alpha_at_move_end&gt; CALL [1] [#param_dx] [#param_dz]&#10;G01 X#param_dx Z#param_dz&#10;&#10;" selected="False" definitions="" path="2" before="&#10;" type="Line" order="['PARAM_DX', 'PARAM_DZ']" icon="icons/line.png">
+    <param tool_tip="X of array center" expanded="False" name="dX" selected="False" value="0" call="#param_dx" path="2:0" type="float" icon="icons/line.png"/>
+    <param tool_tip="Y of array center" expanded="False" name="dZ" image="images/line.png" selected="False" value="0" call="#param_dz" path="2:1" type="float" icon="icons/line.png"/>
+  </feature>
+</LinuxCNC-Features>

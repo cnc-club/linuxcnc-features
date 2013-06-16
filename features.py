@@ -60,7 +60,7 @@ def search_path(path, f) :
 	return None		
 		
 
-def get_icon(icon) :
+def get_pixbuf(icon) :
 	if icon != "" and icon != None :
 		if icon not in PIXBUF_DICT :
 			try :
@@ -88,7 +88,6 @@ class Parameter() :
 		ini = dict(ini)
 		for i in ini :
 			self.attr[i] = ini[i]
-		self.set_pixbufs()
 		if "type" in self.attr : self.attr["type"] = self.attr["type"].lower()
 		if "call" not in self.attr : self.attr["call"] = "#"+ini_id.lower()
 		self.id = ini_id
@@ -96,7 +95,7 @@ class Parameter() :
 	def from_xml(self, xml) :
 		for i in xml.keys() :
 			self.attr[i] = xml.get(i)
-		self.set_pixbufs()
+
 		
 	def to_xml(self) : 
 		xml = etree.Element("param")
@@ -104,20 +103,9 @@ class Parameter() :
 			xml.set(i, unicode(str(self.attr[i])))
 		return xml
 		
-	def set_pixbufs(self) :
-		for i in self.attr : 
-			if i in ["icon","image"] :
-				if self.attr[i] not in PIXBUF_DICT :
-					try :
-						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,self.attr[i]) )
-					except :
-						print "Warning: problem with image %s at path %s"%(self.attr[i], SUBROUTINES_PATH)
-				self.pixbuf[i] = PIXBUF_DICT[self.attr[i]]
-	
-	def get_pixbuf(self, t) :
-		return self.pixbuf[t]  if t in self.pixbuf else None
-	def get_icon(self) : return self.get_pixbuf("icon")
-	def get_image(self) : return self.get_pixbuf("image")
+	def get_icon(self) : return get_pixbuf(self.get_attr("icon"))
+
+	def get_image(self) : return get_pixbuf(self.get_attr("image"))
 
 	def get_value(self, ptype) :
 		if self.attr["type"] in ptype :
@@ -155,10 +143,9 @@ class Feature():
 			f.pixbuf[i] = self.pixbuf[i]
 		return f
 
-	def get_pixbuf(self, t) :
-		return self.pixbuf[t]  if t in self.pixbuf else None
-	def get_icon(self) : return self.get_pixbuf("icon")
-	def get_image(self) : return self.get_pixbuf("image")
+	
+	def get_icon(self) : return get_pixbuf(self.get_attr("icon"))
+	def get_image(self) : return get_pixbuf(self.get_attr("image"))
 
 	def get_value(self, ptype):
 		return self.attr["value"] if "value" in self.attr else ""
@@ -184,63 +171,53 @@ class Feature():
 		f = re.sub(r"(?m)^(\ |\t)",r"\1.",f)
 		if path_src == None :
 			print "Warning! Can not find subroutine %s at path %s"%(src, SUBROUTINES_PATH)
-			
 		config.readfp(io.BytesIO(f))
-		self.attr = dict(config.items("SUBROUTINE"))
 		# remove "." in the begining of multiline parameters to save indents
-		for key in self.attr :
-			self.attr[key] = re.sub("r(?m)\r?\n\r?\.","\n", self.attr[key])
+		conf = {}
+		for section in config.sections() :
+			conf[section] = {}
+			for item in config.options(section) :
+				s = config.get(section,item)
+				s = re.sub(r"(?m)^\.","", " "+s)[1:] 
+				conf[section][item] = s
+		self.attr = conf["SUBROUTINE"]
+
 		self.attr["src"] = src
-		self.param = []
+		if "type" not in self.attr : 
+			self.attr["type"] = self.attr["name"]
 		
 		# get order
 		if "order" not in self.attr :
 			self.attr["order"] = []
 		else :
-			self.attr["order"] = self.attr["order"].lower().split()
-		self.attr["order"] = [s if s[:6]=="param_" else "param_"+s for s in self.attr["order"]]		 
+			self.attr["order"] = self.attr["order"].upper().split()
+		self.attr["order"] = [s if s[:6]=="PARAM_" else "PARAM_"+s for s in self.attr["order"]]		 
 
 		# get params
-		conf = config.sections()
-		conf.sort()
-		param_ = {}
-		for s in conf :		
-			if s[:5].lower() == "param" :
-				p = Parameter(ini=config.items(s), ini_id=s.lower())
-				param_[p.id] = p
-
-		# sort params
-		conf = [s.lower() for s in conf]			
-		self.param = [param_[id] for id in self.attr["order"]  if id in param_ ] 
-		self.param += [param_[id] for id in conf if ((id in param_) and (id not in self.attr["order"])) ]		
-
+		self.param = []
+		parameters = self.attr["order"] + [p for p in conf if (p[:6]=="PARAM_" and p not in self.attr["order"])]
+		for s in parameters :
+			if s in conf :
+				p = Parameter(ini=conf[s], ini_id=s.lower())
+				self.param.append(p)
+		
 		# get gcode parameters		
 		for l in ["definitions","before","call","after"] :
-			try :
-				s = config.get(l.upper(),"content")	
-				self.attr[l] = re.sub(r"(?m)\r?\n\r?\.","\n",s)
-			except: 
-				self.attr[l] = ""
+			l = l.upper()
+			if l in conf and "content" in conf[l] :	
+				self.attr[l.lower()] = re.sub(r"(?m)\r?\n\r?\.","\n",conf[l]["content"])
+			else : 
+				self.attr[l.lower()] = ""
 
-		self.set_pixbufs()	
+
 		#print etree.tostring(self.to_xml(), pretty_print=True)
 		if self.attr["src"] not in 	FEATURE_DICT : FEATURE_DICT[self.attr["src"]] = self.to_xml()
 	
-	def set_pixbufs(self) :
-		for i in self.attr : 
-			if i in ["icon","image"] :
-				if self.attr[i] not in PIXBUF_DICT :
-					try :
-						PIXBUF_DICT[self.attr[i]] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,self.attr[i]) )
-					except :
-						print "Warning: problem with image %s at path %s \n\n"%(self.attr[i], SUBROUTINES_PATH)
-				self.pixbuf[i] = PIXBUF_DICT[self.attr[i]]
-		
+	
 	def from_xml(self, xml) :
 		self.attr = {}
 		for i in xml.keys() :
 			self.attr[i] = xml.get(i)
-		self.set_pixbufs()
 
 		self.param = []
 		for p in xml :
@@ -691,8 +668,9 @@ class Features(gtk.VBox):
 		model, iter = treeselection.get_selected()
 		while iter != None :
 			f = model.get(iter,0)[0]
-			if f.__class__ == Feature :
-				self.help_image.set_from_pixbuf(f.get_image())
+			if f.get_attr("image") != None :
+				print f.get_attr("image")
+				self.help_image.set_from_pixbuf( get_pixbuf(f.get_attr("image")) )
 				self.help_text.set_markup(f.get_attr("help"))
 				break
 			iter = model.iter_parent(iter)	
@@ -878,12 +856,12 @@ class Features(gtk.VBox):
 		
 		# add link to upper level
 		if self.catalog_path != self.catalog :
-			self.icon_store.append([get_icon("images/upper-level.png"),"","parent",0])
+			self.icon_store.append([get_pixbuf("images/upper-level.png"),"","parent",0])
 		
 		for path in range(len(self.catalog_path)) :
 			p = self.catalog_path[path]
 			icon = p.get("icon") if "icon" in p.keys() else None
-			pixbuf = get_icon(icon)
+			pixbuf = get_pixbuf(icon)
 			name = p.get("name") if "name" in p.keys() else None 
 			sub = p.get("sub") if "sub" in p.keys() else None 
 			self.icon_store.append([pixbuf,name,sub, path])
