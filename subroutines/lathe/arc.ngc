@@ -1,0 +1,48 @@
+
+(Add arc sub)
+O<add-arc> SUB
+	#<gcode> = #1
+	#<x> =  #2
+	#<y> =  #3
+	#<i> =  #4
+	#<j> =  #5
+	O<add-arc-if> IF [#<_plane> EQ 17] (XY)
+		G#<gcode> X#<x> Y#<y> I#<i> J#<j> 
+	O<add-arc-if> ELSEIF [#<_plane> EQ 18] (XZ)
+		G#<gcode> X#<x> Z#<y> I#<i> K#<j> 
+	O<add-arc-if> ELSEIF [#<_plane> EQ 19] (YZ)
+		G#<gcode> Y#<x> Z#<y> J#<i> K#<j> 
+	O<add-arc-if> ENDIF
+O<add-arc> ENDSUB
+
+
+
+
+	<eval>self.include_once("get-offsets.ngc")</eval>
+	<eval>self.include_once("lathe/get-move-params.ngc")</eval>
+	
+	#<restore-g90> = 91
+	O<#self_id-if-0001> IF [#<_absolute>]
+		(Set incremental mode)
+		#<restore-g90> = 90
+		G91
+	O<#self_id-if-0001> ENDIF
+	
+	#<r> = #param_r
+	#<a> = #<_global_alpha_at_move_end>  
+	#<i> = [-COS[#<a>]*#<r>]
+	#<k> = [SIN[#<a>]*#<r>]
+	#<z> = #param_dz
+
+	#<x> = [ SQRT[ #<r>*#<r> - [#<z>-#<k>]*[#<z>-#<k>] ] + #<i> ]
+
+	O<alpha_at_move_end> CALL [#param_gcode] [#<x>] [#<z>] [#<i>] [#<k>]
+	G[#param_gcode] X#<x> Z#<z> I#<i> K#<k>
+	G#<restore-g90>	
+	
+[BEFORE]
+content = 
+		
+[AFTER]
+content = 
+
