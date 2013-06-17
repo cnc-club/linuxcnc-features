@@ -35,6 +35,11 @@ from copy import deepcopy
 import io
 from cStringIO import StringIO
 
+import gettext
+gettext.bindtextdomain('myapplication', '')
+gettext.textdomain('myapplication')
+_ = gettext.gettext
+
 PARAMETERS = ["string", "float", "int", "image", "bool"]	
 FEATURES = ["feature"]
 GROUPS = ["group"]
@@ -67,7 +72,7 @@ def get_pixbuf(icon) :
 				PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
 			except Exception, e:
 				PIXBUF_DICT[icon] = None 
-				print "Warning! Failed to load catalog icon from: %s at path %s!" % (icon, SUBROUTINES_PATH)
+				print _("Warning! Failed to load catalog icon from: %s at path %s!") % (icon, SUBROUTINES_PATH)
 		pixbuf = PIXBUF_DICT[icon]
 		return PIXBUF_DICT[icon]
 	else :
@@ -112,7 +117,7 @@ class Parameter() :
 			return self.attr["value"] if "value" in self.attr else ""
 
 	def get_name(self) :
-		return self.attr["name"] if "name" in self.attr else ""
+		return _(self.attr["name"] if "name" in self.attr else "")
 	
 	def get_attr(self, name) :
 		return self.attr[name] if name in self.attr else None
@@ -155,14 +160,14 @@ class Feature():
 	
 	
 	def get_name(self):
-		return self.attr["name"] if "name" in self.attr else ""
+		return _(self.attr["name"] if "name" in self.attr else "")
 		
 	def from_src(self, src) :
 		if src in  FEATURE_DICT : self.from_xml(FEATURE_DICT[src])
 		config = ConfigParser.ConfigParser()
 		path_src = search_path(SUBROUTINES_PATH,src) 
 		if path_src == None :
-			print "Feature file %s not fount in %s"%(src,SUBROUTINES_PATH)
+			print _("Feature file %s not fount in %s!")%(src,SUBROUTINES_PATH)
 			raise IOError, "File not found"
 		f = open(path_src).read()
 			
@@ -170,14 +175,14 @@ class Feature():
 		# add "." in the begining of multiline parameters to save indents
 		f = re.sub(r"(?m)^(\ |\t)",r"\1.",f)
 		if path_src == None :
-			print "Warning! Can not find subroutine %s at path %s"%(src, SUBROUTINES_PATH)
+			print _("Warning! Can not find subroutine %s at path %s")%(src, SUBROUTINES_PATH)
 		config.readfp(io.BytesIO(f))
 		# remove "." in the begining of multiline parameters to save indents
 		conf = {}
 		for section in config.sections() :
 			conf[section] = {}
 			for item in config.options(section) :
-				s = config.get(section,item)
+				s = config.get(section,item, raw=True)
 				s = re.sub(r"(?m)^\.","", " "+s)[1:] 
 				conf[section][item] = s
 		self.attr = conf["SUBROUTINE"]
@@ -208,7 +213,6 @@ class Feature():
 				self.attr[l.lower()] = re.sub(r"(?m)\r?\n\r?\.","\n",conf[l]["content"])
 			else : 
 				self.attr[l.lower()] = ""
-
 
 		#print etree.tostring(self.to_xml(), pretty_print=True)
 		if self.attr["src"] not in 	FEATURE_DICT : FEATURE_DICT[self.attr["src"]] = self.to_xml()
@@ -308,7 +312,7 @@ class Feature():
 			if f != None :
 				return str( open(f).read() )
 			else :
-				print "Error! Can not find file %s in %s, wile processing <import> tag in feature!"%(fname, SUBROUTINES_PATH)
+				print _("Error! Can not find file %s in %s, wile processing <import> tag in feature!")%(fname, SUBROUTINES_PATH)
 				raise IOError, "File not found"
 
 			
@@ -342,13 +346,18 @@ class Features(gtk.VBox):
 		settings = gtk.settings_get_default()
 		settings.props.gtk_button_images = True
 
-		opt, optl = 'U:c:x:i:', ["catalog=","ini="]
+		opt, optl = 'U:c:x:i:t', ["catalog=","ini="]
 		optlist, args = getopt.getopt(sys.argv[1:], opt, optl)
 		optlist = dict(optlist)
 		if "-U" in optlist :
 			optlist_, args = getopt.getopt(optlist["-U"].split(), opt, optl)
 			optlist.update(optlist_)
 		catalog_src = "catalog.xml"
+	
+		if "-t" in optlist : 
+			# get translations and exit
+			self.get_translations()
+			sys.exit()
 	
 		if "--catalog" in optlist :
 			catalog_src = optlist["--catalog"]
@@ -357,9 +366,7 @@ class Features(gtk.VBox):
 			ini = optlist["-i"]
 		if "--ini" in optlist : 
 			ini = optlist["--ini"]
-		
-		print catalog_src
-
+				
 		global SUBROUTINES_PATH
 		SUBROUTINES_PATH = ""
 		global PROGRAM_PREFIX
@@ -369,7 +376,7 @@ class Features(gtk.VBox):
 			SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
 			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
 		except :
-			print "Warning! Problem while loading ini file!"
+			print _("Warning! Problem while loading ini file!")
 		if len(SUBROUTINES_PATH)>0 and SUBROUTINES_PATH[-1]!=":" : SUBROUTINES_PATH+=":"
 		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines:"
 		self.file_dialogs_folder = SUBROUTINES_PATH.split(":")[0]
@@ -385,7 +392,7 @@ class Features(gtk.VBox):
 		# create features catalog
 		catalog_src = search_path(SUBROUTINES_PATH, catalog_src)
 		if catalog_src == None :
-			print "Error! Fatal! Cannot find features catalog %s at %s!" % (catalog_src ,SUBROUTINES_PATH)
+			print _("Error! Fatal! Cannot find features catalog %s at %s!") % (catalog_src ,SUBROUTINES_PATH)
 			sys.exit()
 		xml = etree.parse(catalog_src)
 		
@@ -533,10 +540,51 @@ class Features(gtk.VBox):
 		
 		
 		self.main_box.connect("destroy", gtk.main_quit)
+		if search_path(SUBROUTINES_PATH,"defaults.ngc") != None :
+			self.defaults = open( search_path(SUBROUTINES_PATH,"defaults.ngc") ).read()
+		else :
+			print _("Warning defaults.ngc was not found in path %s!")%SUBROUTINES_PATH 
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
 	
 	
-	
+	def get_translations(self) :
+		os.popen("xgettext --language=Python features.py -o tmp.po")
+		
+		find = os.popen("find ./subroutines/ -name *.ini").read()
+		translatable = []
+		for s in find.split() :
+			print s
+			global SUBROUTINES_PATH 
+			SUBROUTINES_PATH = "./"
+
+			f = Feature(s)
+			for i in ["name", "help"] :
+				if i in f.attr :
+					s1 = f.attr[i]
+		 			translatable.append((s,s1))
+			for p in f.param :
+				for i in ["name", "help", "tool_tip"] :
+					if i in p.attr :
+						s1 = p.attr[i]
+			 			translatable.append((s,s1))
+		out = []
+		for i in translatable : 
+			out.append( "#: %s"%i[0] )
+			s = i[1].replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n")
+			out.append( "_(%s)"%repr(i[1]) )
+			
+			#out.append( 'msgid "%s"'%s )
+			#out.append( 'msgstr ""' )
+			#out.append( '' )
+		out = "\n".join(out)	
+		open("subroutines-ini-files","w").write(out)
+		os.popen("xgettext --language=Python tmp1.py -o tmp1.po")
+		os.popen("msgmerge messages.po tmp.po -U")
+		os.popen("msgmerge messages.po tmp1.po -U")
+		os.popen("rm tmp1.po tmp.po subroutines-ini-files")
+		
+		
+			
 	def move(self, call, i) :
 		f,iter = self.get_selected_feature()
 		if f :
@@ -592,9 +640,6 @@ class Features(gtk.VBox):
 				p = parent
 				parent = parent.getparent()
 				n = parent.index(p)
-				print p, n
-			print parent != xml , not (parent.tag=="param" and parent.get("type") == "items") , parent is not None 
-			print parent
 			if parent is not None and n != None:	
 				parent.insert(n, src)
 				self.treestore_from_xml(xml)	
@@ -669,9 +714,8 @@ class Features(gtk.VBox):
 		while iter != None :
 			f = model.get(iter,0)[0]
 			if f.get_attr("image") != None :
-				print f.get_attr("image")
 				self.help_image.set_from_pixbuf( get_pixbuf(f.get_attr("image")) )
-				self.help_text.set_markup(f.get_attr("help"))
+				self.help_text.set_markup( _(f.get_attr("help")) )
 				break
 			iter = model.iter_parent(iter)	
 
@@ -706,7 +750,7 @@ class Features(gtk.VBox):
 		
 		for s in l:
 			if "sub" not in s.keys() : 
-				print "Warning there's no 'sub' key in %s" %	etree.tostring(s, pretty_print=True)
+				print _("Warning there's no 'sub' key in %s") %	etree.tostring(s, pretty_print=True)
 				return 
 			src = s.get("sub")
 			try :   # TODO make better catalog 
@@ -725,7 +769,7 @@ class Features(gtk.VBox):
 					pixbuf = None
 				#self.icon_liststore.append([pixbuf,f.attr["name"],s])
 			except Exception, e :
-				print "Warning: Error while parsing %s..."%etree.tostring(s, pretty_print=True)
+				print _("Warning: Error while parsing %s...")%etree.tostring(s, pretty_print=True)
 				print e
 
 
@@ -736,7 +780,6 @@ class Features(gtk.VBox):
 		if f.__class__ == Feature : 
 			gcode_def += f.get_definitions()
 			gcode += f.process(f.attr["before"]) 
-			print f.attr["before"]
 			gcode += f.process(f.attr["call"]) 
 		iter = self.treestore.iter_children(iter)
 		while iter :
@@ -762,8 +805,13 @@ class Features(gtk.VBox):
 			gcode += g
 			gcode_def += d
 			iter = self.treestore.iter_next(iter)
+		if search_path(SUBROUTINES_PATH,"defaults.ngc") != None :
+			self.defaults = open( search_path(SUBROUTINES_PATH,"defaults.ngc") ).read()
+		else :
+			print _("Warning defaults.ngc was not found in path %s!")%SUBROUTINES_PATH 
+	
 			
-		return gcode_def+"(End definitions)\n\n\n"+gcode + "\n\nM02"
+		return self.defaults+gcode_def+"(End definitions)\n\n\n"+gcode + "\n\nM02"
 		
 					
 	def refresh(self, *arg ) :
@@ -815,7 +863,6 @@ class Features(gtk.VBox):
 
 	def import_xml(self, xml_) :
 		xml = self.treestore_to_xml()
-		print etree.tostring(xml_, pretty_print=True)		
 		
 		if xml_.tag != "LinuxCNC-Features":
 			xml_ = xml_.find(".//LinuxCNC-Features")
@@ -830,7 +877,6 @@ class Features(gtk.VBox):
 					f=Feature(xml=xf)
 					f.get_id(xml)
 					xf.set("name", f.attr["name"])
-					print f.attr["name"]
 					xf.set("id", f.attr["id"])
 			self.treestore_from_xml(xml)
 			self.action(xml)
@@ -896,7 +942,7 @@ class Features(gtk.VBox):
 			if self.timeout != None :
 				gobject.source_remove(self.timeout)
 			self.timeout = gobject.timeout_add(self.autorefresh_timeout.get_value()*1000, self.autorefresh_call)
-			print "Auto refresh in %s sec"%self.autorefresh_timeout.get_value()
+
 		
 		
 		
@@ -917,7 +963,6 @@ class Features(gtk.VBox):
 	def test(self, *arg) :
 		global FEATURE_DICT 
 		FEATURE_DICT = {}
-		print 		FEATURE_DICT
 		self.get_features()
 		#gobject.timeout_add(1000, self.test)
 		#print	gtk.window_list_toplevels(),gtk.window_list_toplevels()[0].get_focus()
@@ -937,7 +982,7 @@ class Features(gtk.VBox):
 			if parent == src : return # can not move element inside itself
 			parent = parent.getparent()			
 		if dst==None or src==None :		
-			print "Error in dst, or src wile moving subtrees! (dst %s) (src %s)"%(dst,src)
+			print _("Error in dst, or src wile moving subtrees! (dst %s) (src %s)")%(dst,src)
 			return
 		if after :
 			dst.getparent().insert(dst.getparent().index(dst)+1, src) 
@@ -970,7 +1015,6 @@ class Features(gtk.VBox):
 		pass
 		
 	def drag_drop(self, *arg) :
-		print "!"
 		treeselection = self.treeview.get_selection()
 		model, src = treeselection.get_selected()
 		drop_info = self.treeview.get_dest_row_at_pos(x, y)
@@ -1027,7 +1071,6 @@ class Features(gtk.VBox):
 		xml = etree.Element("LinuxCNC-Features")
 		self.get_expand()
 		self.treestore_to_xml_recursion(self.treestore.get_iter_root(), xml)
-		#print etree.tostring(xml, pretty_print=True)
 		return xml
 
 

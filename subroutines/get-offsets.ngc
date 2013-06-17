@@ -20,53 +20,56 @@ O<coordinate-sys-from-num> SUB
 	O<coordinate-sys-from-num-if> ENDIF
 O<coordinate-sys-from-num> ENDSUB
 
-(To world DUB definition)
-#<_to_world_x> = 0
-#<_to_world_y> = 0
-#<_to_world_z> = 0
-#<_to_world_a> = 0
-#<_to_world_b> = 0
-#<_to_world_c> = 0
-#<_to_world_u> = 0
-#<_to_world_v> = 0
-#<_to_world_w> = 0
-#<_to_world_r> = 0
-O<to-world> SUB
-	O<to-world-if-0001> IF [#<_increment>]
-		#<_to_world_x> = [#<_x>+#1]
-		#<_to_world_y> = [#<_y>+#2]
-		#<_to_world_z> = [#<_z>+#3]
-		#<_to_world_a> = [#<_a>+#4]
-		#<_to_world_b> = [#<_b>+#5]
-		#<_to_world_c> = [#<_c>+#6]
-		#<_to_world_u> = [#<_u>+#7]
-		#<_to_world_v> = [#<_v>+#8]
-		#<_to_world_w> = [#<_w>+#9]
-	O<to-world-if-0001>	END
-	O<to-world-if-0002> IF [5210 EQ 1] (Add 92 offset) (In #[5201+#5220*20], 5201 because #5220 starts from 1)
-		#<_to_world_x> = [#[5201+#5220*20] + #5201 + #1]
-		#<_to_world_y> = [#[5202+#5220*20] + #5212 + #2]
-		#<_to_world_z> = [#[5203+#5220*20] + #5213 + #3]
-		#<_to_world_a> = [#[5204+#5220*20] + #5214 + #4]
-		#<_to_world_b> = [#[5205+#5220*20] + #5215 + #5]
-		#<_to_world_c> = [#[5206+#5220*20] + #5216 + #6]
-		#<_to_world_u> = [#[5207+#5220*20] + #5217 + #7]
-		#<_to_world_v> = [#[5208+#5220*20] + #5218 + #8]
-		#<_to_world_w> = [#[5209+#5220*20] + #5219 + #9]
-		#<_to_world_r> = [#[5210+#5220*20]] (There's no G92 offset for R)
-	O<to-world-if-0002> ELSE
-		#<_to_world_x> = #[5201+#5220*20 + #1]
-		#<_to_world_y> = #[5202+#5220*20 + #2]
-		#<_to_world_z> = #[5203+#5220*20 + #3]
-		#<_to_world_a> = #[5204+#5220*20 + #4]
-		#<_to_world_b> = #[5205+#5220*20 + #5]
-		#<_to_world_c> = #[5206+#5220*20 + #6]
-		#<_to_world_u> = #[5207+#5220*20 + #7]
-		#<_to_world_v> = #[5208+#5220*20 + #8]
-		#<_to_world_w> = #[5209+#5220*20 + #9]
-		#<_to_world_r> = #[5210+#5220*20]
-	O<to-world-if-0002> ENDIF 
-O<to-world> ENDSUB
+
+(Get local coordinates)
+#<_lx> = 0 
+#<_ly> = 0 
+#<_lz> = 0 
+#<_la> = 0 
+#<_lb> = 0 
+#<_lc> = 0 
+#<_lu> = 0 
+#<_lv> = 0 
+#<_lw> = 0 
+O<get-local> SUB
+	O<get-local-g91-if> IF [#<_incremental>]
+		#<_lx> = 0 
+		#<_ly> = 0 
+		#<_lz> = 0 
+		#<_la> = 0 
+		#<_lb> = 0 
+		#<_lc> = 0 
+		#<_lu> = 0 
+		#<_lv> = 0 
+		#<_lw> = 0 	
+	O<get-local-g91-if> ELSE
+		#<x> =   [#<_x> - #[5201+#5220*20]] 
+		#<y> =   [#<_y> - #[5202+#5220*20]] 
+		#<_lz> = [#<_z> - #[5203+#5220*20]] 
+		#<_la> = [#<_a> - #[5204+#5220*20]] 
+		#<_lb> = [#<_b> - #[5205+#5220*20]] 
+		#<_lc> = [#<_c> - #[5206+#5220*20]] 
+		#<_lu> = [#<_u> - #[5207+#5220*20]] 
+		#<_lv> = [#<_v> - #[5208+#5220*20]] 
+		#<_lw> = [#<_w> - #[5209+#5220*20]]
+		#<r> = #[5210+#5220*20]
+		O<get-local-if> IF [5210] (G92 is active)
+			#<x> = [#<x> + #5211]
+			#<y> = [#<y> + #5212]
+			#<_lz> = [#<_lz> + #5213]
+			#<_la> = [#<_la> + #5214]
+			#<_lb> = [#<_lb> + #5215]
+			#<_lc> = [#<_lc> + #5216]
+			#<_lu> = [#<_lu> + #5217]
+			#<_lv> = [#<_lv> + #5218]
+			#<_lw> = [#<_lw> + #5219]
+		O<get-local-if> ENDIF
+		(Rotate along Z axis)
+		#<_lx> = [ #<x>*COS[#<r>] - #<y>*SIN[#<r>] ]
+		#<_ly> = [ #<x>*SIN[#<r>] + #<y>*COS[#<r>] ]
+	O<get-local-g91-if> ENDIF
+	
+O<get-local> ENDSUB
 
 
 

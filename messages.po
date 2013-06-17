@@ -1,0 +1,932 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-06-17 19:56+0400\n"
+"PO-Revision-Date: 2013-06-17 19:58+0300\n"
+"Last-Translator: Nick <xepecine@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: tmp1.py:2
+msgid "Group"
+msgstr "Группа"
+
+#: tmp1.py:4
+msgid ""
+"<big>Can group subroutines</big>\n"
+"\tDrag and drop subroutines into Items parameter."
+msgstr ""
+
+#: tmp1.py:6
+#: tmp1.py:54
+#: tmp1.py:166
+#: tmp1.py:226
+msgid "Items"
+msgstr "Элементы"
+
+#: tmp1.py:8
+#: tmp1.py:56
+#: tmp1.py:168
+msgid "Drop Subroutines here"
+msgstr ""
+
+#: tmp1.py:10
+msgid "Linear array"
+msgstr ""
+
+#: tmp1.py:12
+msgid ""
+"<big>Create array of items</big>\n"
+"\tDrag and drop subroutines into Items parameter.\n"
+"\tParameters num, dX, dY, dZ\n"
+"\tUses G57 to make offsets! Returns to G54 afterwards!"
+msgstr ""
+
+#: tmp1.py:14
+#: tmp1.py:134
+#: tmp1.py:418
+#: tmp1.py:420
+msgid "Number"
+msgstr ""
+
+#: tmp1.py:16
+#: tmp1.py:136
+msgid "Number of copies"
+msgstr ""
+
+#: tmp1.py:18
+#: tmp1.py:176
+#: tmp1.py:450
+#: tmp1.py:452
+#: tmp1.py:536
+msgid "X0"
+msgstr ""
+
+#: tmp1.py:20
+msgid "Origin X"
+msgstr ""
+
+#: tmp1.py:22
+#: tmp1.py:180
+#: tmp1.py:408
+#: tmp1.py:442
+#: tmp1.py:444
+#: tmp1.py:528
+msgid "Y0"
+msgstr ""
+
+#: tmp1.py:24
+msgid "Origin Y"
+msgstr ""
+
+#: tmp1.py:26
+#: tmp1.py:30
+msgid "Z0"
+msgstr ""
+
+#: tmp1.py:28
+msgid "Origin Z"
+msgstr ""
+
+#: tmp1.py:32
+msgid "Origin angle"
+msgstr ""
+
+#: tmp1.py:34
+#: tmp1.py:250
+#: tmp1.py:262
+msgid "dX"
+msgstr ""
+
+#: tmp1.py:36
+msgid "X step"
+msgstr ""
+
+#: tmp1.py:38
+msgid "dY"
+msgstr ""
+
+#: tmp1.py:40
+msgid "Y step"
+msgstr ""
+
+#: tmp1.py:42
+#: tmp1.py:254
+#: tmp1.py:266
+msgid "dZ"
+msgstr ""
+
+#: tmp1.py:44
+msgid "Z step"
+msgstr ""
+
+#: tmp1.py:46
+msgid "dR"
+msgstr ""
+
+#: tmp1.py:48
+msgid "Angle step"
+msgstr ""
+
+#: tmp1.py:50
+#: tmp1.py:158
+msgid "Coordinate system G"
+msgstr ""
+
+#: tmp1.py:52
+#: tmp1.py:160
+msgid "Use this coordinate system"
+msgstr ""
+
+#: tmp1.py:58
+msgid "Probe"
+msgstr ""
+
+#: tmp1.py:60
+msgid "<big>Probe downwards</big>"
+msgstr ""
+
+#: tmp1.py:62
+#: tmp1.py:64
+#: tmp1.py:298
+msgid "X"
+msgstr ""
+
+#: tmp1.py:66
+#: tmp1.py:68
+#: tmp1.py:314
+#: tmp1.py:678
+msgid "Y"
+msgstr ""
+
+#: tmp1.py:70
+#: tmp1.py:322
+#: tmp1.py:346
+#: tmp1.py:482
+#: tmp1.py:686
+msgid "Gcode"
+msgstr ""
+
+#: tmp1.py:72
+#: tmp1.py:324
+#: tmp1.py:484
+#: tmp1.py:688
+msgid ""
+"\n"
+"G38.2 - probe toward workpiece, stop on contact, signal error if failure\n"
+"G38.3 - probe toward workpiece, stop on contact\n"
+"G38.4 - probe away from workpiece, stop on loss of contact, signal error if failure\n"
+"G38.5 - probe away from workpiece, stop on loss of contact\n"
+"(Do not write G, just '38.2'.)"
+msgstr ""
+
+#: tmp1.py:74
+#: tmp1.py:326
+#: tmp1.py:414
+#: tmp1.py:416
+#: tmp1.py:486
+#: tmp1.py:554
+#: tmp1.py:556
+#: tmp1.py:588
+#: tmp1.py:690
+msgid "Feed"
+msgstr ""
+
+#: tmp1.py:76
+#: tmp1.py:328
+#: tmp1.py:488
+#: tmp1.py:692
+msgid "Probe fast feed"
+msgstr ""
+
+#: tmp1.py:78
+#: tmp1.py:330
+#: tmp1.py:490
+#: tmp1.py:694
+msgid "Latch dist"
+msgstr ""
+
+#: tmp1.py:80
+#: tmp1.py:592
+msgid "Latch distance"
+msgstr ""
+
+#: tmp1.py:82
+#: tmp1.py:334
+#: tmp1.py:494
+#: tmp1.py:698
+msgid "Latch feed"
+msgstr ""
+
+#: tmp1.py:84
+#: tmp1.py:336
+#: tmp1.py:496
+#: tmp1.py:700
+msgid "Probe latch feed"
+msgstr ""
+
+#: tmp1.py:86
+#: tmp1.py:110
+#: tmp1.py:112
+#: tmp1.py:194
+#: tmp1.py:196
+#: tmp1.py:338
+#: tmp1.py:374
+#: tmp1.py:376
+#: tmp1.py:426
+#: tmp1.py:428
+#: tmp1.py:498
+#: tmp1.py:510
+#: tmp1.py:512
+#: tmp1.py:574
+#: tmp1.py:576
+#: tmp1.py:598
+#: tmp1.py:600
+#: tmp1.py:630
+#: tmp1.py:632
+#: tmp1.py:702
+#: tmp1.py:726
+#: tmp1.py:728
+msgid "Depth"
+msgstr ""
+
+#: tmp1.py:88
+msgid "Maximum depth"
+msgstr ""
+
+#: tmp1.py:90
+#: tmp1.py:126
+#: tmp1.py:206
+#: tmp1.py:342
+#: tmp1.py:386
+#: tmp1.py:458
+#: tmp1.py:502
+#: tmp1.py:542
+#: tmp1.py:562
+#: tmp1.py:610
+#: tmp1.py:662
+#: tmp1.py:706
+#: tmp1.py:742
+msgid "Rappid"
+msgstr ""
+
+#: tmp1.py:92
+#: tmp1.py:124
+#: tmp1.py:128
+#: tmp1.py:208
+#: tmp1.py:212
+#: tmp1.py:344
+#: tmp1.py:388
+#: tmp1.py:460
+#: tmp1.py:464
+#: tmp1.py:504
+#: tmp1.py:544
+#: tmp1.py:548
+#: tmp1.py:612
+#: tmp1.py:664
+#: tmp1.py:668
+#: tmp1.py:708
+#: tmp1.py:740
+#: tmp1.py:744
+msgid "Rappid height"
+msgstr ""
+
+#: tmp1.py:94
+#: tmp1.py:710
+msgid "Circle"
+msgstr ""
+
+#: tmp1.py:96
+#: tmp1.py:712
+msgid ""
+"<big>Creates circle</big>\n"
+"\tParameters: <i>CX CY R Depth Rappid</i>"
+msgstr ""
+
+#: tmp1.py:98
+#: tmp1.py:100
+#: tmp1.py:310
+#: tmp1.py:654
+#: tmp1.py:656
+#: tmp1.py:674
+#: tmp1.py:714
+#: tmp1.py:716
+msgid "CX"
+msgstr ""
+
+#: tmp1.py:102
+#: tmp1.py:104
+#: tmp1.py:646
+#: tmp1.py:648
+#: tmp1.py:718
+#: tmp1.py:720
+msgid "CY"
+msgstr ""
+
+#: tmp1.py:106
+#: tmp1.py:146
+#: tmp1.py:650
+#: tmp1.py:722
+msgid "D"
+msgstr ""
+
+#: tmp1.py:108
+#: tmp1.py:402
+#: tmp1.py:404
+#: tmp1.py:724
+msgid "Diameter"
+msgstr ""
+
+#: tmp1.py:114
+#: tmp1.py:198
+#: tmp1.py:410
+#: tmp1.py:430
+#: tmp1.py:514
+#: tmp1.py:570
+#: tmp1.py:572
+#: tmp1.py:634
+#: tmp1.py:730
+msgid "Depth step"
+msgstr ""
+
+#: tmp1.py:116
+#: tmp1.py:200
+#: tmp1.py:432
+#: tmp1.py:516
+#: tmp1.py:636
+#: tmp1.py:732
+msgid "Depth step per pass"
+msgstr ""
+
+#: tmp1.py:118
+#: tmp1.py:202
+#: tmp1.py:454
+#: tmp1.py:538
+#: tmp1.py:566
+#: tmp1.py:568
+#: tmp1.py:658
+#: tmp1.py:734
+msgid "Surface"
+msgstr ""
+
+#: tmp1.py:120
+#: tmp1.py:204
+#: tmp1.py:456
+#: tmp1.py:540
+#: tmp1.py:660
+#: tmp1.py:736
+msgid "Surface height"
+msgstr ""
+
+#: tmp1.py:122
+#: tmp1.py:210
+#: tmp1.py:462
+#: tmp1.py:546
+#: tmp1.py:558
+#: tmp1.py:666
+#: tmp1.py:738
+msgid "Final cut"
+msgstr ""
+
+#: tmp1.py:130
+msgid "Circular array"
+msgstr ""
+
+#: tmp1.py:132
+msgid ""
+"<big>Create array of items</big>\n"
+"\tDrag and drop subroutines into Items parameter.\n"
+"\tParameters num, dX, dY, dZ\n"
+"\tModifies defined coordinate system to make offsets! Returns to G54 afterwards!"
+msgstr ""
+
+#: tmp1.py:138
+#: tmp1.py:174
+#: tmp1.py:390
+#: tmp1.py:534
+#: tmp1.py:614
+msgid "cX"
+msgstr ""
+
+#: tmp1.py:140
+#: tmp1.py:240
+#: tmp1.py:252
+#: tmp1.py:264
+#: tmp1.py:280
+msgid "X of array center"
+msgstr ""
+
+#: tmp1.py:142
+#: tmp1.py:178
+#: tmp1.py:394
+#: tmp1.py:526
+#: tmp1.py:622
+msgid "cY"
+msgstr ""
+
+#: tmp1.py:144
+#: tmp1.py:256
+#: tmp1.py:268
+msgid "Y of array center"
+msgstr ""
+
+#: tmp1.py:148
+msgid "Array diameter"
+msgstr ""
+
+#: tmp1.py:150
+msgid "Start angle"
+msgstr ""
+
+#: tmp1.py:152
+msgid "Angle for the first array item (0 points to X positive direction)"
+msgstr ""
+
+#: tmp1.py:154
+msgid "Fill angle"
+msgstr ""
+
+#: tmp1.py:156
+msgid "Angle to fill with array"
+msgstr ""
+
+#: tmp1.py:162
+msgid "Rotate items"
+msgstr ""
+
+#: tmp1.py:164
+msgid "Rotate each item (1=Rotate, 0=No)"
+msgstr ""
+
+#: tmp1.py:170
+msgid "Rectangle from center"
+msgstr ""
+
+#: tmp1.py:172
+msgid ""
+"Creates rectangle from center\n"
+"\tcX cY W H"
+msgstr ""
+
+#: tmp1.py:182
+#: tmp1.py:184
+#: tmp1.py:446
+#: tmp1.py:448
+#: tmp1.py:530
+#: tmp1.py:532
+msgid "Width"
+msgstr ""
+
+#: tmp1.py:186
+#: tmp1.py:188
+#: tmp1.py:434
+#: tmp1.py:436
+#: tmp1.py:518
+#: tmp1.py:520
+msgid "Height"
+msgstr ""
+
+#: tmp1.py:190
+#: tmp1.py:192
+#: tmp1.py:378
+#: tmp1.py:438
+#: tmp1.py:440
+#: tmp1.py:602
+#: tmp1.py:642
+#: tmp1.py:644
+msgid "Angle"
+msgstr ""
+
+#: tmp1.py:214
+msgid "Tool change"
+msgstr ""
+
+#: tmp1.py:216
+msgid ""
+"<big>Adds tool change Gcode</big>\n"
+"T#n M6"
+msgstr ""
+
+#: tmp1.py:218
+msgid "Tool number"
+msgstr ""
+
+#: tmp1.py:220
+msgid "Toola number from tools table"
+msgstr ""
+
+#: tmp1.py:222
+msgid "G91 group"
+msgstr ""
+
+#: tmp1.py:224
+#: tmp1.py:232
+#: tmp1.py:248
+#: tmp1.py:260
+#: tmp1.py:272
+msgid "<big>Create line</big>"
+msgstr ""
+
+#: tmp1.py:228
+msgid "Drop items here"
+msgstr ""
+
+#: tmp1.py:230
+#: tmp1.py:270
+msgid "Arc tangent"
+msgstr ""
+
+#: tmp1.py:234
+#: tmp1.py:274
+msgid "G2 or G3"
+msgstr ""
+
+#: tmp1.py:236
+#: tmp1.py:276
+msgid "Use G2 (CW) or G3 (CCW) arc (write only 2 or 3 without G)"
+msgstr ""
+
+#: tmp1.py:238
+#: tmp1.py:278
+#: tmp1.py:382
+#: tmp1.py:606
+msgid "R"
+msgstr ""
+
+#: tmp1.py:242
+msgid "End angle"
+msgstr ""
+
+#: tmp1.py:244
+msgid "Angle at the end"
+msgstr ""
+
+#: tmp1.py:246
+#: tmp1.py:258
+#: tmp1.py:294
+msgid "Line"
+msgstr ""
+
+#: tmp1.py:282
+msgid "Distance along axis"
+msgstr ""
+
+#: tmp1.py:284
+msgid "Coordinate along axis"
+msgstr ""
+
+#: tmp1.py:286
+msgid "G90/G91"
+msgstr ""
+
+#: tmp1.py:288
+msgid ""
+"Absolute or increment discance\n"
+"90 - Absolute\n"
+"91 - Increment\n"
+"Other - do not use current"
+msgstr ""
+
+#: tmp1.py:290
+msgid "Axis"
+msgstr ""
+
+#: tmp1.py:292
+msgid ""
+"Shift along\n"
+"0 - arbitrary x-axis\n"
+"1 - arbitrary y-axis"
+msgstr ""
+
+#: tmp1.py:296
+msgid "<big>Goes to defined point</big>"
+msgstr ""
+
+#: tmp1.py:300
+msgid "X of a point"
+msgstr ""
+
+#: tmp1.py:302
+msgid "Z"
+msgstr ""
+
+#: tmp1.py:304
+msgid "Y of a point"
+msgstr ""
+
+#: tmp1.py:306
+msgid "Probe cube"
+msgstr ""
+
+#: tmp1.py:308
+msgid ""
+"<big>Probe cube</big>\n"
+"Probes hole to find it&#39;s center"
+msgstr ""
+
+#: tmp1.py:312
+#: tmp1.py:676
+msgid "Approximate CX"
+msgstr ""
+
+#: tmp1.py:316
+#: tmp1.py:680
+msgid "Approximate CY"
+msgstr ""
+
+#: tmp1.py:318
+#: tmp1.py:478
+#: tmp1.py:682
+msgid "R+"
+msgstr ""
+
+#: tmp1.py:320
+#: tmp1.py:684
+msgid "Approximate Radius (must be larger than hole)"
+msgstr ""
+
+#: tmp1.py:332
+#: tmp1.py:492
+#: tmp1.py:696
+msgid ""
+"Latch distance\n"
+"If Latch distance greater than 0 than probe will go back and Latch in the same direction.\n"
+"Else Latch will be done in oposite direction (stop on loss of contact)."
+msgstr ""
+
+#: tmp1.py:340
+#: tmp1.py:704
+msgid "Probe depth"
+msgstr ""
+
+#: tmp1.py:348
+msgid ""
+"Flat Gcode\n"
+"\t\\n"
+" can be used to split lines\n"
+"\tlines will be parsed as usual so you can use &lt;eval&gt;&lt;/eval&gt;"
+msgstr ""
+
+#: tmp1.py:350
+msgid "Line 5"
+msgstr ""
+
+#: tmp1.py:352
+#: tmp1.py:356
+#: tmp1.py:360
+#: tmp1.py:364
+#: tmp1.py:368
+msgid "Gcode line"
+msgstr ""
+
+#: tmp1.py:354
+msgid "Line 4"
+msgstr ""
+
+#: tmp1.py:358
+msgid "Line 1"
+msgstr ""
+
+#: tmp1.py:362
+msgid "Line 3"
+msgstr ""
+
+#: tmp1.py:366
+msgid "Line 2"
+msgstr ""
+
+#: tmp1.py:370
+msgid "Hexagon"
+msgstr ""
+
+#: tmp1.py:372
+msgid ""
+"<big>Creates hexagon</big>\n"
+"\tcX cY r depth rappid\n"
+"\t<b>Uses G92!</b>"
+msgstr ""
+
+#: tmp1.py:380
+#: tmp1.py:604
+msgid "Starting angle"
+msgstr ""
+
+#: tmp1.py:384
+#: tmp1.py:608
+msgid "Central radius"
+msgstr ""
+
+#: tmp1.py:392
+#: tmp1.py:616
+msgid "Center X"
+msgstr ""
+
+#: tmp1.py:396
+#: tmp1.py:624
+msgid "Center Y"
+msgstr ""
+
+#: tmp1.py:398
+msgid "Tool"
+msgstr ""
+
+#: tmp1.py:400
+msgid "Selects tools and changes its parameters"
+msgstr ""
+
+#: tmp1.py:406
+msgid "Length"
+msgstr ""
+
+#: tmp1.py:412
+msgid "Tools depth step for multipass mill"
+msgstr ""
+
+#: tmp1.py:422
+msgid "Rectangle"
+msgstr ""
+
+#: tmp1.py:424
+msgid ""
+"Creates rectangle\n"
+"\tW H X0 Y0"
+msgstr ""
+
+#: tmp1.py:466
+msgid "Probe tool diameter"
+msgstr ""
+
+#: tmp1.py:468
+msgid ""
+"<big>Probe cube</big>\n"
+"Probes tool diameter on fixed probe\n"
+"Will be useing G59.3 coordinate system!"
+msgstr ""
+
+#: tmp1.py:470
+#: tmp1.py:750
+msgid "Probe X"
+msgstr ""
+
+#: tmp1.py:472
+msgid "Approximate CX in G53"
+msgstr ""
+
+#: tmp1.py:474
+#: tmp1.py:754
+msgid "Probe Y"
+msgstr ""
+
+#: tmp1.py:476
+msgid "Approximate CY in G53"
+msgstr ""
+
+#: tmp1.py:480
+msgid "Approximate Radius plus probe radius (must be upper approximation)"
+msgstr ""
+
+#: tmp1.py:500
+msgid "Probe depth in G53"
+msgstr ""
+
+#: tmp1.py:506
+msgid "Rectangle from center with steps"
+msgstr ""
+
+#: tmp1.py:508
+msgid ""
+"Creates rectangle from center with multipass cutting\n"
+"\tcX cY W H"
+msgstr ""
+
+#: tmp1.py:522
+msgid "Spiral step"
+msgstr ""
+
+#: tmp1.py:524
+msgid "Step of pocket spiral"
+msgstr ""
+
+#: tmp1.py:550
+msgid "Set cutting params"
+msgstr ""
+
+#: tmp1.py:552
+msgid "Sets global cutting depth, depth step, surface origin, and rappid distance."
+msgstr ""
+
+#: tmp1.py:560
+msgid "Final cut depth"
+msgstr ""
+
+#: tmp1.py:564
+msgid "Rappid distance"
+msgstr ""
+
+#: tmp1.py:578
+msgid "Set probing params"
+msgstr ""
+
+#: tmp1.py:580
+msgid "Sets global probing parameters"
+msgstr ""
+
+#: tmp1.py:582
+#: tmp1.py:584
+msgid "Latch Feed"
+msgstr ""
+
+#: tmp1.py:586
+msgid "Probing Feed"
+msgstr ""
+
+#: tmp1.py:590
+msgid "Latch"
+msgstr ""
+
+#: tmp1.py:594
+msgid "N-gon"
+msgstr ""
+
+#: tmp1.py:596
+msgid ""
+"<big>Creates n-gon</big>\n"
+"\tpolygon with n edges\n"
+"\tcX cY n r depth rappid\n"
+"\t<b>Uses G92!</b>"
+msgstr ""
+
+#: tmp1.py:618
+msgid "n"
+msgstr ""
+
+#: tmp1.py:620
+msgid "Number of edges"
+msgstr ""
+
+#: tmp1.py:626
+msgid "Oval"
+msgstr ""
+
+#: tmp1.py:628
+msgid ""
+"<big>Creates oval</big>\n"
+"\tOval - rectanle + two circles\n"
+"\tParameters: <i>CX CY D L</i>"
+msgstr ""
+
+#: tmp1.py:638
+msgid "L"
+msgstr ""
+
+#: tmp1.py:640
+msgid "Length of oval"
+msgstr ""
+
+#: tmp1.py:652
+msgid "Diameter of oval"
+msgstr ""
+
+#: tmp1.py:670
+msgid "Probe hole"
+msgstr ""
+
+#: tmp1.py:672
+msgid ""
+"<big>Probe hole</big>\n"
+"Probes hole to find it&#39;s center"
+msgstr ""
+
+#: tmp1.py:746
+msgid "Set tool probing params"
+msgstr ""
+
+#: tmp1.py:748
+msgid "Sets global tool probing parameters"
+msgstr ""
+
+#: tmp1.py:752
+msgid "Approximate probe X in G53"
+msgstr ""
+
+#: tmp1.py:756
+msgid "Approximate probe Y in G53"
+msgstr ""
+
+#: tmp1.py:758
+msgid "Probe Z"
+msgstr ""
+
+#: tmp1.py:760
+msgid "Probe Z in G53"
+msgstr ""
+

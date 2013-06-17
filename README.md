@@ -5,15 +5,26 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 --------------------------------------------------------------------------------
 
 1. Move everything to /usr/share/pyshared/gladevcp/
-
+	Or better create links there: 
+	cd /usr/share/pyshared/gladevcp/
+	sudo ln /full-path-to-git-repository/features.py -s
+	sudo ln /full-path-to-git-repository/features.glade -s
+	sudo ln /full-path-to-git-repository/subroutines -s
+	
 2. Create links into /usr/lib/pymodules/python2.6/gladevcp
+	cd /usr/lib/pymodules/python2.6/gladevcp
+	sudo ln /usr/share/pyshared/gladevcp/features.py -s
+	sudo ln /usr/share/pyshared/gladevcp/features.glade -s
+	sudo ln /usr/share/pyshared/gladevcp/subroutines -s
 
 3. Change hal_pythonplugin.py in /usr/share/pyshared/gladevcp/hal_pythonplugin.py
-	Add:
+	Add (find calculator add after :)):
 		from features import Features
+		
 
 4. Change hal_python.xml in /usr/share/glade3/catalogs glade3 can be glade2
-	Add:
+	Add (find first calculator add after :)):
+		
 		<glade-widget-class name="Features" generic-name="features" title="features">
 		    <properties>
 		        <property id="size" query="False" default="1" visible="False"/>
@@ -22,7 +33,8 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 		    </properties>
 		</glade-widget-class>
 
-		....
+	
+	 Add (find second calculator add after :)):
 		
 	   <glade-widget-class-ref name="Features"/>
 

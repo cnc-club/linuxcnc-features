@@ -4,6 +4,7 @@
 	<sub name="Arc" icon="images/arc.png" sub="lathe/arc.ini"/>
 	<sub name="Goto" icon="images/goto.png" sub="lathe/goto.ini"/>
 	<sub name="Arc" icon="images/arc-tangent.png" sub="lathe/arc-tangent-r.ini"/>
+	<sub name="Arc ang" icon="images/arc-tangent.png" sub="lathe/arc-tangent2-r.ini"/>
 	
 	<sub name="G90" icon="images/g90.png" sub="lathe/g91-group.ini"/>
 		
@@ -14,7 +15,6 @@
 	</group>
 	
 	<group name="Tool" icon="images/lathe-tool.png">
-		<sub name="Tool" icon="images/mill-tool.png" sub="set-tool.ini"/>
 		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
 	</group>
 
@@ -30,4 +30,4 @@
 	</group>
 </xml>
 
-<!-- Do not forget to close <sub /> tags! -->
+<!-- Do not forget to close <sub /> tags! -->	
