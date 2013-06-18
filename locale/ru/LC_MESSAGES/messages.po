@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: LinuxCNC Features\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: Nick <xepecine@gmail.com>\n"
+"Last-Translator: nick\n"
 "Language-Team: cnc-club.ru team\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -870,7 +870,7 @@ msgstr "Количество сторон"
 
 #: subroutines-ini-files:626
 msgid "Oval"
-msgstr ""
+msgstr "Овал"
 
 #: subroutines-ini-files:628
 msgid ""

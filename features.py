@@ -36,8 +36,9 @@ import io
 from cStringIO import StringIO
 
 import gettext
-gettext.bindtextdomain('myapplication', '')
-gettext.textdomain('myapplication')
+gettext.install('messages', './locale', unicode=True)
+#gettext.bindtextdomain('myapplication', '')
+#gettext.textdomain('myapplication')
 _ = gettext.gettext
 
 PARAMETERS = ["string", "float", "int", "image", "bool"]	
@@ -377,10 +378,11 @@ class Features(gtk.VBox):
 			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
 		except :
 			print _("Warning! Problem while loading ini file!")
+		
 		if len(SUBROUTINES_PATH)>0 and SUBROUTINES_PATH[-1]!=":" : SUBROUTINES_PATH+=":"
 		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines:"
 		self.file_dialogs_folder = SUBROUTINES_PATH.split(":")[0]
-
+		
 		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
 		self.undo_pointer = 0
@@ -408,16 +410,16 @@ class Features(gtk.VBox):
 
 		self.update_catalog(xml=self.catalog_path)
 				
-		self.add_dialog = gtk.Dialog("Add feature", self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
+		self.add_dialog = gtk.Dialog(_("Add feature"), self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
 		scroll = gtk.ScrolledWindow()
 		scroll.add_with_viewport(self.add_iconview)
 		self.add_dialog.vbox.pack_start(scroll)
 
 		hbox = gtk.HBox()
-		button = gtk.Button("Catalog root")
+		button = gtk.Button(_("Catalog root"))
 		button.connect("clicked", self.update_catalog, self.catalog)
 		hbox.pack_start(button)		
-		button = gtk.Button("Upper level")
+		button = gtk.Button(_("Upper level"))
 		button.connect("clicked", self.update_catalog, "parent")
 		hbox.pack_start(button)		
 		self.add_dialog.vbox.pack_start(hbox, False)
@@ -443,7 +445,7 @@ class Features(gtk.VBox):
 		self.treeview.set_tooltip_column(1)
 
 		self.cols = {}
-		col =  gtk.TreeViewColumn("Name")
+		col =  gtk.TreeViewColumn(_("Name"))
 		# icons
 		cell = gtk.CellRendererPixbuf()
 		col.pack_start(cell, expand=False)
@@ -457,7 +459,7 @@ class Features(gtk.VBox):
 		self.cols["name"] = col
 		
 		# value
-		col =  gtk.TreeViewColumn("Value")
+		col =  gtk.TreeViewColumn(_("Value"))
 		cell = gtk.CellRendererText() 
 		cell.set_property("editable",True)
 		cell.connect('edited', self.edit_value)		
@@ -470,24 +472,10 @@ class Features(gtk.VBox):
 		self.treeview.append_column(col)
 		self.cols["value"] = col
 		
-		self.TARGETS = [('MY_TREE_MODEL_ROW', 0, 0),
-						]		
-		self.treeview.enable_model_drag_source( gtk.gdk.BUTTON1_MASK, self.TARGETS, gtk.gdk.ACTION_DEFAULT |  gtk.gdk.ACTION_MOVE)
-		self.treeview.enable_model_drag_dest(self.TARGETS, gtk.gdk.ACTION_DEFAULT)
-
-		self.treeview.connect("drag-begin", self.drag_begin)		
-		self.treeview.connect("drag-drop", self.drag_drop)
-		#self.treeview.connect("drag-failed", self.drag_drop) # have to use it because axis blocks drag-events 
-		#self.treeview.connect("event", self.drag_get_motion) # have to use it because axis blocks drag-events 
-	
-		
 		self.treeview.connect("cursor-changed", self.show_help, self.treeview)
 		self.treeview.connect('key_press_event' , self.treeview_keypress)
 		self.treeview.connect("key-release-event" , self.treeview_release)
 
-
-		#button = self.glade.get_object("test")
-		#button.connect("clicked", self.test)
 		button = self.glade.get_object("save")
 		button.connect("clicked", self.save)
 		button = self.glade.get_object("open")
@@ -548,8 +536,6 @@ class Features(gtk.VBox):
 	
 	
 	def get_translations(self) :
-		os.popen("xgettext --language=Python features.py -o tmp.po")
-		
 		find = os.popen("find ./subroutines/ -name *.ini").read()
 		translatable = []
 		for s in find.split() :
@@ -578,11 +564,12 @@ class Features(gtk.VBox):
 			#out.append( '' )
 		out = "\n".join(out)	
 		open("subroutines-ini-files","w").write(out)
-		os.popen("xgettext --language=Python tmp1.py -o tmp1.po")
-		os.popen("msgmerge messages.po tmp.po -U")
-		os.popen("msgmerge messages.po tmp1.po -U")
+		os.popen("xgettext --language=Python features.py -o tmp.po")
+		os.popen("xgettext --language=Python subroutines-ini-files -o tmp1.po")
+		os.popen("msgmerge locale/messages.po tmp.po -U")
+		os.popen("msgmerge locale/messages.po tmp1.po -U")
 		os.popen("rm tmp1.po tmp.po subroutines-ini-files")
-		
+		os.popen("cd locale ; update-po.sh")
 		
 			
 	def move(self, call, i) :
@@ -731,10 +718,6 @@ class Features(gtk.VBox):
 					if p.get_attr("type") == "items" :
 						xmlpath_ = xml.find(".//param[@type='items']")
 						self.treestore_from_xml_recursion(treestore, piter, xmlpath_)
-				
-
-			#if len(xml) :
-			#	self.treestore_from_xml_recursion(treestore, citer, xml)
 				
 
 	def treestore_from_xml(self, xml, expand = True):
@@ -942,9 +925,6 @@ class Features(gtk.VBox):
 			if self.timeout != None :
 				gobject.source_remove(self.timeout)
 			self.timeout = gobject.timeout_add(self.autorefresh_timeout.get_value()*1000, self.autorefresh_call)
-
-		
-		
 		
 	def undo(self, *arg) :
 		if self.undo_pointer>=0 and len(self.undo_list)>0:
@@ -967,7 +947,6 @@ class Features(gtk.VBox):
 		#gobject.timeout_add(1000, self.test)
 		#print	gtk.window_list_toplevels(),gtk.window_list_toplevels()[0].get_focus()
 		#for i in gtk.window_list_toplevels() :
-		#handler_id = i.connect("event", self.drag_get_motion)
 		#print arg
 
 	def move_before(self, src, dst, after = False, append = False) :
@@ -1001,44 +980,6 @@ class Features(gtk.VBox):
 		 
 	def grab(self, *arg) :
 		self.treeview.grab_focus()
-
-	def drag_begin(self, *arg):
-		self.treeview.connect("grab-broken-event", self.grab)
-		#self.treeview.grab_add()
-		pass
-
-	def drag_get_motion(self,  c, e ):#drag_context, x, y, timestamp) :
-		#self.drag_motion_x = x
-		#self.drag_motion_y = y
-		#print e,c
-		#print dir(e) 
-		pass
-		
-	def drag_drop(self, *arg) :
-		treeselection = self.treeview.get_selection()
-		model, src = treeselection.get_selected()
-		drop_info = self.treeview.get_dest_row_at_pos(x, y)
-		
-		if self.treestore.get(src,0)[0].__class__ == Feature : # we can move only features
-			if drop_info :
-				dst, position = drop_info
-				dst = self.treestore.get_iter(dst)
-				dst_ = self.treestore.get(dst,0)[0]
-				if dst_.__class__ == Feature : # Drop before and after only for features 
-					if position == gtk.TREE_VIEW_DROP_BEFORE  :
-						self.move_before(src, dst)
-					elif  position == gtk.TREE_VIEW_DROP_AFTER:
-						self.move_after(src, dst)
-				elif dst_.__class__ == Parameter and dst_.get_attr("type") == "items" : # Drop inside only for Group's items 
-						self.append_node(src, dst)
-			else :
-				# pop to root
-				root = model.get_iter_root()
-				n = model.iter_n_children(root)
-				dst = model.iter_nth_child(root,n-1)
-				self.move_after(src,dst)
-			
-		return False # cancel drag 
 
 	def get_col_name(self, column, cell, model, iter) :	
 		cell.set_property('text', model.get_value(iter, 0).get_name() )
@@ -1190,6 +1131,7 @@ class Features(gtk.VBox):
 # for testing without glade editor:
 def t(*arg) :
 	return False
+
 def main():
     window = gtk.Dialog("My dialog",
                    None,
