@@ -44,8 +44,8 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 --------------------------------------------------------------------------------
 
 1. Param subsitutions
-	#param_name can be used to substitude parameters from the feature. 
-	#self_id - unique id made of feature Name + smallest integer id. 
+	"#param_name" can be used to substitude parameters from the feature. 
+	"#self_id" - unique id made of feature Name + smallest integer id. 
 
 2. Eval and exec
 	<eval>"hello world!"</eval> everything inside <eval> tag will be passed

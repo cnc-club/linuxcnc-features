@@ -47,6 +47,9 @@ UNDO_MAX_LEN = 200
 ADD_ICON_SIZE = 60
 UNIQUE_ID = [10000]
 INCLUDE = []
+TOP_FEATURES_COUNT = 3
+LAST_FEATURES_COUNT = 10
+
 
 def get_int(s) :
 	try :
@@ -377,6 +380,14 @@ class Features(gtk.VBox):
 			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
 		except :
 			print _("Warning! Problem while loading ini file!")
+			
+		self.config_src = "" 
+		if ini!="" and ini!=None :
+			self.config_src = os.path.dirname(ini)
+		self.config_src += "features.ini"
+		self.config = ConfigParser.ConfigParser()
+		self.config.read(self.config_src)
+		
 		if len(SUBROUTINES_PATH)>0 and SUBROUTINES_PATH[-1]!=":" : SUBROUTINES_PATH+=":"
 		SUBROUTINES_PATH +=  os.path.abspath(os.path.dirname(__file__))+"/subroutines:"
 		self.file_dialogs_folder = SUBROUTINES_PATH.split(":")[0]
@@ -427,6 +438,52 @@ class Features(gtk.VBox):
 		self.add_dialog.hide()
 	
 		self.get_features()
+
+		# setup topfeatures toolbar		
+		try :
+			topfeatures = self.config.get("VAR","topfeatures", raw=True)
+		except :
+			topfeatures = "" 
+		topfeatures = topfeatures.split("\n")
+		self.topfeatures_dict = {}
+		for s in topfeatures :
+			s = s.split("\t")
+			if len(s)==3 :
+				self.topfeatures_dict[s[0]] = [int(s[1]), float(s[2])]
+		
+			
+		feature_list = [s.get("sub") for s in self.catalog.findall(".//sub") if "sub" in s.keys()]
+		self.topfeatures_toolbar = self.glade.get_object("topfeatures")
+		self.block_toptoolbar = False
+		#self.topfeatures_toolbar.connect("expose-event", self.block_expose)
+		self.topfeatures = {}
+		self.topfeatures_buttons = {}
+		self.topfeatures_topbuttons = {}
+		
+		for src in feature_list :
+			try :
+				f = Feature(src)
+				icon = gtk.Image() # icon widget
+				icon.set_from_pixbuf(f.get_icon())
+				button = gtk.ToolButton(icon, label=_(f.get_attr("name")))
+				button.set_tooltip_markup(_(f.get_attr("name")))
+				button.connect("clicked", self.topfeatures_click, src)
+				self.topfeatures_buttons[src] = button
+				
+				icon = gtk.Image() # icon widget
+				icon.set_from_pixbuf(f.get_icon())
+				button1 = gtk.ToolButton(icon, label=_(f.get_attr("name")))
+				button1.set_tooltip_markup(_(f.get_attr("name")))
+				button1.connect("clicked", self.topfeatures_click, src)
+				self.topfeatures_topbuttons[src] = button1
+				
+				self.topfeatures[src] = [button,button1,0,0]
+				if src in self.topfeatures_dict :
+					self.topfeatures[src][2:] = self.topfeatures_dict[src]
+			except :
+				pass
+		self.topfeatures_update()
+
    		
 		self.help_viewport = self.glade.get_object("help_viewport")
    		self.help_image = self.glade.get_object("feature_image")	
@@ -538,14 +595,32 @@ class Features(gtk.VBox):
 		w,h = self.help_viewport.get_size_request()		
 		self.help_viewport.set_size_request(w,100)	
 		
-		
-		self.main_box.connect("destroy", gtk.main_quit)
 		if search_path(SUBROUTINES_PATH,"defaults.ngc") != None :
 			self.defaults = open( search_path(SUBROUTINES_PATH,"defaults.ngc") ).read()
 		else :
 			print _("Warning defaults.ngc was not found in path %s!")%SUBROUTINES_PATH 
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
+
+		gtk.window_list_toplevels()[0].connect("delete-event", self.delete)
+
 	
+	def delete(self, *arg) :
+		# save config
+		if "VAR" not in self.config.sections() :
+			self.config.add_section('VAR')
+			
+		for src in self.topfeatures :
+			self.topfeatures_dict[src] = self.topfeatures[src][2:]
+		topfeatures = ""
+		for src in self.topfeatures_dict :
+			topfeatures += "\n%s	%s	%s"%(src,self.topfeatures_dict[src][0], self.topfeatures_dict[src][1]) 
+		
+		self.config.set("VAR","topfeatures", topfeatures)
+		try :
+			self.config.write(open(self.config_src,"w"))
+		except :	
+			print "Warning cannot write to config file %s!"%self.config_src
+
 	
 	def get_translations(self) :
 		os.popen("xgettext --language=Python features.py -o tmp.po")
@@ -578,9 +653,9 @@ class Features(gtk.VBox):
 			#out.append( '' )
 		out = "\n".join(out)	
 		open("subroutines-ini-files","w").write(out)
-		os.popen("xgettext --language=Python tmp1.py -o tmp1.po")
-		os.popen("msgmerge messages.po tmp.po -U")
-		os.popen("msgmerge messages.po tmp1.po -U")
+		os.popen("xgettext --language=Python subroutines-ini-files -o tmp1.po")
+		os.popen("msgmerge locales/messages.po tmp.po -U")
+		os.popen("msgmerge locales/messages.po tmp1.po -U")
 		os.popen("rm tmp1.po tmp.po subroutines-ini-files")
 		
 		
@@ -890,7 +965,36 @@ class Features(gtk.VBox):
 		xml.append(fxml)
 		self.treestore_from_xml(xml)
 		self.action(xml)
+		self.topfeatures_update(src)
 
+	def topfeatures_click(self, call, data)	:
+		self.add_feature(data)
+	
+	def block_expose(self, *arg):
+		return self.block_toptoolbar 
+	
+	def topfeatures_update(self, src = None):
+		if src in self.topfeatures :
+			# button topbutton i t
+			self.topfeatures[src][2] += 1 
+			self.topfeatures[src][3] = time.time()
+		#self.block_toptoolbar = True
+		# clear toolbar
+		while self.topfeatures_toolbar.get_n_items() > 0 :
+			 self.topfeatures_toolbar.remove(self.topfeatures_toolbar.get_nth_item(0))
+
+		tf = self.topfeatures.items() 
+		tf.sort(lambda x,y: -1 if x[1][2]-y[1][2]>0 else 1) # sort by i
+		for tfi in tf[:TOP_FEATURES_COUNT] :
+			self.topfeatures_toolbar.insert(tfi[1][0],-1)
+
+		self.topfeatures_toolbar.insert(gtk.SeparatorToolItem(),-1)
+		tf.sort(lambda x,y: -1 if x[1][3]-y[1][3]>0 else 1) # sort by t
+		for tfi in tf[:LAST_FEATURES_COUNT] :
+			self.topfeatures_toolbar.insert(tfi[1][1],-1)
+
+		self.topfeatures_toolbar.show_all()
+		self.block_toptoolbar = False	
 
 	def update_catalog(self, call=None, xml=None) :
 		if xml == "parent" : 
