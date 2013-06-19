@@ -3,6 +3,7 @@
 		<sub name="Goto" icon="images/goto.png" sub="draw/goto.ini"/>
 		<sub name="Line to" icon="images/line-to.png" sub="draw/line-to.ini"/>
 		<sub name="Arc to (X,Y),R" icon="images/arc-to-xyr.png" sub="draw/arc-to-xyr.ini"/>
+		<sub name="Arc to (X,Y),(I,J)" icon="images/arc-to.png" sub="draw/arc-to.ini"/>
 	</group>
 	 
 	<sub name="G90" icon="images/g90.png" sub="lathe/g91-group.ini"/>
