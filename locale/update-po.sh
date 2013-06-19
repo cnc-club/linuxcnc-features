@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-for file in `find -name *.po -mindepth 2`; do
-	msgmerge $file messages.po -U
+for file in `find -mindepth 2 -name *.po`; do
+	msgcat linuxcnc-features.po $file -o $file
 done
 
 

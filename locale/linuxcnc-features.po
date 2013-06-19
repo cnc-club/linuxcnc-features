@@ -1,0 +1,871 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-06-19 12:33+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: features.py:76
+#, python-format
+msgid "Warning! Failed to load catalog icon from: %(icon)s at path %(path)s!"
+msgstr ""
+
+#: features.py:121 features.py:164
+msgid "name"
+msgstr ""
+
+#: features.py:171
+#, python-format
+msgid "Feature ini file %(src)s not found in %(path)s!"
+msgstr ""
+
+#: features.py:313
+#, python-format
+msgid ""
+"Error! Can not find file %(file)s in %(path)s, wile processing <import> tag "
+"in feature!"
+msgstr ""
+
+#: features.py:377
+msgid "Warning! Problem while loading ini file!"
+msgstr ""
+
+#: features.py:401
+#, python-format
+msgid "Error! Fatal! Cannot find features catalog %(src)s at %(path)s!"
+msgstr ""
+
+#: features.py:417
+msgid "Add feature"
+msgstr ""
+
+#: features.py:425
+msgid "Catalog root"
+msgstr ""
+
+#: features.py:428
+msgid "Upper level"
+msgstr ""
+
+#: features.py:511
+msgid "Name"
+msgstr ""
+
+#: features.py:525
+msgid "Value"
+msgstr ""
+
+#: features.py:595 features.py:878
+#, python-format
+msgid "Warning defaults.ngc was not found in path %s!"
+msgstr ""
+
+#: features.py:820
+#, python-format
+msgid "Warning there's no 'sub' key in %s"
+msgstr ""
+
+#: features.py:839
+#, python-format
+msgid "Warning: Error while parsing %s..."
+msgstr ""
+
+#: features.py:1077
+#, python-format
+msgid "Error in dst, or src wile moving subtrees! (dst %(dst)s) (src %(src)s)"
+msgstr ""
+
+#: subroutines-ini-files:2
+msgid "Group"
+msgstr ""
+
+#: subroutines-ini-files:4
+msgid ""
+"<big>Can group subroutines</big>\n"
+"\tDrag and drop subroutines into Items parameter."
+msgstr ""
+
+#: subroutines-ini-files:6 subroutines-ini-files:54 subroutines-ini-files:166
+#: subroutines-ini-files:226
+msgid "Items"
+msgstr ""
+
+#: subroutines-ini-files:8 subroutines-ini-files:56 subroutines-ini-files:168
+msgid "Drop Subroutines here"
+msgstr ""
+
+#: subroutines-ini-files:10
+msgid "Linear array"
+msgstr ""
+
+#: subroutines-ini-files:12
+msgid ""
+"<big>Create array of items</big>\n"
+"\tDrag and drop subroutines into Items parameter.\n"
+"\tParameters num, dX, dY, dZ\n"
+"\tUses G57 to make offsets! Returns to G54 afterwards!"
+msgstr ""
+
+#: subroutines-ini-files:14 subroutines-ini-files:134
+#: subroutines-ini-files:418 subroutines-ini-files:420
+msgid "Number"
+msgstr ""
+
+#: subroutines-ini-files:16 subroutines-ini-files:136
+msgid "Number of copies"
+msgstr ""
+
+#: subroutines-ini-files:18 subroutines-ini-files:176
+#: subroutines-ini-files:450 subroutines-ini-files:452
+#: subroutines-ini-files:536
+msgid "X0"
+msgstr ""
+
+#: subroutines-ini-files:20
+msgid "Origin X"
+msgstr ""
+
+#: subroutines-ini-files:22 subroutines-ini-files:180
+#: subroutines-ini-files:408 subroutines-ini-files:442
+#: subroutines-ini-files:444 subroutines-ini-files:528
+msgid "Y0"
+msgstr ""
+
+#: subroutines-ini-files:24
+msgid "Origin Y"
+msgstr ""
+
+#: subroutines-ini-files:26 subroutines-ini-files:30
+msgid "Z0"
+msgstr ""
+
+#: subroutines-ini-files:28
+msgid "Origin Z"
+msgstr ""
+
+#: subroutines-ini-files:32
+msgid "Origin angle"
+msgstr ""
+
+#: subroutines-ini-files:34 subroutines-ini-files:250
+#: subroutines-ini-files:262
+msgid "dX"
+msgstr ""
+
+#: subroutines-ini-files:36
+msgid "X step"
+msgstr ""
+
+#: subroutines-ini-files:38
+msgid "dY"
+msgstr ""
+
+#: subroutines-ini-files:40
+msgid "Y step"
+msgstr ""
+
+#: subroutines-ini-files:42 subroutines-ini-files:254
+#: subroutines-ini-files:266
+msgid "dZ"
+msgstr ""
+
+#: subroutines-ini-files:44
+msgid "Z step"
+msgstr ""
+
+#: subroutines-ini-files:46
+msgid "dR"
+msgstr ""
+
+#: subroutines-ini-files:48
+msgid "Angle step"
+msgstr ""
+
+#: subroutines-ini-files:50 subroutines-ini-files:158
+msgid "Coordinate system G"
+msgstr ""
+
+#: subroutines-ini-files:52 subroutines-ini-files:160
+msgid "Use this coordinate system"
+msgstr ""
+
+#: subroutines-ini-files:58
+msgid "Probe"
+msgstr ""
+
+#: subroutines-ini-files:60
+msgid "<big>Probe downwards</big>"
+msgstr ""
+
+#: subroutines-ini-files:62 subroutines-ini-files:64 subroutines-ini-files:298
+msgid "X"
+msgstr ""
+
+#: subroutines-ini-files:66 subroutines-ini-files:68 subroutines-ini-files:314
+#: subroutines-ini-files:678
+msgid "Y"
+msgstr ""
+
+#: subroutines-ini-files:70 subroutines-ini-files:322
+#: subroutines-ini-files:346 subroutines-ini-files:482
+#: subroutines-ini-files:686
+msgid "Gcode"
+msgstr ""
+
+#: subroutines-ini-files:72 subroutines-ini-files:324
+#: subroutines-ini-files:484 subroutines-ini-files:688
+msgid ""
+"\n"
+"G38.2 - probe toward workpiece, stop on contact, signal error if failure\n"
+"G38.3 - probe toward workpiece, stop on contact\n"
+"G38.4 - probe away from workpiece, stop on loss of contact, signal error if "
+"failure\n"
+"G38.5 - probe away from workpiece, stop on loss of contact\n"
+"(Do not write G, just '38.2'.)"
+msgstr ""
+
+#: subroutines-ini-files:74 subroutines-ini-files:326
+#: subroutines-ini-files:414 subroutines-ini-files:416
+#: subroutines-ini-files:486 subroutines-ini-files:554
+#: subroutines-ini-files:556 subroutines-ini-files:588
+#: subroutines-ini-files:690
+msgid "Feed"
+msgstr ""
+
+#: subroutines-ini-files:76 subroutines-ini-files:328
+#: subroutines-ini-files:488 subroutines-ini-files:692
+msgid "Probe fast feed"
+msgstr ""
+
+#: subroutines-ini-files:78 subroutines-ini-files:330
+#: subroutines-ini-files:490 subroutines-ini-files:694
+msgid "Latch dist"
+msgstr ""
+
+#: subroutines-ini-files:80 subroutines-ini-files:592
+msgid "Latch distance"
+msgstr ""
+
+#: subroutines-ini-files:82 subroutines-ini-files:334
+#: subroutines-ini-files:494 subroutines-ini-files:698
+msgid "Latch feed"
+msgstr ""
+
+#: subroutines-ini-files:84 subroutines-ini-files:336
+#: subroutines-ini-files:496 subroutines-ini-files:700
+msgid "Probe latch feed"
+msgstr ""
+
+#: subroutines-ini-files:86 subroutines-ini-files:110
+#: subroutines-ini-files:112 subroutines-ini-files:194
+#: subroutines-ini-files:196 subroutines-ini-files:338
+#: subroutines-ini-files:374 subroutines-ini-files:376
+#: subroutines-ini-files:426 subroutines-ini-files:428
+#: subroutines-ini-files:498 subroutines-ini-files:510
+#: subroutines-ini-files:512 subroutines-ini-files:574
+#: subroutines-ini-files:576 subroutines-ini-files:598
+#: subroutines-ini-files:600 subroutines-ini-files:630
+#: subroutines-ini-files:632 subroutines-ini-files:702
+#: subroutines-ini-files:726 subroutines-ini-files:728
+msgid "Depth"
+msgstr ""
+
+#: subroutines-ini-files:88
+msgid "Maximum depth"
+msgstr ""
+
+#: subroutines-ini-files:90 subroutines-ini-files:126
+#: subroutines-ini-files:206 subroutines-ini-files:342
+#: subroutines-ini-files:386 subroutines-ini-files:458
+#: subroutines-ini-files:502 subroutines-ini-files:542
+#: subroutines-ini-files:562 subroutines-ini-files:610
+#: subroutines-ini-files:662 subroutines-ini-files:706
+#: subroutines-ini-files:742
+msgid "Rappid"
+msgstr ""
+
+#: subroutines-ini-files:92 subroutines-ini-files:124
+#: subroutines-ini-files:128 subroutines-ini-files:208
+#: subroutines-ini-files:212 subroutines-ini-files:344
+#: subroutines-ini-files:388 subroutines-ini-files:460
+#: subroutines-ini-files:464 subroutines-ini-files:504
+#: subroutines-ini-files:544 subroutines-ini-files:548
+#: subroutines-ini-files:612 subroutines-ini-files:664
+#: subroutines-ini-files:668 subroutines-ini-files:708
+#: subroutines-ini-files:740 subroutines-ini-files:744
+msgid "Rappid height"
+msgstr ""
+
+#: subroutines-ini-files:94 subroutines-ini-files:710
+msgid "Circle"
+msgstr ""
+
+#: subroutines-ini-files:96 subroutines-ini-files:712
+msgid ""
+"<big>Creates circle</big>\n"
+"\tParameters: <i>CX CY R Depth Rappid</i>"
+msgstr ""
+
+#: subroutines-ini-files:98 subroutines-ini-files:100
+#: subroutines-ini-files:310 subroutines-ini-files:654
+#: subroutines-ini-files:656 subroutines-ini-files:674
+#: subroutines-ini-files:714 subroutines-ini-files:716
+msgid "CX"
+msgstr ""
+
+#: subroutines-ini-files:102 subroutines-ini-files:104
+#: subroutines-ini-files:646 subroutines-ini-files:648
+#: subroutines-ini-files:718 subroutines-ini-files:720
+msgid "CY"
+msgstr ""
+
+#: subroutines-ini-files:106 subroutines-ini-files:146
+#: subroutines-ini-files:650 subroutines-ini-files:722
+msgid "D"
+msgstr ""
+
+#: subroutines-ini-files:108 subroutines-ini-files:402
+#: subroutines-ini-files:404 subroutines-ini-files:724
+msgid "Diameter"
+msgstr ""
+
+#: subroutines-ini-files:114 subroutines-ini-files:198
+#: subroutines-ini-files:410 subroutines-ini-files:430
+#: subroutines-ini-files:514 subroutines-ini-files:570
+#: subroutines-ini-files:572 subroutines-ini-files:634
+#: subroutines-ini-files:730
+msgid "Depth step"
+msgstr ""
+
+#: subroutines-ini-files:116 subroutines-ini-files:200
+#: subroutines-ini-files:432 subroutines-ini-files:516
+#: subroutines-ini-files:636 subroutines-ini-files:732
+msgid "Depth step per pass"
+msgstr ""
+
+#: subroutines-ini-files:118 subroutines-ini-files:202
+#: subroutines-ini-files:454 subroutines-ini-files:538
+#: subroutines-ini-files:566 subroutines-ini-files:568
+#: subroutines-ini-files:658 subroutines-ini-files:734
+msgid "Surface"
+msgstr ""
+
+#: subroutines-ini-files:120 subroutines-ini-files:204
+#: subroutines-ini-files:456 subroutines-ini-files:540
+#: subroutines-ini-files:660 subroutines-ini-files:736
+msgid "Surface height"
+msgstr ""
+
+#: subroutines-ini-files:122 subroutines-ini-files:210
+#: subroutines-ini-files:462 subroutines-ini-files:546
+#: subroutines-ini-files:558 subroutines-ini-files:666
+#: subroutines-ini-files:738
+msgid "Final cut"
+msgstr ""
+
+#: subroutines-ini-files:130
+msgid "Circular array"
+msgstr ""
+
+#: subroutines-ini-files:132
+msgid ""
+"<big>Create array of items</big>\n"
+"\tDrag and drop subroutines into Items parameter.\n"
+"\tParameters num, dX, dY, dZ\n"
+"\tModifies defined coordinate system to make offsets! Returns to G54 "
+"afterwards!"
+msgstr ""
+
+#: subroutines-ini-files:138 subroutines-ini-files:174
+#: subroutines-ini-files:390 subroutines-ini-files:534
+#: subroutines-ini-files:614
+msgid "cX"
+msgstr ""
+
+#: subroutines-ini-files:140 subroutines-ini-files:240
+#: subroutines-ini-files:252 subroutines-ini-files:264
+#: subroutines-ini-files:280
+msgid "X of array center"
+msgstr ""
+
+#: subroutines-ini-files:142 subroutines-ini-files:178
+#: subroutines-ini-files:394 subroutines-ini-files:526
+#: subroutines-ini-files:622
+msgid "cY"
+msgstr ""
+
+#: subroutines-ini-files:144 subroutines-ini-files:256
+#: subroutines-ini-files:268
+msgid "Y of array center"
+msgstr ""
+
+#: subroutines-ini-files:148
+msgid "Array diameter"
+msgstr ""
+
+#: subroutines-ini-files:150
+msgid "Start angle"
+msgstr ""
+
+#: subroutines-ini-files:152
+msgid "Angle for the first array item (0 points to X positive direction)"
+msgstr ""
+
+#: subroutines-ini-files:154
+msgid "Fill angle"
+msgstr ""
+
+#: subroutines-ini-files:156
+msgid "Angle to fill with array"
+msgstr ""
+
+#: subroutines-ini-files:162
+msgid "Rotate items"
+msgstr ""
+
+#: subroutines-ini-files:164
+msgid "Rotate each item (1=Rotate, 0=No)"
+msgstr ""
+
+#: subroutines-ini-files:170
+msgid "Rectangle from center"
+msgstr ""
+
+#: subroutines-ini-files:172
+msgid ""
+"Creates rectangle from center\n"
+"\tcX cY W H"
+msgstr ""
+
+#: subroutines-ini-files:182 subroutines-ini-files:184
+#: subroutines-ini-files:446 subroutines-ini-files:448
+#: subroutines-ini-files:530 subroutines-ini-files:532
+msgid "Width"
+msgstr ""
+
+#: subroutines-ini-files:186 subroutines-ini-files:188
+#: subroutines-ini-files:434 subroutines-ini-files:436
+#: subroutines-ini-files:518 subroutines-ini-files:520
+msgid "Height"
+msgstr ""
+
+#: subroutines-ini-files:190 subroutines-ini-files:192
+#: subroutines-ini-files:378 subroutines-ini-files:438
+#: subroutines-ini-files:440 subroutines-ini-files:602
+#: subroutines-ini-files:642 subroutines-ini-files:644
+msgid "Angle"
+msgstr ""
+
+#: subroutines-ini-files:214
+msgid "Tool change"
+msgstr ""
+
+#: subroutines-ini-files:216
+msgid ""
+"<big>Adds tool change Gcode</big>\n"
+"T#n M6"
+msgstr ""
+
+#: subroutines-ini-files:218
+msgid "Tool number"
+msgstr ""
+
+#: subroutines-ini-files:220
+msgid "Toola number from tools table"
+msgstr ""
+
+#: subroutines-ini-files:222
+msgid "G91 group"
+msgstr ""
+
+#: subroutines-ini-files:224 subroutines-ini-files:232
+#: subroutines-ini-files:248 subroutines-ini-files:260
+#: subroutines-ini-files:272
+msgid "<big>Create line</big>"
+msgstr ""
+
+#: subroutines-ini-files:228
+msgid "Drop items here"
+msgstr ""
+
+#: subroutines-ini-files:230 subroutines-ini-files:270
+msgid "Arc tangent"
+msgstr ""
+
+#: subroutines-ini-files:234 subroutines-ini-files:274
+msgid "G2 or G3"
+msgstr ""
+
+#: subroutines-ini-files:236 subroutines-ini-files:276
+msgid "Use G2 (CW) or G3 (CCW) arc (write only 2 or 3 without G)"
+msgstr ""
+
+#: subroutines-ini-files:238 subroutines-ini-files:278
+#: subroutines-ini-files:382 subroutines-ini-files:606
+msgid "R"
+msgstr ""
+
+#: subroutines-ini-files:242
+msgid "End angle"
+msgstr ""
+
+#: subroutines-ini-files:244
+msgid "Angle at the end"
+msgstr ""
+
+#: subroutines-ini-files:246 subroutines-ini-files:258
+#: subroutines-ini-files:294
+msgid "Line"
+msgstr ""
+
+#: subroutines-ini-files:282
+msgid "Distance along axis"
+msgstr ""
+
+#: subroutines-ini-files:284
+msgid "Coordinate along axis"
+msgstr ""
+
+#: subroutines-ini-files:286
+msgid "G90/G91"
+msgstr ""
+
+#: subroutines-ini-files:288
+msgid ""
+"Absolute or increment discance\n"
+"90 - Absolute\n"
+"91 - Increment\n"
+"Other - do not use current"
+msgstr ""
+
+#: subroutines-ini-files:290
+msgid "Axis"
+msgstr ""
+
+#: subroutines-ini-files:292
+msgid ""
+"Shift along\n"
+"0 - arbitrary x-axis\n"
+"1 - arbitrary y-axis"
+msgstr ""
+
+#: subroutines-ini-files:296
+msgid "<big>Goes to defined point</big>"
+msgstr ""
+
+#: subroutines-ini-files:300
+msgid "X of a point"
+msgstr ""
+
+#: subroutines-ini-files:302
+msgid "Z"
+msgstr ""
+
+#: subroutines-ini-files:304
+msgid "Y of a point"
+msgstr ""
+
+#: subroutines-ini-files:306
+msgid "Probe cube"
+msgstr ""
+
+#: subroutines-ini-files:308
+msgid ""
+"<big>Probe cube</big>\n"
+"Probes hole to find it&#39;s center"
+msgstr ""
+
+#: subroutines-ini-files:312 subroutines-ini-files:676
+msgid "Approximate CX"
+msgstr ""
+
+#: subroutines-ini-files:316 subroutines-ini-files:680
+msgid "Approximate CY"
+msgstr ""
+
+#: subroutines-ini-files:318 subroutines-ini-files:478
+#: subroutines-ini-files:682
+msgid "R+"
+msgstr ""
+
+#: subroutines-ini-files:320 subroutines-ini-files:684
+msgid "Approximate Radius (must be larger than hole)"
+msgstr ""
+
+#: subroutines-ini-files:332 subroutines-ini-files:492
+#: subroutines-ini-files:696
+msgid ""
+"Latch distance\n"
+"If Latch distance greater than 0 than probe will go back and Latch in the "
+"same direction.\n"
+"Else Latch will be done in oposite direction (stop on loss of contact)."
+msgstr ""
+
+#: subroutines-ini-files:340 subroutines-ini-files:704
+msgid "Probe depth"
+msgstr ""
+
+#: subroutines-ini-files:348
+msgid ""
+"Flat Gcode\n"
+"\t\\n can be used to split lines\n"
+"\tlines will be parsed as usual so you can use &lt;eval&gt;&lt;/eval&gt;"
+msgstr ""
+
+#: subroutines-ini-files:350
+msgid "Line 5"
+msgstr ""
+
+#: subroutines-ini-files:352 subroutines-ini-files:356
+#: subroutines-ini-files:360 subroutines-ini-files:364
+#: subroutines-ini-files:368
+msgid "Gcode line"
+msgstr ""
+
+#: subroutines-ini-files:354
+msgid "Line 4"
+msgstr ""
+
+#: subroutines-ini-files:358
+msgid "Line 1"
+msgstr ""
+
+#: subroutines-ini-files:362
+msgid "Line 3"
+msgstr ""
+
+#: subroutines-ini-files:366
+msgid "Line 2"
+msgstr ""
+
+#: subroutines-ini-files:370
+msgid "Hexagon"
+msgstr ""
+
+#: subroutines-ini-files:372
+msgid ""
+"<big>Creates hexagon</big>\n"
+"\tcX cY r depth rappid\n"
+"\t<b>Uses G92!</b>"
+msgstr ""
+
+#: subroutines-ini-files:380 subroutines-ini-files:604
+msgid "Starting angle"
+msgstr ""
+
+#: subroutines-ini-files:384 subroutines-ini-files:608
+msgid "Central radius"
+msgstr ""
+
+#: subroutines-ini-files:392 subroutines-ini-files:616
+msgid "Center X"
+msgstr ""
+
+#: subroutines-ini-files:396 subroutines-ini-files:624
+msgid "Center Y"
+msgstr ""
+
+#: subroutines-ini-files:398
+msgid "Tool"
+msgstr ""
+
+#: subroutines-ini-files:400
+msgid "Selects tools and changes its parameters"
+msgstr ""
+
+#: subroutines-ini-files:406
+msgid "Length"
+msgstr ""
+
+#: subroutines-ini-files:412
+msgid "Tools depth step for multipass mill"
+msgstr ""
+
+#: subroutines-ini-files:422
+msgid "Rectangle"
+msgstr ""
+
+#: subroutines-ini-files:424
+msgid ""
+"Creates rectangle\n"
+"\tW H X0 Y0"
+msgstr ""
+
+#: subroutines-ini-files:466
+msgid "Probe tool diameter"
+msgstr ""
+
+#: subroutines-ini-files:468
+msgid ""
+"<big>Probe cube</big>\n"
+"Probes tool diameter on fixed probe\n"
+"Will be useing G59.3 coordinate system!"
+msgstr ""
+
+#: subroutines-ini-files:470 subroutines-ini-files:750
+msgid "Probe X"
+msgstr ""
+
+#: subroutines-ini-files:472
+msgid "Approximate CX in G53"
+msgstr ""
+
+#: subroutines-ini-files:474 subroutines-ini-files:754
+msgid "Probe Y"
+msgstr ""
+
+#: subroutines-ini-files:476
+msgid "Approximate CY in G53"
+msgstr ""
+
+#: subroutines-ini-files:480
+msgid "Approximate Radius plus probe radius (must be upper approximation)"
+msgstr ""
+
+#: subroutines-ini-files:500
+msgid "Probe depth in G53"
+msgstr ""
+
+#: subroutines-ini-files:506
+msgid "Rectangle from center with steps"
+msgstr ""
+
+#: subroutines-ini-files:508
+msgid ""
+"Creates rectangle from center with multipass cutting\n"
+"\tcX cY W H"
+msgstr ""
+
+#: subroutines-ini-files:522
+msgid "Spiral step"
+msgstr ""
+
+#: subroutines-ini-files:524
+msgid "Step of pocket spiral"
+msgstr ""
+
+#: subroutines-ini-files:550
+msgid "Set cutting params"
+msgstr ""
+
+#: subroutines-ini-files:552
+msgid ""
+"Sets global cutting depth, depth step, surface origin, and rappid distance."
+msgstr ""
+
+#: subroutines-ini-files:560
+msgid "Final cut depth"
+msgstr ""
+
+#: subroutines-ini-files:564
+msgid "Rappid distance"
+msgstr ""
+
+#: subroutines-ini-files:578
+msgid "Set probing params"
+msgstr ""
+
+#: subroutines-ini-files:580
+msgid "Sets global probing parameters"
+msgstr ""
+
+#: subroutines-ini-files:582 subroutines-ini-files:584
+msgid "Latch Feed"
+msgstr ""
+
+#: subroutines-ini-files:586
+msgid "Probing Feed"
+msgstr ""
+
+#: subroutines-ini-files:590
+msgid "Latch"
+msgstr ""
+
+#: subroutines-ini-files:594
+msgid "N-gon"
+msgstr ""
+
+#: subroutines-ini-files:596
+msgid ""
+"<big>Creates n-gon</big>\n"
+"\tpolygon with n edges\n"
+"\tcX cY n r depth rappid\n"
+"\t<b>Uses G92!</b>"
+msgstr ""
+
+#: subroutines-ini-files:618
+msgid "n"
+msgstr ""
+
+#: subroutines-ini-files:620
+msgid "Number of edges"
+msgstr ""
+
+#: subroutines-ini-files:626
+msgid "Oval"
+msgstr ""
+
+#: subroutines-ini-files:628
+msgid ""
+"<big>Creates oval</big>\n"
+"\tOval - rectanle + two circles\n"
+"\tParameters: <i>CX CY D L</i>"
+msgstr ""
+
+#: subroutines-ini-files:638
+msgid "L"
+msgstr ""
+
+#: subroutines-ini-files:640
+msgid "Length of oval"
+msgstr ""
+
+#: subroutines-ini-files:652
+msgid "Diameter of oval"
+msgstr ""
+
+#: subroutines-ini-files:670
+msgid "Probe hole"
+msgstr ""
+
+#: subroutines-ini-files:672
+msgid ""
+"<big>Probe hole</big>\n"
+"Probes hole to find it&#39;s center"
+msgstr ""
+
+#: subroutines-ini-files:746
+msgid "Set tool probing params"
+msgstr ""
+
+#: subroutines-ini-files:748
+msgid "Sets global tool probing parameters"
+msgstr ""
+
+#: subroutines-ini-files:752
+msgid "Approximate probe X in G53"
+msgstr ""
+
+#: subroutines-ini-files:756
+msgid "Approximate probe Y in G53"
+msgstr ""
+
+#: subroutines-ini-files:758
+msgid "Probe Z"
+msgstr ""
+
+#: subroutines-ini-files:760
+msgid "Probe Z in G53"
+msgstr ""
