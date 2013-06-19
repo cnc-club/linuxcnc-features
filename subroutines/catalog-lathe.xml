@@ -1,11 +1,10 @@
 <xml>
-	
-	<sub name="Line" icon="images/line.png" sub="lathe/line.ini"/>
-	<sub name="Arc" icon="images/arc.png" sub="lathe/arc.ini"/>
-	<sub name="Goto" icon="images/goto.png" sub="lathe/goto.ini"/>
-	<sub name="Arc" icon="images/arc-tangent.png" sub="lathe/arc-tangent-r.ini"/>
-	<sub name="Arc ang" icon="images/arc-tangent.png" sub="lathe/arc-tangent2-r.ini"/>
-	
+	<group name="Draw" icon="images/drawing.png">
+		<sub name="Goto" icon="images/goto.png" sub="draw/goto.ini"/>
+		<sub name="Line to" icon="images/line-to.png" sub="draw/line-to.ini"/>
+		<sub name="Arc to (X,Y),R" icon="images/arc-to-xyr.png" sub="draw/arc-to-xyr.ini"/>
+	</group>
+	 
 	<sub name="G90" icon="images/g90.png" sub="lathe/g91-group.ini"/>
 		
 	<group name="Grouping" icon="images/array.png"> 
