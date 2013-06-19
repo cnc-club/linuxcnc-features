@@ -339,7 +339,7 @@ msgstr ""
 #: subroutines-ini-files:404
 #: subroutines-ini-files:724
 msgid "Diameter"
-msgstr ""
+msgstr "Диаметр"
 
 #: subroutines-ini-files:114
 #: subroutines-ini-files:198
@@ -479,7 +479,7 @@ msgstr ""
 #: subroutines-ini-files:530
 #: subroutines-ini-files:532
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: subroutines-ini-files:186
 #: subroutines-ini-files:188
@@ -488,7 +488,7 @@ msgstr ""
 #: subroutines-ini-files:518
 #: subroutines-ini-files:520
 msgid "Height"
-msgstr ""
+msgstr "Высота"
 
 #: subroutines-ini-files:190
 #: subroutines-ini-files:192
@@ -499,7 +499,7 @@ msgstr ""
 #: subroutines-ini-files:642
 #: subroutines-ini-files:644
 msgid "Angle"
-msgstr ""
+msgstr "Угол"
 
 #: subroutines-ini-files:214
 msgid "Tool change"
