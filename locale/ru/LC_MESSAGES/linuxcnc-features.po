@@ -138,7 +138,7 @@ msgstr ""
 #: subroutines-ini-files:166
 #: subroutines-ini-files:226
 msgid "Items"
-msgstr ""
+msgstr "Элементы"
 
 #: subroutines-ini-files:8
 #: subroutines-ini-files:56
@@ -163,7 +163,7 @@ msgstr ""
 #: subroutines-ini-files:418
 #: subroutines-ini-files:420
 msgid "Number"
-msgstr ""
+msgstr "Номер"
 
 #: subroutines-ini-files:16
 #: subroutines-ini-files:136
@@ -281,7 +281,7 @@ msgstr ""
 #: subroutines-ini-files:482
 #: subroutines-ini-files:686
 msgid "Gcode"
-msgstr ""
+msgstr "G-код"
 
 #: subroutines-ini-files:72
 #: subroutines-ini-files:324
@@ -306,7 +306,7 @@ msgstr ""
 #: subroutines-ini-files:588
 #: subroutines-ini-files:690
 msgid "Feed"
-msgstr ""
+msgstr "Подача"
 
 #: subroutines-ini-files:76
 #: subroutines-ini-files:328
