@@ -39,7 +39,7 @@ msgstr ""
 #: subroutines-ini-files:6 subroutines-ini-files:54 subroutines-ini-files:166
 #: subroutines-ini-files:226
 msgid "Items"
-msgstr ""
+msgstr "Элементы"
 
 #: subroutines-ini-files:8 subroutines-ini-files:56 subroutines-ini-files:168
 msgid "Drop Subroutines here"
@@ -60,7 +60,7 @@ msgstr ""
 #: subroutines-ini-files:14 subroutines-ini-files:134
 #: subroutines-ini-files:418 subroutines-ini-files:420
 msgid "Number"
-msgstr ""
+msgstr "Номер"
 
 #: subroutines-ini-files:16 subroutines-ini-files:136
 msgid "Number of copies"
@@ -161,7 +161,7 @@ msgstr ""
 #: subroutines-ini-files:346 subroutines-ini-files:482
 #: subroutines-ini-files:686
 msgid "Gcode"
-msgstr ""
+msgstr "G-код"
 
 #: subroutines-ini-files:72 subroutines-ini-files:324
 #: subroutines-ini-files:484 subroutines-ini-files:688
@@ -181,7 +181,7 @@ msgstr ""
 #: subroutines-ini-files:556 subroutines-ini-files:588
 #: subroutines-ini-files:690
 msgid "Feed"
-msgstr ""
+msgstr "Подача"
 
 #: subroutines-ini-files:76 subroutines-ini-files:328
 #: subroutines-ini-files:488 subroutines-ini-files:692
