@@ -48,9 +48,6 @@ UNDO_MAX_LEN = 200
 ADD_ICON_SIZE = 60
 UNIQUE_ID = [10000]
 INCLUDE = []
-TOP_FEATURES_COUNT = 3
-LAST_FEATURES_COUNT = 10
-
 
 def get_int(s) :
 	try :
@@ -445,6 +442,17 @@ class Features(gtk.VBox):
 			topfeatures = self.config.get("VAR","topfeatures", raw=True)
 		except :
 			topfeatures = "" 
+		self.ini = {
+			"top-features": 3,
+			"last-features": 10
+		}
+		
+		for i in self.ini:
+			try :			
+				s = self.config.get("FEATURES",i.lower(), raw=True)
+				self.ini[i] = int(s)
+			except :		
+				pass
 		topfeatures = topfeatures.split("\n")
 		self.topfeatures_dict = {}
 		for s in topfeatures :
@@ -595,7 +603,12 @@ class Features(gtk.VBox):
 		# save config
 		if "VAR" not in self.config.sections() :
 			self.config.add_section('VAR')
-			
+		if "FEATURES" not in self.config.sections() :
+			self.config.add_section('FEATURES')
+
+		for i in self.ini :	
+			self.config.set("FEATURES",i.lower() , self.ini[i])
+	
 		for src in self.topfeatures :
 			self.topfeatures_dict[src] = self.topfeatures[src][2:]
 		topfeatures = ""
@@ -967,12 +980,12 @@ class Features(gtk.VBox):
 
 		tf = self.topfeatures.items() 
 		tf.sort(lambda x,y: -1 if x[1][2]-y[1][2]>0 else 1) # sort by i
-		for tfi in tf[:TOP_FEATURES_COUNT] :
+		for tfi in tf[:self.ini["top-features"]] :
 			self.topfeatures_toolbar.insert(tfi[1][0],-1)
 
 		self.topfeatures_toolbar.insert(gtk.SeparatorToolItem(),-1)
 		tf.sort(lambda x,y: -1 if x[1][3]-y[1][3]>0 else 1) # sort by t
-		for tfi in tf[:LAST_FEATURES_COUNT] :
+		for tfi in tf[:self.ini["last-features"]] :
 			self.topfeatures_toolbar.insert(tfi[1][1],-1)
 
 		self.topfeatures_toolbar.show_all()
