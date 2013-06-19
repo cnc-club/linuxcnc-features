@@ -352,15 +352,17 @@ class Features(gtk.VBox):
 		if "-U" in optlist :
 			optlist_, args = getopt.getopt(optlist["-U"].split(), opt, optl)
 			optlist.update(optlist_)
-		catalog_src = "catalog.xml"
+		self.catalog_src = "catalog.xml"
 	
 		if "-t" in optlist : 
 			# get translations and exit
 			self.get_translations()
 			sys.exit()
-	
+
+		if "-c" in optlist :
+			self.catalog_src = optlist["-c"]
 		if "--catalog" in optlist :
-			catalog_src = optlist["--catalog"]
+			self.catalog_src = optlist["--catalog"]
 		ini = os.getenv("INI_FILE_NAME")
 		if "-i" in optlist : 
 			ini = optlist["-i"]
@@ -399,11 +401,11 @@ class Features(gtk.VBox):
 		self.glade.connect_signals(self)
 		self.timeout = None
 		# create features catalog
-		catalog_src = search_path(SUBROUTINES_PATH, catalog_src)
-		if catalog_src == None :
-			print _("Error! Fatal! Cannot find features catalog %(src)s at %(path)s!") % {"src":catalog_src , "path":SUBROUTINES_PATH}
+		self.catalog_src = search_path(SUBROUTINES_PATH, self.catalog_src)
+		if self.catalog_src == None :
+			print _("Error! Fatal! Cannot find features catalog %(src)s at %(path)s!") % {"src":self.catalog_src , "path":SUBROUTINES_PATH}
 			sys.exit()
-		xml = etree.parse(catalog_src)
+		xml = etree.parse(self.catalog_src)
 		
 		self.catalog = xml.getroot()
 		self.catalog_path = self.catalog
@@ -1004,11 +1006,17 @@ class Features(gtk.VBox):
 		
 		for path in range(len(self.catalog_path)) :
 			p = self.catalog_path[path]
-			icon = p.get("icon") if "icon" in p.keys() else None
-			pixbuf = get_pixbuf(icon)
 			name = _(p.get("name")) if "name" in p.keys() else None 
 			sub = p.get("sub") if "sub" in p.keys() else None 
-			self.icon_store.append([pixbuf,name,sub, path])
+			icon = p.get("icon") if "icon" in p.keys() else None
+			if icon == None :
+				try :
+					f = Feature(sub)
+					icon = f.get_attr("image")
+				except:
+					print _("Warning no icon for feature %(feature)s in catalog %(catalog)")%{"feature":sub,"catalog":self.catalog_src}
+			pixbuf = get_pixbuf(icon)
+			self.icon_store.append([pixbuf, name, sub, path])
 		
 	
 	def catalog_activate(self, iconview, path) : 

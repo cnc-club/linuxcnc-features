@@ -9,13 +9,14 @@
 
 		
 	<group name="Grouping" icon="images/array.png"> 
+		<sub name="Lathe multipass" sub="lathe/lathe-multipass.ini"/>
 		<sub name="Group" icon="images/group.png" sub="group.ini"/>
 		<sub name="Array" icon="images/array.png" sub="array.ini"/>
 		<sub name="Circular array" icon="images/circular-array.png" sub="circular-array.ini"/>
 	</group>
 	
 	<group name="Tool" icon="images/lathe-tool.png">
-		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
+		<sub name="Set lathe cuting params" sub="lathe/lathe-cutting-params.ini"/>
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
