@@ -36,10 +36,12 @@ import io
 from cStringIO import StringIO
 
 import gettext
-gettext.install('messages', './locale', unicode=True)
-#gettext.bindtextdomain('myapplication', '')
-#gettext.textdomain('myapplication')
-_ = gettext.gettext
+
+if os.path.exists('./locale/linuxcnc-features.po') :
+	gettext.install('linuxcnc-features', './locale', unicode=True)
+else :
+	gettext.install('linuxcnc-features', None, unicode=True)
+
 
 PARAMETERS = ["string", "float", "int", "image", "bool"]	
 FEATURES = ["feature"]
@@ -73,7 +75,7 @@ def get_pixbuf(icon) :
 				PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
 			except Exception, e:
 				PIXBUF_DICT[icon] = None 
-				print _("Warning! Failed to load catalog icon from: %s at path %s!") % (icon, SUBROUTINES_PATH)
+				print _("Warning! Failed to load catalog icon from: %(icon)s at path %(path)s!") % {"icon":icon, "path":SUBROUTINES_PATH}
 		pixbuf = PIXBUF_DICT[icon]
 		return PIXBUF_DICT[icon]
 	else :
@@ -168,15 +170,12 @@ class Feature():
 		config = ConfigParser.ConfigParser()
 		path_src = search_path(SUBROUTINES_PATH,src) 
 		if path_src == None :
-			print _("Feature file %s not fount in %s!")%(src,SUBROUTINES_PATH)
+			print _("Feature ini file %(src)s not found in %(path)s!")%{"src":src,"path":SUBROUTINES_PATH}
 			raise IOError, "File not found"
-		f = open(path_src).read()
-			
 
+		f = open(path_src).read()
 		# add "." in the begining of multiline parameters to save indents
 		f = re.sub(r"(?m)^(\ |\t)",r"\1.",f)
-		if path_src == None :
-			print _("Warning! Can not find subroutine %s at path %s")%(src, SUBROUTINES_PATH)
 		config.readfp(io.BytesIO(f))
 		# remove "." in the begining of multiline parameters to save indents
 		conf = {}
@@ -313,7 +312,7 @@ class Feature():
 			if f != None :
 				return str( open(f).read() )
 			else :
-				print _("Error! Can not find file %s in %s, wile processing <import> tag in feature!")%(fname, SUBROUTINES_PATH)
+				print _("Error! Can not find file %(file)s in %(path)s, wile processing <import> tag in feature!")%{"file":fname, "path":SUBROUTINES_PATH}
 				raise IOError, "File not found"
 
 			
@@ -382,7 +381,8 @@ class Features(gtk.VBox):
 		self.config_src = "" 
 		if ini!="" and ini!=None :
 			self.config_src = os.path.dirname(ini)
-		self.config_src += "features.ini"
+		self.config_src += "/features.ini"
+		print self.config_src
 		self.config = ConfigParser.ConfigParser()
 		self.config.read(self.config_src)
 		
@@ -401,7 +401,7 @@ class Features(gtk.VBox):
 		# create features catalog
 		catalog_src = search_path(SUBROUTINES_PATH, catalog_src)
 		if catalog_src == None :
-			print _("Error! Fatal! Cannot find features catalog %s at %s!") % (catalog_src ,SUBROUTINES_PATH)
+			print _("Error! Fatal! Cannot find features catalog %(src)s at %(path)s!") % {"src":catalog_src , "path":SUBROUTINES_PATH}
 			sys.exit()
 		xml = etree.parse(catalog_src)
 		
@@ -416,8 +416,10 @@ class Features(gtk.VBox):
 		self.add_iconview.connect("item-activated", self.catalog_activate)
 
 		self.update_catalog(xml=self.catalog_path)
-				
-		self.add_dialog = gtk.Dialog(_("Add feature"), self.main_box.get_toplevel(), gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
+		parent = self.main_box.get_toplevel()
+		self.add_dialog = gtk.Dialog(_("Add feature"), parent, gtk.RESPONSE_CANCEL or gtk.DIALOG_MODAL, (gtk.STOCK_CLOSE,gtk.RESPONSE_REJECT))
+		
+		self.add_dialog.set_transient_for(parent)
 		scroll = gtk.ScrolledWindow()
 		scroll.add_with_viewport(self.add_iconview)
 		self.add_dialog.vbox.pack_start(scroll)
@@ -584,7 +586,6 @@ class Features(gtk.VBox):
 		w,h = paned.get_size_request()
 		paned.set_position(max(300,h-200))
 
-	
 		w,h = self.treeview.get_size_request()		
 		self.treeview.set_size_request(w,200)	
 		w,h = self.help_viewport.get_size_request()		
@@ -596,9 +597,8 @@ class Features(gtk.VBox):
 			print _("Warning defaults.ngc was not found in path %s!")%SUBROUTINES_PATH 
 		self.load(filename=search_path(SUBROUTINES_PATH,"template.xml"))
 
-		gtk.window_list_toplevels()[0].connect("delete-event", self.delete)
+		self.treeview.connect("destroy", self.delete)
 
-	
 	def delete(self, *arg) :
 		# save config
 		if "VAR" not in self.config.sections() :
@@ -617,13 +617,15 @@ class Features(gtk.VBox):
 		
 		self.config.set("VAR","topfeatures", topfeatures)
 		try :
+			print self.config_src 
 			self.config.write(open(self.config_src,"w"))
 		except :	
 			print "Warning cannot write to config file %s!"%self.config_src
 
 	
 	def get_translations(self) :
-		find = os.popen("find ./subroutines/ -name *.ini").read()
+		find = os.popen("find ./subroutines/ -name '*.ini'").read()		
+
 		translatable = []
 		for s in find.split() :
 			print s
@@ -645,18 +647,15 @@ class Features(gtk.VBox):
 			out.append( "#: %s"%i[0] )
 			s = i[1].replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n")
 			out.append( "_(%s)"%repr(i[1]) )
-			
-			#out.append( 'msgid "%s"'%s )
-			#out.append( 'msgstr ""' )
-			#out.append( '' )
 		out = "\n".join(out)	
+		
 		open("subroutines-ini-files","w").write(out)
 		os.popen("xgettext --language=Python features.py -o tmp.po")
 		os.popen("xgettext --language=Python subroutines-ini-files -o tmp1.po")
-		os.popen("msgmerge locale/messages.po tmp.po -U")
-		os.popen("msgmerge locale/messages.po tmp1.po -U")
+		os.popen("sed --in-place *.po --expression=s/charset=CHARSET/charset=UTF-8/") # fix fckng encoding.
+		os.popen("msgcat tmp.po tmp1.po -o locale/linuxcnc-features.po")
 		os.popen("rm tmp1.po tmp.po subroutines-ini-files")
-		os.popen("cd locale ; update-po.sh")
+		os.popen("cd locale ; ./update-po.sh")
 		
 			
 	def move(self, call, i) :
@@ -1007,7 +1006,7 @@ class Features(gtk.VBox):
 			p = self.catalog_path[path]
 			icon = p.get("icon") if "icon" in p.keys() else None
 			pixbuf = get_pixbuf(icon)
-			name = p.get("name") if "name" in p.keys() else None 
+			name = _(p.get("name")) if "name" in p.keys() else None 
 			sub = p.get("sub") if "sub" in p.keys() else None 
 			self.icon_store.append([pixbuf,name,sub, path])
 		
@@ -1077,7 +1076,7 @@ class Features(gtk.VBox):
 			if parent == src : return # can not move element inside itself
 			parent = parent.getparent()			
 		if dst==None or src==None :		
-			print _("Error in dst, or src wile moving subtrees! (dst %s) (src %s)")%(dst,src)
+			print _("Error in dst, or src wile moving subtrees! (dst %(dst)s) (src %(src)s)")%{"dst":dst,"src":src}
 			return
 		if after :
 			dst.getparent().insert(dst.getparent().index(dst)+1, src) 
@@ -1135,10 +1134,10 @@ class Features(gtk.VBox):
 		for xml in xmlpath :
 			if xml.tag == "feature" :
 				f = Feature(xml = xml)
-				tool_tip = f.attr["tool_tip"] if "tool_tip" in f.attr else None
+				tool_tip = _(f.attr["tool_tip"]) if "tool_tip" in f.attr else None
 				citer = treestore.append(iter, [f, tool_tip])
 				for p in f.param :
-					tool_tip = p.attr["tool_tip"] if "tool_tip" in p.attr else None
+					tool_tip = _(p.attr["tool_tip"]) if "tool_tip" in p.attr else None
 					piter = treestore.append(citer, [p, tool_tip])
 					if p.get_attr("type") == "items" :
 						xmlpath_ = xml.find(".//param[@type='items']")

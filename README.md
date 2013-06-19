@@ -39,6 +39,16 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	   <glade-widget-class-ref name="Features"/>
 
 
+5. Translations:
+	Make links in your system locale directories to translation files
+	cd /usr/share/locale/<<<YOUR LOCALE>>>/LC_MESSAGES
+	sudo ln /<full path to features sourse>/locale/<<<YOUR LOCALE>>>/LC_MESSAGES/linuxcnc-features.mo -s
+
+	Example:
+	cd /usr/share/locale/ru/LC_MESSAGES
+	sudo ln /home/nick/Design/cnc-club.ru/linuxcnc/features/locale/ru/LC_MESSAGES/linuxcnc-features.mo -s
+
+
 
 	2.	Usage
 --------------------------------------------------------------------------------
