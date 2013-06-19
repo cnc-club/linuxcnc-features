@@ -6,7 +6,7 @@
 		<sub name="Arc to (X,Y),(I,J)" icon="images/arc-to.png" sub="draw/arc-to.ini"/>
 	</group>
 	 
-	<sub name="G90" icon="images/g90.png" sub="lathe/g91-group.ini"/>
+
 		
 	<group name="Grouping" icon="images/array.png"> 
 		<sub name="Group" icon="images/group.png" sub="group.ini"/>
@@ -19,7 +19,9 @@
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
-		<sub name="Custom Gcode" sub="gcode.ini" icon="images/gcode.png"/>
+		<sub name="Custom Gcode" icon="images/gcode.png" sub="gcode/gcode.ini"/>
+		<sub name="G91 Group" icon="images/g91.png" sub="gcode/g91-group.ini"/>
+		
 	</group>
 
 	<group name="Probing" icon="images/probe-cube.png">

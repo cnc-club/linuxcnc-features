@@ -46,6 +46,7 @@ O<arc-to> ENDSUB
 (get curent XY in current plane defined by G17-19)
 O<get-local-xy> SUB 
 	(G17 - pass)
+	O<get-local> CALL
 	O<get-local-xy-if> IF     [#<_plane> EQ 180] (XZ)
 		#<_yl> = #<_zl>
 	O<get-local-xy-if> ELSEIF [#<_plane> EQ 190] (YZ)
@@ -62,21 +63,18 @@ O<arc-to-xyr> SUB
 	#<r> =  #4
 	(Get center)
 	O<get-local-xy> CALL
-	#<x1> = [[#<x>+#<_xl>]/2]
-	#<y1> = [[#<y>+#<_yl>]/2]
+	#<x1> = [[#<x>-#<_xl>]/2]
+	#<y1> = [[#<y>-#<_yl>]/2]
 
-	#<l> = [#<r>*#<r> - #<x1>*#<x1> - #<y1>*#<y1>]
-	#<l1> = [SQRT[#<x1>*#<x1> + #<y1>*#<y1>]]
-	(DEBUG, l #<l> #<l1>)
-	(DEBUG, r #<r> x1 #<x1> y1 #<y1>)
-	(DEBUG, r #<r> x #<x> y #<y>)
-	(DEBUG, r #<r> x #<_xl> y #<_yl>)
-	
-	O<arc-to-xyr-paranoid> IF [[#<l> GE 0 AND #<l1> GT 0] OR #<_paranoid> EQ 0] (If we are paranoid Will raise an error while preview if we can not add arc)
-			#<l> = [ SQRT[#<l>] / #<l1> ]
-			#<g3mult> = [#<gcode>*2-5] (-1 for G02, 1 for G3)
-			#<abs> = 	[#<_ijk_absolute_mode>] (=0 if i and j are absolute)			
-			;O<arc-to> CALL [#<gcode>] [#<x>] [#<y>] [#<x1>-#<y>*#<l>+#<abs>*#<_xl>] [#<y1>+#<x>*#<l>+#<abs>*#<_yl>]
+	#<l> = [#<r>*#<r> - #<x1>**2 - #<y1>**2]
+	#<l1> = [#<x1>**2 + #<y1>**2]
+	O<arc-to-xyr-paranoid> IF [ [#<l> GE 0 AND #<l1> GT 0]   OR   #<_paranoid> EQ 0 ] (If we are paranoid Will raise an error while preview if we can not add arc)
+			#<l> = [ SQRT[#<l>]/SQRT[#<l1>] ]
+			#<g3mult> = -[#<gcode>*2-5] (-1 for G02, 1 for G3)
+			#<abs> = 	[#<_ijk_absolute_mode>] (=0 if i and j are absolute)		
+			#<i> = [-#<y1>*#<l>*#<g3mult>]
+			#<j> = [+#<x1>*#<l>*#<g3mult>]
+			O<arc-to> CALL [#<gcode>] [#<x>] [#<y>] [#<x1>-#<y1>*#<l>*#<g3mult>+#<abs>*#<_xl>] [#<y1>+#<x1>*#<l>*#<g3mult>+#<abs>*#<_yl>]
 	O<arc-to-xyr-paranoid> ELSE (We are not paranoid)
 			O<line-to> CALL [#<x>] [#<y>]
 	O<arc-to-xyr-paranoid> ENDIF
