@@ -6,7 +6,9 @@
 		<sub name="Arc to (X,Y),(I,J)" icon="images/arc-to.png" sub="draw/arc-to.ini"/>
 	</group>
 	 
-
+	<group name="Lathe OD/ID" icon="images/od.png">
+		<sub name="OD" sub="lathe/od.ini"/>	
+	</group>
 		
 	<group name="Grouping" icon="images/array.png"> 
 		<sub name="Lathe multipass" sub="lathe/lathe-multipass.ini"/>
