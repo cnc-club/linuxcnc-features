@@ -359,8 +359,6 @@ class Features(gtk.VBox):
 			self.get_translations()
 			sys.exit()
 
-		if "-c" in optlist :
-			self.catalog_src = optlist["-c"]
 		if "--catalog" in optlist :
 			self.catalog_src = optlist["--catalog"]
 		ini = os.getenv("INI_FILE_NAME")
@@ -401,10 +399,10 @@ class Features(gtk.VBox):
 		self.glade.connect_signals(self)
 		self.timeout = None
 		# create features catalog
-		self.catalog_src = search_path(SUBROUTINES_PATH, self.catalog_src)
-		if self.catalog_src == None :
+		if search_path(SUBROUTINES_PATH, self.catalog_src) == None :
 			print _("Error! Fatal! Cannot find features catalog %(src)s at %(path)s!") % {"src":self.catalog_src , "path":SUBROUTINES_PATH}
 			sys.exit()
+		self.catalog_src = search_path(SUBROUTINES_PATH, self.catalog_src)
 		xml = etree.parse(self.catalog_src)
 		
 		self.catalog = xml.getroot()
