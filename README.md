@@ -72,3 +72,5 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	G-code ngc files can be included by using one of the following functions: 
 		<eval>self.include_once("rotate-xy.ngc")</eval>
 		<eval>self.include("rotate-xy.ngc")</eval>
+=================================================================================
+некоторую информацию по установке можно получить здесь: http://cnc-club.ru/forum/viewtopic.php?f=15&t=3124&p=72441#p72441
