@@ -352,7 +352,7 @@ class Features(gtk.VBox):
 		if "-U" in optlist :
 			optlist_, args = getopt.getopt(optlist["-U"].split(), opt, optl)
 			optlist.update(optlist_)
-		self.catalog_src = "catalog.xml"
+		self.catalog_src = "catalogs/catalog.xml"
 	
 		if "-t" in optlist : 
 			# get translations and exit
