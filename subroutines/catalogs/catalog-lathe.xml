@@ -1,6 +1,4 @@
 <xml>
-	<defaults src="lathe/lathe-defaults.ngc"/>
-	
 	<group name="Draw" icon="images/drawing.png">
 		<sub name="Goto" icon="images/goto.png" sub="draw/goto.ini"/>
 		<sub name="Line to" icon="images/line-to.png" sub="draw/line-to.ini"/>
@@ -9,8 +7,9 @@
 	</group>
 	 
 	<group name="Lathe OD/ID" icon="images/od.png">
-		<sub name="OD-simple" sub="lathe/od-simple.ini"/>	
-		<sub name="OD" sub="lathe/od.ini"/>	
+		<sub name="OD" sub="lathe/od-simple.ini"/>	
+		<sub name="Taper" sub="lathe/taper.ini"/>
+		<sub name="OD-advanced" sub="lathe/od.ini"/>	
 	</group>
 		
 	<group name="Grouping" icon="images/array.png"> 
@@ -36,6 +35,7 @@
 		<sub name="Probe cube" sub="probe-cube.ini" icon="images/probe-cube.png"/>
 		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
 	</group>
+	<defaults src="lathe/lathe-defaults.ngc"/>	
 </xml>
 
 <!-- Do not forget to close <sub /> tags! -->	

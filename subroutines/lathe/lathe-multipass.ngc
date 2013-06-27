@@ -28,8 +28,6 @@
 		#<xstep> = [#<x0> - #<x>]
 		#<x0> = [#<_get_offsets_x> + #<x0>]
 		#<z0> = [#<_get_offsets_z> + #<z0>]
-		(debug, x0 #<x0>)
-		(debug, x1 #<x1>)
 
 		#<l> = SQRT[#<zstep>**2 + #<xstep>**2]
 		#<step> = #<step>

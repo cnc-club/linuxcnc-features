@@ -68,10 +68,6 @@ O<arc-to-xyr> SUB
 
 	#<l> = [#<r>*#<r> - #<x1>**2 - #<y1>**2]
 	#<l1> = [#<x1>**2 + #<y1>**2]
-	(DEBUG, x y #<x> #<y>)
-	(DEBUG, x1 y1 #<x1> #<y1>)
-	(DEBUG, xl yl #<_xl> #<_yl>)
-	(DEBUG, l l1 #<l> #<l1>)
 
 	O<arc-to-xyr-paranoid> IF [ [#<l> GE 0 AND #<l1> GT 0]   OR   #<_paranoid> EQ 0 ] (If we are paranoid Will raise an error while preview if we can not add arc)
 			#<l> = [ SQRT[#<l>]/SQRT[#<l1>] ]
