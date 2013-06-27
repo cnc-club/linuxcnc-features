@@ -381,7 +381,7 @@ class Features(gtk.VBox):
 		self.config_src = "" 
 		if ini!="" and ini!=None :
 			self.config_src = os.path.dirname(ini)
-		self.config_src += "/features.ini"
+		self.config_src += "/features.conf"
 		print self.config_src
 		self.config = ConfigParser.ConfigParser()
 		self.config.read(self.config_src)
