@@ -1,4 +1,6 @@
 <xml>
+	<defaults src="lathe/lathe-defaults.ngc"/>
+	
 	<group name="Draw" icon="images/drawing.png">
 		<sub name="Goto" icon="images/goto.png" sub="draw/goto.ini"/>
 		<sub name="Line to" icon="images/line-to.png" sub="draw/line-to.ini"/>

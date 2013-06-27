@@ -773,7 +773,6 @@ class Features(gtk.VBox):
 			self.remove()
 			return True
 		if keyname == "Insert" : 
-			self.add()
 			return True
 								
 		return False
@@ -881,12 +880,15 @@ class Features(gtk.VBox):
 			gcode += g
 			gcode_def += d
 			iter = self.treestore.iter_next(iter)
-		if search_path(SUBROUTINES_PATH,"defaults.ngc") != None :
-			self.defaults = open( search_path(SUBROUTINES_PATH,"defaults.ngc") ).read()
-		else :
-			print _("Warning defaults.ngc was not found in path %s!")%SUBROUTINES_PATH 
+		d = [x.get("src") for x in self.catalog.findall(".//defaults")]
+		if "defaults.ngc" not in d : d = ["defaults.ngc"] + d
+		self.defaults = ""
+		for s in d :
+			if search_path(SUBROUTINES_PATH, s) != None :
+				self.defaults += open( search_path(SUBROUTINES_PATH, s) ).read()
+			else :
+				print _("Warning %(file)s was not found in path %(path)s!")%{"file":s,"path":SUBROUTINES_PATH}
 	
-			
 		return self.defaults+gcode_def+"(End definitions)\n\n\n"+gcode + "\n\nM02"
 		
 					
