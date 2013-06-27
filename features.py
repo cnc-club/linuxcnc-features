@@ -769,6 +769,13 @@ class Features(gtk.VBox):
 				iter = model.get_iter(path)
 				self.treeview.set_cursor_on_cell(path, focus_column=self.col_value, focus_cell=self.cell_value, start_editing=True)
 				return True
+		if keyname == "Delete" : 
+			self.remove()
+			return True
+		if keyname == "Insert" : 
+			self.add()
+			return True
+								
 		return False
 
 	def add(self, *arg) :
@@ -921,7 +928,7 @@ class Features(gtk.VBox):
 		self.action()
 		self.treeview.grab_focus()
 				
-	def remove(self, call) :
+	def remove(self, *arg) :
 		treeselection = self.treeview.get_selection()
 		model, iter = treeselection.get_selected()
 		if iter != None :
