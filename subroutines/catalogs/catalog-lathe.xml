@@ -10,7 +10,7 @@
 		<sub name="OD" sub="lathe/od-simple.ini"/>	
 		<sub name="Taper" sub="lathe/taper.ini"/>
 		<sub name="OD-advanced" sub="lathe/od.ini"/>	
-		<sub name="Thread" sub="lathe/lathe-thread.ini"/>	
+		<sub name="Thread" sub="lathe/thread.ini"/>	
 		
 	</group>
 		

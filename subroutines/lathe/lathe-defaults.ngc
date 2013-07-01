@@ -1,3 +1,11 @@
 (   Lathe deafults )
 G18
 ( / Lathe deafults )
+
+#<_global_thread_j> = 1
+#<_global_thread_r> = 1.7
+#<_global_thread_h> = 1
+#<_global_thread_q> = 29.5
+#<_global_thread_e> = 2
+#<_global_thread_l> = 3
+
