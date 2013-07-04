@@ -4,6 +4,9 @@
 	( Parameters : sub x0 z0 x z step feed rappid final final_num final_feed coord items )
 	( Depends on get-offsets.ngc )
 	O<lathe-multipass> SUB 
+		
+		O<flood> CALL (Turn on flood/mist if needed)
+		
 		#<sub> =	#1
 		#<x0> =		#2
 		#<z0> =		#3
@@ -76,5 +79,8 @@
 		G[#<_coordinate-from-num>]
 		F#<feed> (Restore feed)
 		G53 G0 X#<world-rappid>  (Goto Rappid distance in saved Machine coordinates)
+		
+		M9 (Turn off flood/mist)
+		
 	O<lathe-multipass> ENDSUB
 

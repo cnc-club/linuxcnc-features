@@ -29,6 +29,8 @@
 	
 	<group name="Tool" icon="images/lathe-tool.png">
 		<sub name="Set lathe cuting params" sub="lathe/lathe-cutting-params.ini"/>
+		<sub name="Change tool" sub="lathe/tool-change.ini"/>
+		
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
@@ -43,7 +45,7 @@
 		<sub name="Probe cube" sub="probe-cube.ini" icon="images/probe-cube.png"/>
 		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
 	</group>
-	<defaults src="lathe/lathe-defaults.ngc"/>	
+	<defaults src="lathe/defaults.ngc"/>	
 </xml>
 
 <!-- Do not forget to close <sub /> tags! -->	
