@@ -342,7 +342,7 @@ class Features(gtk.VBox):
 	
 	def __init__(self, *a, **kw):
 		self.linuxcnc = linuxcnc.command()
-		
+		self.stat = linuxcnc.stat()
 		settings = gtk.settings_get_default()
 		settings.props.gtk_button_images = True
 
@@ -896,10 +896,12 @@ class Features(gtk.VBox):
 		f = open(PROGRAM_PREFIX + "/features.ngc","w")
 		f.write(self.to_gcode())
 		f.close()
-		self.linuxcnc.reset_interpreter()
-		self.linuxcnc.mode(linuxcnc.MODE_AUTO)
-		self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
-		subprocess.call(["axis-remote",PROGRAM_PREFIX + "/features.ngc"])
+		self.stat.poll()
+		if self.stat.interp_state == linuxcnc.INTERP_IDLE :
+			self.linuxcnc.reset_interpreter()
+			self.linuxcnc.mode(linuxcnc.MODE_AUTO)
+			self.linuxcnc.program_open(PROGRAM_PREFIX + "/features.ngc")
+			subprocess.call(["axis-remote",PROGRAM_PREFIX + "/features.ngc"])
 		
 	
 	def to_file(self, *arg) :
