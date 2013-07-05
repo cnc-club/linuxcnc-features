@@ -409,10 +409,10 @@ class Features(gtk.VBox):
 		self.catalog_path = self.catalog
 		
 		self.add_iconview = gtk.IconView()		
-		self.icon_store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, int)
+		self.icon_store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, int)
 		self.add_iconview.set_model(self.icon_store)
 		self.add_iconview.set_pixbuf_column(0)
-		self.add_iconview.set_text_column(1)
+		self.add_iconview.set_text_column(2)
 		self.add_iconview.connect("item-activated", self.catalog_activate)
 
 		self.update_catalog(xml=self.catalog_path)
@@ -463,7 +463,7 @@ class Features(gtk.VBox):
 				self.topfeatures_dict[s[0]] = [int(s[1]), float(s[2])]
 		
 			
-		feature_list = [s.get("sub") for s in self.catalog.findall(".//sub") if "sub" in s.keys()]
+		feature_list = [s.get("src") for s in self.catalog.findall(".//sub") if "src" in s.keys()]
 		self.topfeatures_toolbar = self.glade.get_object("topfeatures")
 		self.block_toptoolbar = False
 		#self.topfeatures_toolbar.connect("expose-event", self.block_expose)
@@ -825,10 +825,10 @@ class Features(gtk.VBox):
 		l = self.catalog.findall(".//sub")		
 		
 		for s in l:
-			if "sub" not in s.keys() : 
+			if "src" not in s.keys() : 
 				print _("Warning there's no 'sub' key in %s") %	etree.tostring(s, pretty_print=True)
 				return 
-			src = s.get("sub")
+			src = s.get("src")
 			try :   # TODO make better catalog 
 					# if there's an error parsing ini - just skip it
 				f = Feature(src)
@@ -1012,35 +1012,38 @@ class Features(gtk.VBox):
 		
 		# add link to upper level
 		if self.catalog_path != self.catalog :
-			self.icon_store.append([get_pixbuf("images/upper-level.png"),"","parent",0])
+			self.icon_store.append([get_pixbuf("images/upper-level.png"),"parent","","parent",0])
 		
 		for path in range(len(self.catalog_path)) :
 			p = self.catalog_path[path]
 			name = _(p.get("name")) if "name" in p.keys() else None 
-			sub = p.get("sub") if "sub" in p.keys() else None 
+			src = p.get("src") if "src" in p.keys() else None 
 			icon = p.get("icon") if "icon" in p.keys() else None
 			if icon == None :
 				try :
-					f = Feature(sub)
+					f = Feature(src)
 					icon = f.get_attr("image")
 				except:
-					print _("Warning no icon for feature %(feature)s in catalog %(catalog)")%{"feature":sub,"catalog":self.catalog_src}
+					print _("Warning no icon for feature %(feature)s in catalog %(catalog)s")%{"feature":src,"catalog":self.catalog_src}
 			pixbuf = get_pixbuf(icon)
-			self.icon_store.append([pixbuf, name, sub, path])
+			self.icon_store.append([pixbuf, p.tag.lower(), name, src, path])
 		
 	
 	def catalog_activate(self, iconview, path) : 
 		iter = self.icon_store.get_iter(path)
-		src = self.icon_store.get(iter,2)[0]
-		if src != None :
-			if src == "parent" :
-				self.update_catalog(xml="parent")
-			else :
+		src = self.icon_store.get(iter,3)[0]
+		tag = self.icon_store.get(iter,1)[0]
+		if tag == "parent" :
+			self.update_catalog(xml="parent")
+		elif tag == "sub" :
 				self.add_feature(src)
 				self.add_dialog.hide()
-		else : 	# it's a group
-			path = self.icon_store.get(iter,3)[0]		
+		elif tag == "group" : 	# it's a group
+			path = self.icon_store.get(iter,4)[0]		
 			self.update_catalog(xml=self.catalog_path[path]) 
+		elif tag == "import" :
+			self.import_from_file(src)			
+			self.add_dialog.hide()
 		
 	def autorefresh_call(self) :
 		self.refresh()
@@ -1216,10 +1219,22 @@ class Features(gtk.VBox):
 		if response == gtk.RESPONSE_OK:
 			self.file_dialogs_folder = filechooserdialog.get_current_folder()		
 			filename = filechooserdialog.get_filename() 
-			xml = etree.parse(filename).getroot()
-			self.import_xml(xml)
+			self.import_from_file(filename)
 		
 		filechooserdialog.destroy()
+
+	def import_from_file(self, f) :
+		if f == None :
+			print "Warning! None in import src!"
+			return
+		if not os.path.isfile(f) : 
+			f = search_path(SUBROUTINES_PATH,f)
+			if f == None :
+				print _("Error! Can not find file %(file)s in %(path)s, wile processing <import> from catalog!")%{"file":f, "path":SUBROUTINES_PATH}
+				return
+		xml = etree.parse(f).getroot()
+		self.import_xml(xml)
+		
 
 	def save(self, callback) :
 		filechooserdialog = gtk.FileChooserDialog("Save as...", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))

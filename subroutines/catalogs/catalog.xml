@@ -1,49 +1,49 @@
 <xml>
 	<group name="Cutting" icon="images/rect.png">
 		<group name="Rectangles" icon="images/rect.png"> 
-			<sub name="Rectangle" icon="images/rect-corner.png" sub="rect.ini"/>
-			<sub name="Rectangle from Center" icon="images/center-rect.png" sub="rect-center.ini"/>
+			<sub name="Rectangle" icon="images/rect-corner.png" src="rect.ini"/>
+			<sub name="Rectangle from Center" icon="images/center-rect.png" src="rect-center.ini"/>
 		</group>
 	
 		<group name="Circles" icon="images/circle.png"> 
-			<sub name="Circle" icon="images/circle.png" sub="circle.ini"/>
-			<sub name="Oval" icon="images/oval.png" sub="oval.ini"/>
+			<sub name="Circle" icon="images/circle.png" src="circle.ini"/>
+			<sub name="Oval" icon="images/oval.png" src="oval.ini"/>
 		</group>
 
 		<group name="Polygon" icon="images/hexagon.png">
-			<sub name="Hexagon" icon="images/hexagon.png" sub="hexagon.ini"/>
-			<sub name="n-gon" icon="images/n-gon.png" sub="n-gon.ini"/>
+			<sub name="Hexagon" icon="images/hexagon.png" src="hexagon.ini"/>
+			<sub name="n-gon" icon="images/n-gon.png" src="n-gon.ini"/>
 		</group>
 	</group> 	
 
 	<group name="Pocketing" icon="images/rect-pocket.png">
-		<sub name="Rectangular pocket" icon="images/rect-pocket.png" sub="rect-pocket.ini" />
+		<sub name="Rectangular pocket" icon="images/rect-pocket.png" src="rect-pocket.ini" />
 	</group>
 
 	<group name="Grouping" icon="images/array.png"> 
-		<sub name="Group" icon="images/group.png" sub="group.ini"/>
-		<sub name="Array" icon="images/array.png" sub="array.ini"/>
-		<sub name="Circular array" icon="images/circular-array.png" sub="circular-array.ini"/>
+		<sub name="Group" icon="images/group.png" src="group.ini"/>
+		<sub name="Array" icon="images/array.png" src="array.ini"/>
+		<sub name="Circular array" icon="images/circular-array.png" src="circular-array.ini"/>
 	</group>
 	
 	<group name="Tool" icon="images/mill-tool.png">
-		<sub name="Tool change" icon="images/tool-change.png" sub="tool-change.ini"/>
-		<sub name="Tool" icon="images/mill-tool.png" sub="set-tool.ini"/>
-		<sub name="Set cuting params" icon="images/tool.png" sub="set-cutting-params.ini"/>
-		<sub name="Measure tool length" icon="images/probe-tool-l.png" sub="probe-tool-l.ini"/> 
-		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" sub="probe-tool-d.ini"/> 
-		<sub name="Set tool probing params" icon="images/tool-probe.png" sub="set-tool-probing-params.ini"/> 
+		<sub name="Tool change" icon="images/tool-change.png" src="tool-change.ini"/>
+		<sub name="Tool" icon="images/mill-tool.png" src="set-tool.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" src="set-cutting-params.ini"/>
+		<sub name="Measure tool length" icon="images/probe-tool-l.png" src="probe-tool-l.ini"/> 
+		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" src="probe-tool-d.ini"/> 
+		<sub name="Set tool probing params" icon="images/tool-probe.png" src="set-tool-probing-params.ini"/> 
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
-		<sub name="Custom Gcode" sub="gcode.ini" icon="images/gcode.png"/>
+		<sub name="Custom Gcode" src="gcode.ini" icon="images/gcode.png"/>
 	</group>
 
 	<group name="Probing" icon="images/probe-cube.png">
-		<sub name="Probe down" sub="probe-down.ini" icon="images/probe-down.png"/>
-		<sub name="Probe hole" sub="probe-hole.ini" icon="images/probe-hole.png"/>
-		<sub name="Probe cube" sub="probe-cube.ini" icon="images/probe-cube.png"/>
-		<sub name="Set probing params" icon="images/probe.png" sub="set-probing-params.ini"/>
+		<sub name="Probe down" src="probe-down.ini" icon="images/probe-down.png"/>
+		<sub name="Probe hole" src="probe-hole.ini" icon="images/probe-hole.png"/>
+		<sub name="Probe cube" src="probe-cube.ini" icon="images/probe-cube.png"/>
+		<sub name="Set probing params" icon="images/probe.png" src="set-probing-params.ini"/>
 	</group>
 </xml>
 

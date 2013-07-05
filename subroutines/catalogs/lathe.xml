@@ -1,0 +1,54 @@
+<xml>
+	<group name="Draw" icon="images/drawing.png">
+		<sub name="Goto" icon="images/goto.png" src="draw/goto.ini"/>
+		<sub name="Line to" icon="images/line-to.png" src="draw/line-to.ini"/>
+		<sub name="Arc to (X,Y),R" icon="images/arc-to-xyr.png" src="draw/arc-to-xyr.ini"/>
+		<sub name="Arc to (X,Y),(I,J)" icon="images/arc-to.png" src="draw/arc-to.ini"/>
+	</group>
+	 
+	<group name="OD ID Taper" icon="images/od.png">
+		<sub name="OD" src="lathe/od.ini"/>	
+		<sub name="Taper" src="lathe/taper.ini"/>
+		<sub name="ID" src="lathe/id.ini"/>			
+		<sub name="OD-advanced" src="lathe/od-advanced.ini"/>	
+	</group>
+
+	<group name="Threading" icon="images/threading.png">
+		<sub name="Thread" src="lathe/thread.ini"/>
+		<sub name="Thread ID" src="lathe/thread-id.ini"/>		
+		<sub name="Threading params" src="lathe/threading-params.ini"/>
+		
+	</group>
+		
+	<group name="Grouping" icon="images/array.png"> 
+		<sub name="Lathe multipass" src="lathe/lathe-multipass.ini"/>
+		<sub name="Group" icon="images/group.png" src="group.ini"/>
+		<sub name="Array" icon="images/array.png" src="array.ini"/>
+		<sub name="Circular array" icon="images/circular-array.png" src="circular-array.ini"/>
+	</group>
+	
+	<group name="Tool" icon="images/lathe-tool.png">
+		<sub name="Set lathe cuting params" src="lathe/lathe-cutting-params.ini"/>
+		<sub name="Change tool" src="lathe/tool-change.ini"/>
+	</group>
+
+	<group name="Import saved subroutines" icon="images/import.png">
+		<import name="Ballscrew BK" src="2505.xml"/> 
+	</group>
+
+	<group name="Gcode" icon="images/gcode.png">
+		<sub name="Custom Gcode" icon="images/gcode.png" src="gcode/gcode.ini"/>
+		<sub name="G91 Group" icon="images/g91.png" src="gcode/g91-group.ini"/>
+		
+	</group>
+
+	<group name="Probing" icon="images/probe-cube.png">
+		<sub name="Probe down" src="probe-down.ini" icon="images/probe-down.png"/>
+		<sub name="Probe hole" src="probe-hole.ini" icon="images/probe-hole.png"/>
+		<sub name="Probe cube" src="probe-cube.ini" icon="images/probe-cube.png"/>
+		<sub name="Set probing params" icon="images/probe.png" src="set-probing-params.ini"/>
+	</group>
+	<defaults src="lathe/defaults.ngc"/>	
+</xml>
+
+<!-- Do not forget to close <sub /> tags! -->	
