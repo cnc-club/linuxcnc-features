@@ -739,7 +739,7 @@ class Features(gtk.VBox):
 		selection = self.treeview.get_selection()
 		(model, pathlist) = selection.get_selected_rows()
 		path = pathlist[0] if len(pathlist) > 0 else None 
-		
+		print keyname
 		if keyname == "Up" : 
 			if path :
 				rect = self.treeview.get_cell_area(path, self.col_value) 
@@ -764,7 +764,7 @@ class Features(gtk.VBox):
 			if path!= None :
 				self.treeview.expand_row(path,False)
 				return True
-		if keyname == "Return" : 
+		if keyname in ["Return","KP_Enter"]  : 
 			if path!= None :
 				iter = model.get_iter(path)
 				self.treeview.set_cursor_on_cell(path, focus_column=self.col_value, focus_cell=self.cell_value, start_editing=True)
@@ -773,6 +773,7 @@ class Features(gtk.VBox):
 			self.remove()
 			return True
 		if keyname == "Insert" : 
+			self.add()
 			return True
 								
 		return False
