@@ -68,14 +68,18 @@ def search_path(path, f) :
 	return None		
 		
 
-def get_pixbuf(icon) :
+def get_pixbuf(icon, no_icon=False) :
 	if icon != "" and icon != None :
 		if icon not in PIXBUF_DICT :
 			try :
 				PIXBUF_DICT[icon] = gtk.gdk.pixbuf_new_from_file( search_path(SUBROUTINES_PATH,icon) ) 
 			except Exception, e:
-				PIXBUF_DICT[icon] = None 
 				print _("Warning! Failed to load catalog icon from: %(icon)s at path %(path)s!") % {"icon":icon, "path":SUBROUTINES_PATH}
+				if no_icon : 
+					PIXBUF_DICT[icon] = None 
+				else : 
+					icon = re.sub(r"[^\/]+$", "no-icon.png", icon)
+					PIXBUF_DICT[icon] = get_pixbuf(icon, no_icon=True)
 		pixbuf = PIXBUF_DICT[icon]
 		return PIXBUF_DICT[icon]
 	else :
@@ -434,7 +438,7 @@ class Features(gtk.VBox):
 		self.add_dialog.vbox.pack_start(hbox, False)
 		
 		self.add_dialog.show_all()
-		self.add_dialog.set_size_request(600,500)
+		self.add_dialog.set_size_request(700,500)
 		self.add_dialog.hide()
 	
 		self.get_features()
@@ -1016,17 +1020,19 @@ class Features(gtk.VBox):
 		
 		for path in range(len(self.catalog_path)) :
 			p = self.catalog_path[path]
-			name = _(p.get("name")) if "name" in p.keys() else None 
-			src = p.get("src") if "src" in p.keys() else None 
-			icon = p.get("icon") if "icon" in p.keys() else None
-			if icon == None :
-				try :
-					f = Feature(src)
-					icon = f.get_attr("image")
-				except:
-					print _("Warning no icon for feature %(feature)s in catalog %(catalog)s")%{"feature":src,"catalog":self.catalog_src}
-			pixbuf = get_pixbuf(icon)
-			self.icon_store.append([pixbuf, p.tag.lower(), name, src, path])
+			if p.tag.lower() in ["group", "sub", "import"] :
+				name = _(p.get("name")) if "name" in p.keys() else None 
+				src = p.get("src") if "src" in p.keys() else None 
+				icon = p.get("icon") if "icon" in p.keys() else None
+				if icon == None :
+					try :
+						f = Feature(src)
+						icon = f.get_attr("image")
+					except:
+						print _("Warning no icon for feature %(feature)s in catalog %(catalog)s")%{"feature":src,"catalog":self.catalog_src}
+						icon = "images/no-icon.png"
+				pixbuf = get_pixbuf(icon)
+				self.icon_store.append([pixbuf, p.tag.lower(), name, src, path])
 		
 	
 	def catalog_activate(self, iconview, path) : 

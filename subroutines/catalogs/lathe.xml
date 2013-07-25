@@ -6,11 +6,13 @@
 		<sub name="Arc to (X,Y),(I,J)" icon="images/arc-to.png" src="draw/arc-to.ini"/>
 	</group>
 	 
-	<group name="OD ID Taper" icon="images/od.png">
+	<group name="Cutting" icon="images/od.png">
 		<sub name="OD" src="lathe/od.ini"/>	
 		<sub name="Taper" src="lathe/taper.ini"/>
 		<sub name="ID" src="lathe/id.ini"/>			
+		<sub name="Face" src="lathe/face.ini"/>			
 		<sub name="OD-advanced" src="lathe/od-advanced.ini"/>	
+		
 	</group>
 
 	<group name="Threading" icon="images/threading.png">
@@ -28,7 +30,7 @@
 	</group>
 	
 	<group name="Tool" icon="images/lathe-tool.png">
-		<sub name="Set lathe cuting params" src="lathe/lathe-cutting-params.ini"/>
+		<sub name="Set lathe cuting params" src="lathe/cutting-params.ini"/>
 		<sub name="Change tool" src="lathe/tool-change.ini"/>
 	</group>
 
