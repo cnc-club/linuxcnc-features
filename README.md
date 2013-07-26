@@ -102,4 +102,4 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 
 --------------------------------------------------------------------------------
 
-Some information on Russinan can be obtained here: http://cnc-club.ru/forum/viewtopic.php?f=15&t=3124&p=72441#p72441
+Some information on Russian can be obtained here: http://cnc-club.ru/forum/viewtopic.php?f=15&t=3124&p=72441#p72441
