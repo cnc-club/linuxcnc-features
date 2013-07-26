@@ -67,20 +67,31 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	"#self_id" - unique id made of feature Name + smallest integer id. 
 
 2. Eval and exec
-	<eval>"hello world!"</eval> everything inside <eval> tag will be passed
+	```xml
+	<eval>"hello world!"</eval>
+	```
+	everything inside &lt;eval&gt; tag will be passed
 	trought python's eval function. 
 	
-	<exec>print "hello world"</exec> allmost the same but will take all printed data.
+	```xml
+	<exec>print "hello world"</exec>
+	```
+	allmost the same but will take all printed data.
 	
 	you can use self as feature's self.
 
 3. Import 
-	<import>filename<import> will import file into feature text before proceccing.	
+	```xml
+	<import>filename<import>
+	```
+	will import file into feature text before proceccing.	
 	
 3. Including Gcode
 	G-code ngc files can be included by using one of the following functions: 
+	```xml
 		<eval>self.include_once("rotate-xy.ngc")</eval>
 		<eval>self.include("rotate-xy.ngc")</eval>
+	```
 
 --------------------------------------------------------------------------------
 
