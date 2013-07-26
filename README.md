@@ -1,6 +1,24 @@
 LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 
 
+0.	Simple usage
+--------------------------------------------------------------------------------
+1. You can use LinuxCNC Features in "stand alone" mode. It is almost the same
+	except that the Features are not included into Axis window and just lays 
+	in a sepparate window. Everything else should work the same including
+	preview in Axis!
+	
+	To use LinuxCNC Features in stand alone mode, just start them after you
+	have started LinuxCNC providing path to your LinuxCNC ini file in 
+	--ini parameter
+	
+	Example:
+	(in the directory with features.py)
+	```sh
+	./features.py --ini=/home/nick/linuxcnc/configs/sim/axis/axis_mm.ini
+	```
+
+
 1.	Install
 --------------------------------------------------------------------------------
 
