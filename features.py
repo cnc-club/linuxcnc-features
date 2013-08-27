@@ -372,16 +372,24 @@ class Features(gtk.VBox):
 			ini = optlist["--ini"]
 				
 		global SUBROUTINES_PATH
-		SUBROUTINES_PATH = ""
 		global PROGRAM_PREFIX
+		SUBROUTINES_PATH = ""
 		PROGRAM_PREFIX = ""
 		try : 
 			inifile = linuxcnc.ini(ini)
-			SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
-			PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""
+			try :			
+				SUBROUTINES_PATH = inifile.find('RS274NGC', 'SUBROUTINE_PATH') or ""
+			except : 
+				print _("Warning! There's no SUBROUTINES_PATH in ini file!")
+
+			try : 
+				PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""					
+			except : 
+				print _("Warning! There's no PROGRAM_PREFIX in ini file!")
 		except :
 			print _("Warning! Problem while loading ini file!")
-			
+
+		
 		self.config_src = "" 
 		if ini!="" and ini!=None :
 			self.config_src = os.path.dirname(ini)
