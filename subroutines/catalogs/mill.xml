@@ -6,30 +6,30 @@
 		</group>
 	
 		<group name="Circles" icon="images/circle.png"> 
-			<sub name="Circle" icon="images/circle.png" src="circle.ini"/>
-			<sub name="Oval" icon="images/oval.png" src="oval.ini"/>
+			<sub name="Circle" icon="images/circle.png" src="mill/circle.ini"/>
+			<sub name="Oval" icon="images/oval.png" src="mill/oval.ini"/>
 		</group>
 
 		<group name="Polygon" icon="images/hexagon.png">
-			<sub name="Hexagon" icon="images/hexagon.png" src="hexagon.ini"/>
-			<sub name="n-gon" icon="images/n-gon.png" src="n-gon.ini"/>
+			<sub name="Hexagon" icon="images/hexagon.png" src="mill/hexagon.ini"/>
+			<sub name="n-gon" icon="images/n-gon.png" src="mill/n-gon.ini"/>
 		</group>
 	</group> 	
 
 	<group name="Pocketing" icon="images/rect-pocket.png">
-		<sub name="Rectangular pocket" icon="images/rect-pocket.png" src="rect-pocket.ini" />
+		<sub name="Rectangular pocket" icon="images/rect-pocket.png" src="mill/rect-pocket.ini" />
 	</group>
 
 	<group name="Grouping" icon="images/array.png"> 
-		<sub name="Group" icon="images/group.png" src="group.ini"/>
-		<sub name="Array" icon="images/array.png" src="array.ini"/>
-		<sub name="Circular array" icon="images/circular-array.png" src="circular-array.ini"/>
+		<sub name="Group" icon="images/group.png" src="mill/group.ini"/>
+		<sub name="Array" icon="images/array.png" src="mill/array.ini"/>
+		<sub name="Circular array" icon="images/circular-array.png" src="mill/circular-array.ini"/>
 	</group>
 	
 	<group name="Tool" icon="images/mill-tool.png">
 		<sub name="Tool change" icon="images/tool-change.png" src="tool-change.ini"/>
 		<sub name="Tool" icon="images/mill-tool.png" src="set-tool.ini"/>
-		<sub name="Set cuting params" icon="images/tool.png" src="set-cutting-params.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" src="mill/set-cutting-params.ini"/>
 		<sub name="Measure tool length" icon="images/probe-tool-l.png" src="probe-tool-l.ini"/> 
 		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" src="probe-tool-d.ini"/> 
 		<sub name="Set tool probing params" icon="images/tool-probe.png" src="set-tool-probing-params.ini"/> 
@@ -48,3 +48,19 @@
 </xml>
 
 <!-- Do not forget to close <sub /> tags! -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
