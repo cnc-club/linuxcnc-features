@@ -4,194 +4,144 @@ O<draw-multipass> SUB
 	(Uses #<_z> and global cutting parameters)
 	O<draw-multipass-if> IF [#<_z> GT [#<_global_depth>+#<_global_final>*#<_global_final_num>]]
 		#<_draw_z> = [#<_z> - #<_global_depth_step>]
-		O<draw-multipass-if-01> IF [#<_draw_z> GT [#<_global_depth>+#<_global_final>*#<_global_final_num>]]
-			#<draw_z> = [#<_global_depth>+#<_global_final>*#<_global_final_num>]
-		O<draw-multipass-if-01> ENDIF 
+		O<draw-multipass-if-01> IF [#<_draw_z> LT [#<_global_depth>+#<_global_final>*#<_global_final_num>]]
+			#<_draw_z> = [#<_global_depth>+#<_global_final>*#<_global_final_num>]
+		O<draw-multipass-if-01> ENDIF
+		(debug, mult 1) 
 	O<draw-multipass-if> ELSE 
 		#<_draw_z> = [#<_z> - #<_global_final>]
+		(debug, mult 2) 
 	O<draw-multipass-if> ENDIF
-	O<draw-multipass-if-02> IF [#<_draw_z> LH #<global_depth>]
-		#<_draw_z> = #<global_depth>
+	O<draw-multipass-if-02> IF [#<_draw_z> LE #<_global_depth> AND #<_draw_last_pass> EQ 0  AND #<_draw_stage> GT 1]
+		#<_draw_z> = #<_global_depth>
+		#<_draw_l> = #<_draw_length>	
+		#<_draw_last_pass> = 1 (last pass)	
+		(debug, mult 3  IF [#<_draw_z> LT #<_global_depth> AND #<_draw_last_pass> EQ 0  AND #<_draw_stage> gt 1]) 
 	O<draw-multipass-if-02> ENDIF
-	#<_draw_l> = #<_draw_l_total>
+	O<draw-multipass-if-03> IF [#<_draw_last_pass> EQ 0]
+		#<_draw_l> = #<_draw_length>
+		(debug, multipass)
+		(debug, mult 4) 
+	O<draw-multipass-if-03> ENDIF
+	
 O<draw-multipass> ENDSUB
 
 (Draw line)
 O<draw-line-to> SUB
-	(adds line to in reletive coords)
+	(adds line to in relative coords)
 	#<x> = #1
 	#<y> = #2
 	#<l> = SQRT[#<x>**2 + #<y>**2] 
-	O<draw-line-if> IF [#<_draw-stage> EQ 1] (Just get length)
-		#<_draw-l> = [ #<_draw_length> + #<l> ]
+	O<draw-line-if> IF [#<_draw_stage> EQ 1] (Just get length)
+		#<_draw_length> = [ #<_draw_length> + #<l> ]
+		
 	O<draw-line-if> ELSEIF [#<l> GT 0] (here comes the cut)
-		O<draw-line-if-01> IF [#<_draw_l> LE 0 AND #<_z> GT #<_global_depth>] (Cut next layer)
+		(Get depth if needed)
+		O<draw-line-if-01> IF [#<_draw_l> LE 0 AND #<_z> GT #<_global_depth> ] (Cut next layer)
 			O<draw-multipass> CALL
 		O<draw-line-if-01> ENDIF	
+		
+		(Check len needed to penetrate to next pass)
 		#<_pl> = [[#<_z>-#<_draw_z>]/TAN[#<_global_penetration>]]
-		O<draw-line-if-03> IF [#<_pl> GT 0]
+
+		(Penetrate)
+		O<draw-line-if-03> IF [#<_pl> GT 0 ]
 			(Penetrate and then call cut)
-			#<k> = #<_pl>/#<l>
-			G01 X[#<_x>+#<x>*#<k>] Y[#<_y>+#<y>*#<k>] Z[#<draw_z>]
-			O<draw-line> CALL [ #<x>-#<x>*#<k> ]  [ #<y>-#<y>*#<k> ] 
-		O<draw-line-if-03> ELSE
+			#<k1> = [#<_pl>/#<l>]
+			O<draw-line-if-05> IF [#<k1> GT 1] 
+				#<k1> = 1
+			O<draw-line-if-05> ENDIF
+			G01 X[#<_x>+#<x>*#<k1>] Y[#<_y>+#<y>*#<k1>] Z[#<_z> - #<l>*#<k1>*TAN[#<_global_penetration>] ]
+			O<draw-line-to> CALL [ #<x>-#<x>*#<k1> ]  [ #<y>-#<y>*#<k1> ] 
+		O<draw-line-if-03> ELSEIF [#<_draw_l> GT 0 OR #<_z> GT #<_global_depth> ]
+			(debug, #<_draw_l> GT 0 OR #<_z> GT #<_global_depth>)
 			(Just cut)
 			O<draw-line-if-04> IF [#<l> GT #<_draw_l>] (Cut but not to the end)
-				#<k> = #<_draw_l>/#<l>
-				G01 X[#<_x>+#<x>*#<k>] Y[#<_y>+#<y>*#<k>]
-				#<_draw_l> = 0
-				O<draw-line> CALL [ #<x>-#<x>*#<k> ]  [ #<y>-#<y>*#<k> ] 
+				#<k1> = [#<_draw_l>/#<l>]
+				G01 X[#<_x>+#<x>*#<k1>] Y[#<_y>+#<y>*#<k1>]
+				#<_draw_l> = [#<_draw_l> - #<l>]				
+				(Next layer)
+				O<draw-multipass> CALL
+				O<draw-line-to> CALL [ #<x>-#<x>*#<k1> ]  [ #<y>-#<y>*#<k1> ] 
 			O<draw-line-if-04> ELSE (Cut)
 				G01 X[#<_x>+#<x>] Y[#<_y>+#<y>]
 				#<_draw_l> = [#<_draw_l> - #<l>]
+			O<draw-line-if-04> ENDIF
 		O<draw-line-if-03> ENDIF	
 	O<draw-line-if> ENDIF
-O<draw-line> ENDSUB
+O<draw-line-to> ENDSUB
 
 
 
 
+(   Mill deafults )
+	G17
 
-(Add line)
-O<line-to> SUB
-	O<goto> CALL [#1] [#2] [1]
-O<line-to> ENDSUB
+	#<_global_surface> = 40
+	#<_global_depth> = -10
+	#<_global_depth_step> = 10
+	#<_global_feed> = 1000
+	#<_global_spindle> = 1000
+	#<_global_rappid> = 70
 
+	#<_global_final> = 1
+	#<_global_final_num> = 2
+	#<_global_final_feed> = 1000
+	#<_global_final_spindle> = 1000
 
-(Add line or goto)
-O<goto> SUB
-	#<x> =  #1
-	#<y> =  #2
-	#<gcode> = #3
-	(Save angle at the end of movement)
-	O<alpha-at-move-end> CALL [1] [#1] [#2]
+	F#<_global_feed>
+	S#<_global_spindle>
+( / Mill deafults )
+
+(   defaults.ngc )
+
+	(Probe defaults)
+	#<_global_probe_func> = 38.2
+	#<_paranoid> = 1
 	
-	O<goto-if> IF [#<_plane> EQ 170] (XY)
-		G#<gcode> X#<x> Y#<y> 
-	O<goto-if> ELSEIF [#<_plane> EQ 180] (XZ)
-		G#<gcode> X#<x> Z#<y>
-	O<goto-if> ELSEIF [#<_plane> EQ 190] (YZ)
-		G#<gcode> Y#<x> Z#<y>
-	O<goto-if> ENDIF
-O<goto> ENDSUB
-
-
-(Add arc sub)
-(G x y i j)
-O<arc-to> SUB
-	#<gcode> = #1
-	#<x> =  #2
-	#<y> =  #3
-	#<i> =  #4
-	#<j> =  #5
-	(Save angle at the end of movement)
-	O<alpha-at-move-end> CALL [#1] [#2] [#3] [#4] [#5]
-	O<arc-to-if> IF     [#<_plane> EQ 170] (XY)
-		G#<gcode> X#<x> Y#<y> I#<i> J#<j> 
-	O<arc-to-if> ELSEIF [#<_plane> EQ 180] (XZ)
-		G#<gcode> X#<x> Z#<y> I#<i> K#<j> 
-	O<arc-to-if> ELSEIF [#<_plane> EQ 190] (YZ)
-		G#<gcode> Y#<x> Z#<y> J#<i> K#<j> 
-	O<arc-to-if> ENDIF
-O<arc-to> ENDSUB
-
-
-(get curent XY in current plane defined by G17-19)
-O<get-local-xy> SUB 
-	(G17 - pass)
-	O<get-local> CALL
-	O<get-local-xy-if> IF     [#<_plane> EQ 180] (XZ)
-		#<_yl> = #<_zl>
-	O<get-local-xy-if> ELSEIF [#<_plane> EQ 190] (YZ)
-		#<_xl> = #<_yl> 
-		#<_yl> = #<_zl>
-	O<get-local-xy-if> ENDIF
-O<get-local-xy> ENDSUB 
-
-(Add arc to x,y with r)
-O<arc-to-xyr> SUB
-	#<gcode> = #1
-	#<x> =  #2
-	#<y> =  #3
-	#<r> =  #4
-	(Get center)
-	O<get-local-xy> CALL
-	#<x1> = [[#<x>-#<_xl>]/2]
-	#<y1> = [[#<y>-#<_yl>]/2]
-
-	#<l> = [#<r>*#<r> - #<x1>**2 - #<y1>**2]
-	#<l1> = [#<x1>**2 + #<y1>**2]
-
-	O<arc-to-xyr-paranoid> IF [ [#<l> GE 0 AND #<l1> GT 0]   OR   #<_paranoid> EQ 0 ] (If we are paranoid Will raise an error while preview if we can not add arc)
-			#<l> = [ SQRT[#<l>]/SQRT[#<l1>] ]
-			#<g3mult> = -[#<gcode>*2-5] (-1 for G02, 1 for G3)
-			#<abs> = 	[#<_ijk_absolute_mode>] (=0 if i and j are absolute)		
-			#<i> = [-#<y1>*#<l>*#<g3mult>]
-			#<j> = [+#<x1>*#<l>*#<g3mult>]
-			O<arc-to> CALL [#<gcode>] [#<x>] [#<y>] [#<x1>-#<y1>*#<l>*#<g3mult>+#<abs>*#<_xl>] [#<y1>+#<x1>*#<l>*#<g3mult>+#<abs>*#<_yl>]
-	O<arc-to-xyr-paranoid> ELSE (We are not paranoid)
-			O<line-to> CALL [#<x>] [#<y>]
-	O<arc-to-xyr-paranoid> ENDIF
-O<arc-to-xyr> ENDSUB
-
-
-(This sub uses get-offsets.ngc, do not forget to include <eval>self.include_once["get-offsets.ngc"]</eval>)
-(get alpha at the end of next move)
-#<_global_alpha-at-move-end> =  0
-O<alpha-at-move-end> SUB
-	#<gcode> = #1
-	#<x> = #2
-	#<y> = #3
-	#<i> = #4
-	#<j> = #5
-	#<r> = #6
-
-	(Get local coordinates in plane)
-	O<get-local-xy> CALL
+	#<_global_flood> = 1
+	#<_global_mist> = 0
 	
-	(Now get alpha)
-	O<alpha-at-move-end-if-02> IF     [#<gcode> EQ 1] 
-		#<_global_alpha-at-move-end> =  ATAN[#<x>-#<_xl>]/[#<y>-#<_yl>]
-	O<alpha-at-move-end-if-02> ELSEIF [#<gcode> EQ 1]
-		#<g3mult> = [#<gcode>*2-5] (-1 for G02, 1 for G3)
-		#<abs> =	[1-#<_ijk_absolute_mode>] (=0 if i and j are absolute)
-		#<_global_alpha-at-move-end> =  ATAN[[#<y>-#<_yl>*#<abs>-#<j>]*#<g3mult>]/[#<x>-#<_yl>*#<abs>-#<i>]
-	O<alpha-at-move-end-if-02> ENDIF
-	
-O<alpha-at-move-end> ENDSUB
+	( Flood sub - turns on flood/mist depending on global parameters. )
+	O<flood> SUB  
+		O<flood-if-01>IF [#<_global_flood>]
+			M7
+		O<flood-if-01>ENDIF
+		O<flood-if-02>IF [#<_global_mist>]
+			M8
+		O<flood-if-02>ENDIF
+	O<flood> ENDSUB  
 
+( / defaults.ngc )
+O<flood> call
 
+#<_global_penetration> = 80
+#<_global_depth> = -10
+#<_global_depth_step> = 1000
+#<_draw_stage> = 1
+#<_draw_l> = 0
+G0 Z20
+G1 X0 Y0
+G1 X10
+#<_draw_z> = #<_global_surface>
+#<_draw_length> = 0
+#<_draw_last_pass> = 0
+O<draw> WHILE [[#<_z> GE #<_global_depth> OR #<_draw_l> GT 0]]
+	O<draw-line-to> CALL [10] [0]
+	O<draw-line-to> CALL [0] [10]
+	O<draw-line-to> CALL [-10] [-10]
 
-(Add arc tangent to 2 angles with R)
-(x,y,r,a,a)
-O<arc-to-raa> SUB
-	#<gcode> = #1
-	#<r> =  #2
-	#<a> =  #3
-	#<a1> = #4
+;	O<draw-line-to> CALL [10] [0]
+;	O<draw-line-to> CALL [0] [10]
+;	O<draw-line-to> CALL [10] [0]	
+;	O<draw-line-to> CALL [0] [-10]
+;	O<draw-line-to> CALL [10] [0]	
+;	O<draw-line-to> CALL [0] [20]
+;	O<draw-line-to> CALL [-30] [0]
+;	O<draw-line-to> CALL [0] [-20]
 
-	O<get-local-xy> CALL (get current local position)
-
-	O<arc-to-raa-if-01> IF [#<gcode> EQ 3]
-		#<i> = [ COS[#<a>]*#<r>]
-		#<j> = [-SIN[#<a>]*#<r>]
-		#<x1> = [ #<_xl>+#<i> - COS[#<a1>]*#<r> ]
-		#<y1> = [ #<_yl>+#<j> + SIN[#<a1>]*#<r> ]
-	O<arc-to-raa-if-01> ELSE
-		#<i> = [-COS[#<a>]*#<r>]
-		#<j> = [ SIN[#<a>]*#<r>]
-		#<x1> = [ #<_xl>+#<i> + COS[#<a1>]*#<r> ]
-		#<y1> = [ #<_yl>+#<j> - SIN[#<a1>]*#<r> ]
-	O<arc-to-raa-if-01> ENDIF
-	
-	;O<goto> CALL [#<i>] [#<j>]
-	;O<goto> CALL [#<x1>] [#<y1>]
-	;O<goto> CALL [#<x0>] [#<y0>]
-	;O<goto> CALL [#<_xl>] [#<_zl>]
-	
-	O<arc-to> CALL [#<gcode>] [#<x1>] [#<y1>] [#<i>] [#<j>]
-	
-O<arc-to-raa> ENDSUB
+	#<_draw_stage> = 2
+O<draw> ENDWHILE 
 
 
 M02
