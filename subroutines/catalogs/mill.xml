@@ -16,6 +16,15 @@
 		</group>
 	</group> 	
 
+	<group name="Draw" icon="images/draw.png">
+		<sub name="Draw" icon="images/draw.png" src="mill/draw/draw.ini" />	
+		<sub name="Line absolute" icon="images/line-abs.png" src="mill/draw/line-abs.ini" />
+		<sub name="Line relative" icon="images/line-rel.png" src="mill/draw/line-rel.ini" />
+		<sub name="Close drawing" icon="images/close.png" src="mill/draw/close.ini" />
+		<sub name="Arc to" icon="images/arc.png" src="mill/draw/arc-to.ini" />
+	</group>
+
+
 	<group name="Pocketing" icon="images/rect-pocket.png">
 		<sub name="Rectangular pocket" icon="images/rect-pocket.png" src="mill/rect-pocket.ini" />
 	</group>

@@ -284,7 +284,7 @@ class Feature():
 				
 	def process(self, s) :
 		def eval_callback(m) :
-			return str( eval(m.group(2), {"self":self}) )
+			return str( eval(m.group(2), globals(),{"self":self}) )
 			
 		def exec_callback(m) :
 			s = m.group(2) 
@@ -405,6 +405,7 @@ class Features(gtk.VBox):
 		gtk.VBox.__init__(self, *a, **kw)
 		self.undo_list = []
 		self.undo_pointer = 0
+
 		self.glade = gtk.Builder()
 		self.glade.add_from_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "features.glade"))
 		self.main_box = self.glade.get_object("FeaturesBox")
@@ -584,6 +585,7 @@ class Features(gtk.VBox):
 		button.connect("clicked", self.indent)
 		button = self.glade.get_object("unindent")
 		button.connect("clicked", self.unindent)
+
 
 		self.main_box.reparent(self)
 		self.main_box.show_all()

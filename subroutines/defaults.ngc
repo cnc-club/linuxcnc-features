@@ -1,5 +1,6 @@
-(   defaults.ngc )
 
+(   defaults.ngc )
+	;py,import interpreter
 	(Probe defaults)
 	#<_global_probe_func> = 38.2
 	#<_paranoid> = 1
