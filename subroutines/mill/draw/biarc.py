@@ -12,36 +12,44 @@ class Process:
 	rappid = 5 
 	feed = 1000
 	penetration_feed = 400 
-	penetration_angle = 45
+	penetration_angle = 45./180.*pi
 	final = 0.4
 	final_num = 3
 	final_feed = 400 
 	x,y,z = 0,0,0
 	gcode = ""
 	current_depth = 0
+	penetration_strategy = 0
+
 	
 	def p(self) : 
 		return P(self.x,self.y)
 		
-	def rappid_move(self, x,y) :
+	def rappid_move(self, x, y=None) :
+		if x.__class__ == P :
+			x,y = x.x,x.y
 		if self.z!=self.rappid :
 			self.g0(None, None, self.rappid)
-		if (self.x-x)**2 + (self.y-y)**2 > 1e-5
+		if (self.x-x)**2 + (self.y-y)**2 > 1e-5 :
 			self.g0(x, y)
 
-	def g1(self,x,y=None,z=None, feed, g0=False) :
+	def g1(self,x,y=None,z=None, feed=None, g0=False) :
 		if x.__class__ == P :
 			x,y = x.x, x.y
-		self.gcode += (g0?"G00":"G01") 
-		if x!= None :
+		self.gcode += "G00" if g0 else "G01" 
+		if x != None :
 			self.gcode +=" X%s"%x
 			self.x = x
-		if y!= None :
+		if y != None :
 			self.gcode +=" Y%s"%y
 			self.y = y
-		if z!= None :
+		if z != None :
 			self.gcode +=" Z%s"%z
 			self.z = z
+		if feed != None :
+			self.gcode +=" F%s"%feed
+			self.feed = feed
+			
 		self.gcode += "\n"
 		
 	def g0(self,x,y=None,z=None) :
@@ -209,42 +217,42 @@ class Line():
 	def reverse(self):
 		return Line(self.end,self.st)
 
-	def gcode(self, process,t=0.):
+	def to_gcode(self, process,t=0.):
+		process.gcode += "\n(%s)->Start at t=%s\n"%(self,t)	
 		if t>0 : # process from t - split line and process it from start
 			st = self.st + (self.end-self.st)*t
 			line = Line(st,self.end)
-			t = line.process(process, 0.)
-			l = line.l()*t
-			t = l/self.l()
+			t1 = line.to_gcode(process, 0.)
+			l = line.l*t1
+			t += l/self.l
 			return t
 		else : # process from the start	
-			gcode = ""
+
 			if (process.p()-self.st).l2()>1e-5 :
 				process.rappid_move(self.st)
 			
 			if process.z > process.surface :
 				process.to_surface()
 		
-			l = self.l()
-		
 			if process.z > process.current_depth :
 				# need to penetrate
-				pl = (process.z-process.current_depth)/sin(process.penetration_angle)
-				if pl>=l :
-					process.g1(self.end, None, process.z-l/tan(process.penetration_angle), process.penetration_feed)
+				pl = (process.z-process.current_depth)/tan(process.penetration_angle)
+				if pl>=self.l :
+					process.g1(self.end, None, process.z-self.l/tan(process.penetration_angle), process.penetration_feed)
 					return 1.
 				else :
-					process.g1(self.start + (self.end-self.start)*pl/l, None, process.current_depth, process.penetration_feed)
-					return (l-pl)/l # return t
+					process.g1(self.st + (self.end-self.st)*pl/self.l, None, process.current_depth, process.penetration_feed)
+					return pl/self.l # return t
 			else :	
-				if l < process.L - process.l :
+				if self.l < process.L - process.l :
 					process.g1(self.end)
-					process.l += l
+					process.l += self.l
 					return 1.
 				else :	
-					process.g1(self.start + (self.end-self.start)*(process.L-process.l)/l)			
+					process.g1(self.st + (self.end-self.st)*(process.L-process.l)/self.l)			
+					t = (process.L-process.l)/self.l
 					process.l = process.L
-					return (process.L-process.l)/l
+					return t
 			
 	def get_t_at_point(self,p) :
 		if self.st.x-self.end.x != 0 :
@@ -253,7 +261,7 @@ class Line():
 			return (self.st.y-p.y)/(self.st.y-self.end.y)
 			
 	def __repr__(self) :
-		return "Line: %s %s (l=.3%f) " % (self.st,self.end,self.l)
+		return "Line: %s %s (l=%0.3f)" % (self.st,self.end,self.l)
 				
 	def copy(self) : 
 		return Line(self.st,self.end)
@@ -378,29 +386,75 @@ class LineArc:
 			if (self.items[0].st-self.items[-1].end).l2()>10e-10 :
 				self.tems.append(Line(self.items[-1].end,self.items[0].st))
 	
+	def check_close(self) :
+		return len(self.items)>0 and (self.items[0].st-self.items[-1].end).l2()<1e-8
 	
 	def to_gcode(self) :
 		self.process = Process()
 		l = 0 # current pass length
 		L = self.l() # total path length
-		process.current_depth = process.surface
+		self.process.L = L
+		self.process.current_depth = self.process.surface
+		self.process.l = 0
 		i,t = 0,0.
-		while process.current_depth > process.depth :
-			if process.current_depth => process.depth+process.final*process.final_num :
-				process.current_depth -= process.step
-				process.current_depth = max(process.current_depth, process.depth+process.final*process.final_num)
+		w,w1 = 0,0
+		last_pass = None		
+		while self.process.current_depth > self.process.depth and w<15 :
+			w += 1
+			if self.process.current_depth > self.process.depth+self.process.final*self.process.final_num :
+				self.process.current_depth -= self.process.depth_step
+				self.process.current_depth = max(self.process.current_depth, self.process.depth + self.process.final*self.process.final_num)
 			else :	
-				process.current_depth -= process.final
-				process.current_depth = max(process.current_depth, process.depth)				
+				self.process.current_depth -= self.process.final
+				self.process.current_depth = max(self.process.current_depth, self.process.depth)				
+
+			self.process.gcode += "(New Depth = %s)"%self.process.current_depth
+			
+			self.process.l = 0
 			
 			if self.check_close() : # path is closed do the spiral
 				
-				while process.l<L :
+				while self.process.l<L :
 					# t- start/end point
-					t = self.items[i].process(process,t)
+					t = self.items[i].to_gcode(self.process,t)
 					if t>=1 : 
 						i = (i+1)%len(self.items)
-		
+						t=0
+			else :
+				if self.process.penetration_strategy == 0 : # saw /|/|/|/|/|/|/|/|
+					# penetrate
+					if last_pass != None :
+						self.process.rappid_move(self.items[0].st)
+						self.process.g0(None,None,last_pass)
+					while self.process.z > self.process.current_depth :
+						t = self.items[i].to_gcode(self.process,t)
+					last_pass = self.process.z
+					# now reverse and go back
+					t = 1.-t
+					while i>=0 or t>0. :
+						print i,t
+						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
+						self.process.l = 0
+						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
+						t = self.items[i].reverse().to_gcode(self.process,t)
+						t = 1.-t	
+						i -= 1
+
+				else : # triangle /\/\/\/\/\/\/\/\/\
+					pass
+				i,t = 0,0. 
+				# now we should be at the depth and at the start of the path
+				# process the path again
+				self.process.l = 0
+				while self.process.l<L :
+				# t- start/end point
+					t = self.items[i].to_gcode(self.process,t)
+					if t>=1 : 
+						i = (i+1)%len(self.items)
+						t=0
+					
+			
+		return self.process.gcode
 				
 		
 	def check(self, check_close = True) :

@@ -10,7 +10,9 @@ def log(*arg):
 
 
 class MillDraw:
-	def __init__(id=None):
+	def __init__(self, id=None):
+		self.path = LineArc()
+		 
 		pass
 	def draw_start(self,x,y):
 		self.items = []
@@ -38,3 +40,13 @@ class MillDraw:
 
 	def process(self): 
 		pass
+		
+draw = MillDraw()
+draw.path.items.append(Line([0,0],[0,100]))
+draw.path.items.append(Line([0,100],[100,100]))
+draw.path.items.append(Line([100,100],[100,0]))
+#draw.path.items.append(Line([100,0],[0,0]))
+
+print draw.path.to_gcode()
+
+
