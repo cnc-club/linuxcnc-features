@@ -6,22 +6,37 @@ pi2 = pi*2
 ###		Process - is used to store data while creating Gcode
 ################################################################################
 class Process:
-	depth = -10
-	depth_step = 1
-	surface = 0 
-	rappid = 5 
-	feed = 1000
-	penetration_feed = 400 
+	depth = -10.
+	depth_step = 1.
+	surface = 0.
+	rappid = 5.
+	feed = 1000.
+	spindle = 1000.
+	
+	penetration_feed = 400.
 	penetration_angle = 45./180.*pi
-	final = 0.4
-	final_num = 3
-	final_feed = 400 
+	
+	final = 0.1
+	final_num = 3.
+	final_feed = 400.
+	final_spindle = 400.
+	
 	x,y,z = None,None,None
 	gcode = ""
-	current_depth = 0
-	penetration_strategy = 0
+	current_depth = 0.
+	penetration_strategy = 0.
 	current_feed = None
-	cut_feed = 0
+	cut_feed = 0.
+
+	def __init__(self) :
+		self.x,self.y,self.z = None,None,None
+		self.gcode = ""
+		self.current_depth = 0
+		self.penetration_strategy = 0
+		self.current_feed = None
+		self.cut_feed = 0
+		self.current_spindle = None
+
 	
 	def p(self) : 
 		return P(self.x,self.y)
@@ -32,6 +47,11 @@ class Process:
 		self.to_rappid()
 		if self.x==None or self.y== None or (self.x-x)**2 + (self.y-y)**2 > 1e-8 :
 			self.g0(x, y)
+
+	def set_spindle(self, spindle) :
+		if spindle != None and spindle != self.current_spindle:
+			self.current_spindle = spindle
+			self.gcode +="S%s\n"%spindle
 
 	def g1(self,x,y=None,z=None, feed=None, g0=False) :
 		if x.__class__ == P :
@@ -49,7 +69,6 @@ class Process:
 		if feed != None and feed != self.current_feed:
 			self.current_feed = feed
 			self.gcode +=" F%s"%feed
-
 			
 		self.gcode += "\n"
 		
@@ -368,6 +387,7 @@ class Line():
 			
 class LineArc:
 	def __init__(self, items=None):
+		self.process = Process()
 		if items == None :
 			self.items = []
 		else: 	
@@ -392,7 +412,7 @@ class LineArc:
 	
 	def to_gcode(self) :
 		if len(self.items)==0 : return ""
-		self.process = Process()
+		self.process.__init__()
 		l = 0 # current pass length
 		L = self.l() # total path length
 		self.process.L = L
@@ -410,10 +430,12 @@ class LineArc:
 				self.process.current_depth -= self.process.depth_step
 				self.process.current_depth = max(self.process.current_depth, self.process.depth + self.process.final*self.process.final_num)
 				self.process.cut_feed = self.process.feed
+				self.process.set_spindle(self.process.spindle)
 			else :	
 				self.process.current_depth -= self.process.final
 				self.process.current_depth = max(self.process.current_depth, self.process.depth)				
 				self.process.cut_feed = self.process.final_feed
+				self.process.set_spindle(self.process.final_spindle)
 
 			self.process.gcode += "(New Depth = %s)"%self.process.current_depth
 			
@@ -438,13 +460,17 @@ class LineArc:
 					last_pass = self.process.z
 					# now reverse and go back
 					t = 1.-t
-					while i>=0 or t>0. :
+					print "@"
+					while i>=0 or t>1.e-10 :
+						print "(%s,%s)"%(i,t),
 						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
 						self.process.l = 0
 						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
 						t = self.items[i].reverse().to_gcode(self.process,t)
+						print "%s,%s"%(i,t)
 						t = 1.-t	
 						i -= 1
+						
 
 				else : # triangle /\/\/\/\/\/\/\/\/\
 					pass

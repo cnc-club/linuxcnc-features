@@ -43,6 +43,11 @@ class MillDraw:
 		for s in gcode.split("\n") :
 			s = re.sub("\(.*\)","",s)
 			s = re.sub(";.*","",s)
+			r = re.search("(?i)S([-0-9\.]+)",s)  
+			if r :
+				r = r.groups()
+				self.exp.append((-100,r[0], None, None, None, None, None, None))
+
 			r = re.search("(?i)G0?(1|0)\s*(X([-0-9\.]+))?\s*(Y([-0-9\.]+))?\s*(Z([-0-9\.]+))?\s*(F([-0-9\.]+))?",s) 
 			if r :
 				r = r.groups()
@@ -60,10 +65,7 @@ class MillDraw:
 			else :
 				return (-1, None, None, None, None, None, None, None)
 		
-#draw = MillDraw()
-#draw.path.items.append(Line([0,0],[0,100]))
-#draw.path.items.append(Line([0,100],[100,100]))
-#draw.path.items.append(Line([100,100],[100,0]))
-#draw.path.items.append(Line([100,0],[0,0]))
-#draw.process()
+draw = MillDraw()
+draw.path.items.append(Line([0,0],[0,100]))
+draw.process()
 

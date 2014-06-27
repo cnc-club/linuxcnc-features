@@ -38,7 +38,8 @@
 	<group name="Tool" icon="images/mill-tool.png">
 		<sub name="Tool change" icon="images/tool-change.png" src="tool-change.ini"/>
 		<sub name="Tool" icon="images/mill-tool.png" src="set-tool.ini"/>
-		<sub name="Set cuting params" icon="images/tool.png" src="mill/set-cutting-params.ini"/>
+		<sub name="Set cuting params" icon="images/surface.png" src="mill/set-cutting-params.ini"/>
+		<sub name="Set tool params" icon="images/tool.png" src="mill/set-tool-params.ini"/>		
 		<sub name="Measure tool length" icon="images/probe-tool-l.png" src="probe-tool-l.ini"/> 
 		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" src="probe-tool-d.ini"/> 
 		<sub name="Set tool probing params" icon="images/tool-probe.png" src="set-tool-probing-params.ini"/> 
@@ -54,22 +55,8 @@
 		<sub name="Probe cube" src="probe-cube.ini" icon="images/probe-cube.png"/>
 		<sub name="Set probing params" icon="images/probe.png" src="set-probing-params.ini"/>
 	</group>
+	<defaults src="mill/defaults.ngc"/>	
 </xml>
 
 <!-- Do not forget to close <sub /> tags! -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

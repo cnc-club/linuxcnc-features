@@ -8,6 +8,9 @@
 	#<_global_spindle> = 1000
 	#<_global_rappid> = 70
 
+	#<_global_penetration_feed> = 100
+	#<_global_penetration_angle> = 30
+
 	#<_global_final> = 1
 	#<_global_final_num> = 2
 	#<_global_final_feed> = 1000
@@ -17,24 +20,4 @@
 	S#<_global_spindle>
 ( / Mill deafults )
 
-(   defaults.ngc )
 
-	(Probe defaults)
-	#<_global_probe_func> = 38.2
-	#<_paranoid> = 1
-	
-	#<_global_flood> = 1
-	#<_global_mist> = 0
-	
-	( Flood sub - turns on flood/mist depending on global parameters. )
-	O<flood> SUB  
-		O<flood-if-01>IF [#<_global_flood>]
-			M7
-		O<flood-if-01>ENDIF
-		O<flood-if-02>IF [#<_global_mist>]
-			M8
-		O<flood-if-02>ENDIF
-	O<flood> ENDSUB  
-
-( / defaults.ngc )
-O<flood> call
