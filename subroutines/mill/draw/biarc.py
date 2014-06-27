@@ -16,11 +16,12 @@ class Process:
 	final = 0.4
 	final_num = 3
 	final_feed = 400 
-	x,y,z = 0,0,0
+	x,y,z = None,None,None
 	gcode = ""
 	current_depth = 0
 	penetration_strategy = 0
-
+	current_feed = None
+	cut_feed = 0
 	
 	def p(self) : 
 		return P(self.x,self.y)
@@ -28,9 +29,8 @@ class Process:
 	def rappid_move(self, x, y=None) :
 		if x.__class__ == P :
 			x,y = x.x,x.y
-		if self.z!=self.rappid :
-			self.g0(None, None, self.rappid)
-		if (self.x-x)**2 + (self.y-y)**2 > 1e-5 :
+		self.to_rappid()
+		if self.x==None or self.y== None or (self.x-x)**2 + (self.y-y)**2 > 1e-8 :
 			self.g0(x, y)
 
 	def g1(self,x,y=None,z=None, feed=None, g0=False) :
@@ -46,9 +46,10 @@ class Process:
 		if z != None :
 			self.gcode +=" Z%s"%z
 			self.z = z
-		if feed != None :
+		if feed != None and feed != self.current_feed:
+			self.current_feed = feed
 			self.gcode +=" F%s"%feed
-			self.feed = feed
+
 			
 		self.gcode += "\n"
 		
@@ -245,11 +246,11 @@ class Line():
 					return pl/self.l # return t
 			else :	
 				if self.l < process.L - process.l :
-					process.g1(self.end)
+					process.g1(self.end, feed=process.cut_feed)
 					process.l += self.l
 					return 1.
 				else :	
-					process.g1(self.st + (self.end-self.st)*(process.L-process.l)/self.l)			
+					process.g1(self.st + (self.end-self.st)*(process.L-process.l)/self.l, feed=process.cut_feed)			
 					t = (process.L-process.l)/self.l
 					process.l = process.L
 					return t
@@ -390,6 +391,7 @@ class LineArc:
 		return len(self.items)>0 and (self.items[0].st-self.items[-1].end).l2()<1e-8
 	
 	def to_gcode(self) :
+		if len(self.items)==0 : return ""
 		self.process = Process()
 		l = 0 # current pass length
 		L = self.l() # total path length
@@ -398,15 +400,20 @@ class LineArc:
 		self.process.l = 0
 		i,t = 0,0.
 		w,w1 = 0,0
-		last_pass = None		
+		last_pass = None	
+		self.process.to_rappid()
+		self.process.rappid_move(self.items[0].st)
+			
 		while self.process.current_depth > self.process.depth and w<15 :
 			w += 1
 			if self.process.current_depth > self.process.depth+self.process.final*self.process.final_num :
 				self.process.current_depth -= self.process.depth_step
 				self.process.current_depth = max(self.process.current_depth, self.process.depth + self.process.final*self.process.final_num)
+				self.process.cut_feed = self.process.feed
 			else :	
 				self.process.current_depth -= self.process.final
 				self.process.current_depth = max(self.process.current_depth, self.process.depth)				
+				self.process.cut_feed = self.process.final_feed
 
 			self.process.gcode += "(New Depth = %s)"%self.process.current_depth
 			
@@ -432,7 +439,6 @@ class LineArc:
 					# now reverse and go back
 					t = 1.-t
 					while i>=0 or t>0. :
-						print i,t
 						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
 						self.process.l = 0
 						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
@@ -442,6 +448,7 @@ class LineArc:
 
 				else : # triangle /\/\/\/\/\/\/\/\/\
 					pass
+					
 				i,t = 0,0. 
 				# now we should be at the depth and at the start of the path
 				# process the path again
@@ -453,7 +460,7 @@ class LineArc:
 						i = (i+1)%len(self.items)
 						t=0
 					
-			
+		self.process.to_rappid()
 		return self.process.gcode
 				
 		
