@@ -1,5 +1,6 @@
 from points import P
 from biarc import *
+from math import *
 import sys
 sys.stderr=sys.stdout
 import re
@@ -13,7 +14,7 @@ def log(*arg):
 
 
 class MillDraw:
-	def __init__(self, id=None):
+	def __init__(self):
 		self.path = LineArc()
 		 
 	def draw_start(self,x,y):
@@ -27,8 +28,8 @@ class MillDraw:
 		self.p = P(x,y)
 		print "Line to (%s, %s)"%(x,y)
 	
-	def arc_to(self,x,y,i,j):
-		self.path.items.append( Line(self.p, [x,y]) )
+	def arc_to(self,a,x,y,i,j): # a=2|3 => (a*2-5)=-1|1
+		self.path.items.append( Arc(self.p, self.p+P(x,y), self.p+P(i,j), a*2-5) )
 		self.p = P(x,y)
 		print "Arc to (%s, %s)-(%s, %s)"%(x,y,i,j)
 
@@ -52,8 +53,16 @@ class MillDraw:
 			if r :
 				r = r.groups()
 				g1 = 10*(r[2]!=None) + 20*(r[4]!=None) + 40*(r[6]!=None)
-				g = (int(r[0])*100+g1, r[2],r[4],r[6], None, None, None,r[8])
+				g = (int(r[0])*100+g1, r[2], r[4], r[6], None, None, None, r[8])
 				self.exp.append(g)
+
+			r = re.search("(?i)G0?(2|3)\s*(X([-0-9\.]+))?\s*(Y([-0-9\.]+))?\s*(I([-0-9\.]+))?\s*(J([-0-9\.]+))?\s*(Z([-0-9\.]+))?\s*(F([-0-9\.]+))?",s) 
+			if r :
+				r = r.groups()
+				g1 = 1*(r[2]!=None) + 2*(r[4]!=None) + 4*(r[6]!=None) + 8*(r[8]!=None) + 16*(r[10]!=None)
+				g = (int(r[0])*100+g1, r[2], r[4], r[10], r[6], r[8], None, r[12])
+				self.exp.append(g)
+
 		self.exp.append((-1, None, None, None, None, None, None, None))		
 
 
@@ -64,8 +73,18 @@ class MillDraw:
 				return self.exp[self.line_num-1]
 			else :
 				return (-1, None, None, None, None, None, None, None)
-		
-draw = MillDraw()
-draw.path.items.append(Line([0,0],[0,100]))
-draw.process()
 
+
+if __name__ == "__main__" :
+	draw = MillDraw()
+	draw.draw_start(0,0)
+#	draw.line_to(.1,1)	
+	draw.line_to(10,0)
+	draw.line_to(20,0)	
+	draw.path.process.penetration_angle = 2./180.*pi
+	for i in draw.path.items:
+		print i
+		
+	draw.process()
+	
+	print draw.path.process.gcode

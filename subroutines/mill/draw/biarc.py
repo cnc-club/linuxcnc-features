@@ -1,4 +1,5 @@
 from points import P
+import sys
 from math import *
 pi2 = pi*2
 
@@ -53,6 +54,20 @@ class Process:
 			self.current_spindle = spindle
 			self.gcode +="S%s\n"%spindle
 
+	def g2(self, st, end, c, a, z=None, feed=None) :
+		self.gcode += "G02" if a>0 else "G03"
+		self.gcode += " X%s Y%s"%(end.x,end.y)
+		self.gcode += " I%s J%s"%((c-st).x,(c-st).y)
+		self.x = end.x
+		self.y = end.y
+		if z != None :
+			self.gcode += " Z%s"%(z)
+			self.z = z
+		if feed != None :
+			self.gcode += " F%s"%feed
+			self.current_feed = feed
+		self.gcode += "\n"		
+	
 	def g1(self,x,y=None,z=None, feed=None, g0=False) :
 		if x.__class__ == P :
 			x,y = x.x, x.y
@@ -104,7 +119,11 @@ class Arc():
 		if a>0 : self.a -= pi2
 		self.a *= -1.
 		self.cp = (self.st-self.c).rot(self.a/2)+self.c # central point of an arc
-
+		self.l = self.length()
+		
+	def reverse(self):
+		return Arc(self.end,self.st,self.c,-self.a)
+		
 	def __repr__(self) :
 		return "Arc: s%s e%s c%s r%.2f a%.2f (l=%.3f) " % (self.st,self.end,self.c,self.r,self.a,self.length())
 
@@ -211,7 +230,7 @@ class Arc():
 							P([P2.x-h*(P1.y-P0.y)/d, P2.y+h*(P1.x-P0.x)/d]),
 						] ))
 
-	def point_d2(self, p):
+	def point_d2(self, p) :
 		if self.point_inside_angle(p) :
 			l = (p-self.c).mag()
 			if l == 0 : return self.r**2
@@ -219,8 +238,63 @@ class Arc():
 		else :
 			return min( (p-self.st).l2(), (p-self.end).l2() )	
 
-
+	
+	def to_gcode(self, process, t=0.) :
+		print "%s"%self
+		print "t=%s"%t
+		process.gcode += "\n(%s ->Start at t=%s)\n"%(self,t)	
+		if t>0 : # process from t - split line and process it from start
+			st = (self.st - self.c).rot(self.a*t) + self.c
+			arc = Arc(st, self.end, self.c, self.a*t)
+			t1 = arc.to_gcode(process, 0.)
+			l = arc.l*t1
+			t += l/self.l
+			return t
+		else: # t=0 from the start
+			if (process.p()-self.st).l2()>1e-5 :
+				process.rappid_move(self.st)
 			
+			if process.z > process.surface :
+				process.to_surface()
+		
+			if process.z > process.current_depth :
+				# need to penetrate
+				if process.penetration_angle >= 89.9/180.*pi : # do straight penetration
+					process.g1(self.st, None, process.current_depth, process.penetration_feed)
+					return 0.
+				else :					
+					pl = (process.z-process.current_depth)/tan(process.penetration_angle)
+					if pl>=self.l :
+						process.g2(self.st, self.end, self.c, self.a, process.z-self.l*tan(process.penetration_angle), process.penetration_feed)
+						return 1.
+					else :
+						process.g2(
+									self.st, 
+									(self.st - self.c).rot(self.a*pl/self.l) + self.c,
+									self.c,
+									self.a, 
+									process.current_depth, 
+									process.penetration_feed
+									)
+						return pl/self.l # return t
+			else :	# do the cut
+				if self.l < process.L - process.l :
+					process.g2(self.st, self.end, self.c, self.a, feed=process.penetration_feed)
+					process.l += self.l
+					return 1.
+				else :	
+					process.g1(self.st + (self.end-self.st)*(process.L-process.l)/self.l, feed=process.cut_feed)			
+					process.g2(
+								self.st, 
+								(self.st - self.c).rot(self.a*(process.L-process.l)/self.l) + self.c,
+								self.c,
+								self.a, 
+								feed=process.cut_feed
+								)
+					t = (process.L-process.l)/self.l
+					process.l = process.L
+					return t
+				
 class Line():
 	def __init__(self,st,end):
 		#debugger.add_debugger_to_class(self.__class__)
@@ -238,7 +312,10 @@ class Line():
 		return Line(self.end,self.st)
 
 	def to_gcode(self, process,t=0.):
-		process.gcode += "\n(%s)->Start at t=%s\n"%(self,t)	
+		print "%s"%self
+		print "t=%s"%t
+		sys.stdin.read(1)
+		process.gcode += "\n(%s ->Start at t=%s)\n"%(self,t)	
 		if t>0 : # process from t - split line and process it from start
 			st = self.st + (self.end-self.st)*t
 			line = Line(st,self.end)
@@ -247,23 +324,28 @@ class Line():
 			t += l/self.l
 			return t
 		else : # process from the start	
-
 			if (process.p()-self.st).l2()>1e-5 :
+				print "Move@@@@@@"
 				process.rappid_move(self.st)
-			
 			if process.z > process.surface :
 				process.to_surface()
-		
 			if process.z > process.current_depth :
+				print "Penetrate CUT",process.z, process.current_depth
 				# need to penetrate
-				pl = (process.z-process.current_depth)/tan(process.penetration_angle)
-				if pl>=self.l :
-					process.g1(self.end, None, process.z-self.l/tan(process.penetration_angle), process.penetration_feed)
-					return 1.
-				else :
-					process.g1(self.st + (self.end-self.st)*pl/self.l, None, process.current_depth, process.penetration_feed)
-					return pl/self.l # return t
+				if process.penetration_angle >= 89.9/180.*pi : # do straight penetration
+					process.g1(self.st, None, process.current_depth, process.penetration_feed)
+					return 0.
+				else :					
+					pl = (process.z-process.current_depth)/tan(process.penetration_angle)
+					if pl>self.l :
+						process.g1(self.end, None, process.z-self.l*tan(process.penetration_angle), process.penetration_feed)
+						print "Penetrate CUT---",process.z
+						return 1.
+					else :
+						process.g1(self.st + (self.end-self.st)*pl/self.l, None, process.current_depth, process.penetration_feed)
+						return pl/self.l # return t
 			else :	
+				print "CUT"
 				if self.l < process.L - process.l :
 					process.g1(self.end, feed=process.cut_feed)
 					process.l += self.l
@@ -412,6 +494,11 @@ class LineArc:
 	
 	def to_gcode(self) :
 		if len(self.items)==0 : return ""
+		if self.process.penetration_angle*180./pi < 1. : # bad penetration angle, penetrate at 45 degree
+			self.process.penetration_angle = 45./180.*pi
+		if self.process.penetration_angle*180./pi >= 90. : # bad penetration angle, penetrate at 90 degree
+			self.process.penetration_angle = 90./180.*pi
+			
 		self.process.__init__()
 		l = 0 # current pass length
 		L = self.l() # total path length
@@ -446,28 +533,46 @@ class LineArc:
 				while self.process.l<L :
 					# t- start/end point
 					t = self.items[i].to_gcode(self.process,t)
-					if t>=1 : 
+					if t>=1. : 
 						i = (i+1)%len(self.items)
 						t=0
 			else :
 				if self.process.penetration_strategy == 0 : # saw /|/|/|/|/|/|/|/|
 					# penetrate
+					i = 0 # always start at the start
+					t = 0.
 					if last_pass != None :
 						self.process.rappid_move(self.items[0].st)
 						self.process.g0(None,None,last_pass)
+					forward = True # current saw direction, for small paths	
 					while self.process.z > self.process.current_depth :
-						t = self.items[i].to_gcode(self.process,t)
+						print "Penetrate, %s %s"%(i,t)
+						if forward :
+							t = self.items[i].to_gcode(self.process,0)
+							if t>=1. :
+								i += 1 # TODO short paths saw penetration
+								t = 0.
+								if i>=len(self.items) :
+									forward = False
+									i = len(self.items)-1 # last item
+						else :						
+							t = self.items[i].reverse().to_gcode(self.process,0)
+							if t>=1. :
+								i -= 1
+								t = 0.
+								if i<0 :
+									forward = True
+									i = 0
+															
 					last_pass = self.process.z
 					# now reverse and go back
 					t = 1.-t
-					print "@"
 					while i>=0 or t>1.e-10 :
-						print "(%s,%s)"%(i,t),
+						print "Fall back, %s %s"%(i,t)
 						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
 						self.process.l = 0
 						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
 						t = self.items[i].reverse().to_gcode(self.process,t)
-						print "%s,%s"%(i,t)
 						t = 1.-t	
 						i -= 1
 						
@@ -479,13 +584,15 @@ class LineArc:
 				# now we should be at the depth and at the start of the path
 				# process the path again
 				self.process.l = 0
-				while self.process.l<L :
-				# t- start/end point
+				while self.process.l < self.process.L :
+					print "Cut, %s %s"%(i,t)
+					print "Cut, process=%s of %s"%(self.process.l,self.process.L)
+					# t- start/end point
 					t = self.items[i].to_gcode(self.process,t)
 					if t>=1 : 
 						i = (i+1)%len(self.items)
-						t=0
-					
+						t = 0
+					print "Cut, process=%s of %s, t=%s"%(self.process.l,self.process.L, t)					
 		self.process.to_rappid()
 		return self.process.gcode
 				
