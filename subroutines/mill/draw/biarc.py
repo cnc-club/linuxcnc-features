@@ -53,37 +53,45 @@ class Process:
 		if spindle != None and spindle != self.current_spindle:
 			self.current_spindle = spindle
 			self.gcode +="S%s\n"%spindle
+	
+	def format(self, *arg):
+		s = arg[0]
+		t = [("%0.7f"%i).rstrip("0") for i in arg[1:]]
+		return s%tuple(t)
+			
+
 
 	def g2(self, st, end, c, a, z=None, feed=None) :
-		self.gcode += "G02" if a>0 else "G03"
-		self.gcode += " X%s Y%s"%(end.x,end.y)
-		self.gcode += " I%s J%s"%((c-st).x,(c-st).y)
+		gcode = "G03" if a>0 else "G02"
+		gcode += self.format(" X%s Y%s",end.x,end.y)
+		gcode += self.format(" I%s J%s",(c-st).x,(c-st).y)
 		self.x = end.x
 		self.y = end.y
 		if z != None :
-			self.gcode += " Z%s"%(z)
+			gcode += self.format(" Z%s",(z))
 			self.z = z
 		if feed != None :
-			self.gcode += " F%s"%feed
+			gcode += self.format(" F%s",feed)
 			self.current_feed = feed
-		self.gcode += "\n"		
+		# print gcode	
+		self.gcode += gcode+"\n"		
 	
 	def g1(self,x,y=None,z=None, feed=None, g0=False) :
 		if x.__class__ == P :
 			x,y = x.x, x.y
 		self.gcode += "G00" if g0 else "G01" 
 		if x != None :
-			self.gcode +=" X%s"%x
+			self.gcode += self.format(" X%s",x)
 			self.x = x
 		if y != None :
-			self.gcode +=" Y%s"%y
+			self.gcode += self.format(" Y%s",y)
 			self.y = y
 		if z != None :
-			self.gcode +=" Z%s"%z
+			self.gcode += self.format(" Z%s",z)
 			self.z = z
 		if feed != None and feed != self.current_feed:
 			self.current_feed = feed
-			self.gcode +=" F%s"%feed
+			self.gcode +=self.format(" F%s",feed)
 			
 		self.gcode += "\n"
 		
@@ -240,10 +248,10 @@ class Arc():
 
 	
 	def to_gcode(self, process, t=0.) :
-		print "%s"%self
-		print "t=%s"%t
+		# print "To Gcode %s, t=%s"%(self,t)
 		process.gcode += "\n(%s ->Start at t=%s)\n"%(self,t)	
 		if t>0 : # process from t - split line and process it from start
+			# print self.l, process.l,"@@@5"
 			st = (self.st - self.c).rot(self.a*t) + self.c
 			arc = Arc(st, self.end, self.c, self.a*t)
 			t1 = arc.to_gcode(process, 0.)
@@ -272,18 +280,17 @@ class Arc():
 									self.st, 
 									(self.st - self.c).rot(self.a*pl/self.l) + self.c,
 									self.c,
-									self.a, 
+									self.a*pl/self.l, 
 									process.current_depth, 
 									process.penetration_feed
 									)
 						return pl/self.l # return t
 			else :	# do the cut
 				if self.l < process.L - process.l :
-					process.g2(self.st, self.end, self.c, self.a, feed=process.penetration_feed)
+					process.g2(self.st, self.end, self.c, self.a, feed=process.cut_feed)
 					process.l += self.l
 					return 1.
 				else :	
-					process.g1(self.st + (self.end-self.st)*(process.L-process.l)/self.l, feed=process.cut_feed)			
 					process.g2(
 								self.st, 
 								(self.st - self.c).rot(self.a*(process.L-process.l)/self.l) + self.c,
@@ -312,9 +319,7 @@ class Line():
 		return Line(self.end,self.st)
 
 	def to_gcode(self, process,t=0.):
-		print "%s"%self
-		print "t=%s"%t
-		sys.stdin.read(1)
+#		print "To Gcode %s, t=%s"%(self,t)
 		process.gcode += "\n(%s ->Start at t=%s)\n"%(self,t)	
 		if t>0 : # process from t - split line and process it from start
 			st = self.st + (self.end-self.st)*t
@@ -325,12 +330,10 @@ class Line():
 			return t
 		else : # process from the start	
 			if (process.p()-self.st).l2()>1e-5 :
-				print "Move@@@@@@"
 				process.rappid_move(self.st)
 			if process.z > process.surface :
 				process.to_surface()
 			if process.z > process.current_depth :
-				print "Penetrate CUT",process.z, process.current_depth
 				# need to penetrate
 				if process.penetration_angle >= 89.9/180.*pi : # do straight penetration
 					process.g1(self.st, None, process.current_depth, process.penetration_feed)
@@ -339,13 +342,11 @@ class Line():
 					pl = (process.z-process.current_depth)/tan(process.penetration_angle)
 					if pl>self.l :
 						process.g1(self.end, None, process.z-self.l*tan(process.penetration_angle), process.penetration_feed)
-						print "Penetrate CUT---",process.z
 						return 1.
 					else :
 						process.g1(self.st + (self.end-self.st)*pl/self.l, None, process.current_depth, process.penetration_feed)
 						return pl/self.l # return t
 			else :	
-				print "CUT"
 				if self.l < process.L - process.l :
 					process.g1(self.end, feed=process.cut_feed)
 					process.l += self.l
@@ -532,8 +533,9 @@ class LineArc:
 				
 				while self.process.l<L :
 					# t- start/end point
+#					print "Spiral i=%s, t=%s, process.z=%s, cur_depth=%s"%(i,t,self.process.z,self.process.current_depth)
 					t = self.items[i].to_gcode(self.process,t)
-					if t>=1. : 
+					if t>=1.-1.e-8 : 
 						i = (i+1)%len(self.items)
 						t=0
 			else :
@@ -546,7 +548,7 @@ class LineArc:
 						self.process.g0(None,None,last_pass)
 					forward = True # current saw direction, for small paths	
 					while self.process.z > self.process.current_depth :
-						print "Penetrate, %s %s"%(i,t)
+#						print "Penetrate saw, i=%s, t=%s, forward=%s"%(i,t,forward)
 						if forward :
 							t = self.items[i].to_gcode(self.process,0)
 							if t>=1. :
@@ -563,17 +565,18 @@ class LineArc:
 								if i<0 :
 									forward = True
 									i = 0
-															
+									
+					if not forward :
+						t = 1.-t
+#					print "Done penetration at i=%s t=%s"%(i,t)
 					last_pass = self.process.z
 					# now reverse and go back
-					t = 1.-t
-					while i>=0 or t>1.e-10 :
-						print "Fall back, %s %s"%(i,t)
+					while i>=0 :
+#						print "Fall back, %s %s"%(i,t)
 						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
 						self.process.l = 0
 						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
-						t = self.items[i].reverse().to_gcode(self.process,t)
-						t = 1.-t	
+						t = self.items[i].reverse().to_gcode(self.process,1.-t)
 						i -= 1
 						
 
@@ -585,14 +588,13 @@ class LineArc:
 				# process the path again
 				self.process.l = 0
 				while self.process.l < self.process.L :
-					print "Cut, %s %s"%(i,t)
-					print "Cut, process=%s of %s"%(self.process.l,self.process.L)
+#					print "Cut, i=%s t=%s"%(i,t)
+#					print "Cut, process=%s of %s"%(self.process.l,self.process.L)
 					# t- start/end point
 					t = self.items[i].to_gcode(self.process,t)
 					if t>=1 : 
 						i = (i+1)%len(self.items)
 						t = 0
-					print "Cut, process=%s of %s, t=%s"%(self.process.l,self.process.L, t)					
 		self.process.to_rappid()
 		return self.process.gcode
 				

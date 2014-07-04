@@ -28,8 +28,8 @@ class MillDraw:
 		self.p = P(x,y)
 		print "Line to (%s, %s)"%(x,y)
 	
-	def arc_to(self,a,x,y,i,j): # a=2|3 => (a*2-5)=-1|1
-		self.path.items.append( Arc(self.p, self.p+P(x,y), self.p+P(i,j), a*2-5) )
+	def arc_to(self,a,x,y,i,j): # a=2|3 => a*2-5=-1|1
+		self.path.items.append( Arc(self.p, P(x,y), self.p+P(i,j), a*2-5) )
 		self.p = P(x,y)
 		print "Arc to (%s, %s)-(%s, %s)"%(x,y,i,j)
 
@@ -78,10 +78,9 @@ class MillDraw:
 if __name__ == "__main__" :
 	draw = MillDraw()
 	draw.draw_start(0,0)
-#	draw.line_to(.1,1)	
 	draw.line_to(10,0)
-	draw.line_to(20,0)	
-	draw.path.process.penetration_angle = 2./180.*pi
+	draw.arc_to(3,0,0,-5,0)	
+	draw.path.process.penetration_angle = 30./180.*pi
 	for i in draw.path.items:
 		print i
 		
