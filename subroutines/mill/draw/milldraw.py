@@ -4,13 +4,18 @@ from math import *
 import sys
 sys.stderr=sys.stdout
 import re
+import subprocess
+import os
 log_level=1
+
+
 
 def log(*arg):
 	if log_level > 0 :
 		for s in arg :
 			print s,", ",
 		print 
+
 
 
 class MillDraw:
@@ -29,10 +34,26 @@ class MillDraw:
 		print "Line to (%s, %s)"%(x,y)
 	
 	def arc_to(self,a,x,y,i,j): # a=2|3 => a*2-5=-1|1
-		self.path.items.append( Arc(self.p, P(x,y), self.p+P(i,j), a*2-5) )
-		self.p = P(x,y)
-		print "Arc to (%s, %s)-(%s, %s)"%(x,y,i,j)
-
+		end = P(x,y)
+		c = self.p+P(i,j) 
+		r1,r2 = (self.p-c).l2(), (self.p-end).l2()
+		if  abs(r1-r2) > 1.e-6 :	# check radiuses at the start/end of the arc
+			r1,r2 = (self.p-c).mag(), (self.p-end).mag()
+			subprocess.Popen(['zenity', '--warning', '--timeout=3',
+							'--text', ('Arc from %s-%s was replaced by the line because of start and end raduises are not equal.\n'+
+							'r1=%s, r2=%s, st %s, end %s, center %s')%(self.p,end,r1,r2,self.p,end,c)])
+			self.line_to(x,y)			
+		elif r1<1e-6 or r2<1e-6 :
+			r1,r2 = (self.p-c).mag(), (self.p-end).mag()
+			subprocess.Popen(['zenity', '--warning', '--timeout=3',
+							'--text', ('Arc from %s-%s was replaced by the line because of radius too small.\n'+
+							'r1=%s, r2=%s, st %s, end %s, center %s')%(self.p,end,r1,r2,self.p,end,c)])
+			self.line_to(x,y)				
+		else :
+			self.path.items.append( Arc(self.p, end, c, a*2-5) )
+			self.p = P(x,y)
+			print "Arc to (%s, %s)-(%s, %s)"%(x,y,i,j)
+		
 	def close(self) :
 		self.path.items.append( Line(self.p, self.st) )
 	

@@ -3,6 +3,8 @@ import sys
 from math import *
 pi2 = pi*2
 
+line_limit=1000 # will break if Gcode is larget than line_limit
+
 ################################################################################
 ###		Process - is used to store data while creating Gcode
 ################################################################################
@@ -538,6 +540,11 @@ class LineArc:
 					if t>=1.-1.e-8 : 
 						i = (i+1)%len(self.items)
 						t=0
+						
+					if self.process.gcode.count("\n")>line_limit : # check limits to aviod infinite loop
+						self.process.to_rappid()
+						return self.process.gcode
+	
 			else :
 				if self.process.penetration_strategy == 0 : # saw /|/|/|/|/|/|/|/|
 					# penetrate
@@ -565,9 +572,14 @@ class LineArc:
 								if i<0 :
 									forward = True
 									i = 0
-									
+					
+						if self.process.gcode.count("\n")>line_limit : # check limits to aviod infinite loop
+							self.process.to_rappid()
+							return self.process.gcode
+
 					if not forward :
 						t = 1.-t
+
 #					print "Done penetration at i=%s t=%s"%(i,t)
 					last_pass = self.process.z
 					# now reverse and go back
@@ -578,6 +590,10 @@ class LineArc:
 						self.process.gcode += "(Reversed %s)\n"%self.items[i].reverse()
 						t = self.items[i].reverse().to_gcode(self.process,1.-t)
 						i -= 1
+						
+						if self.process.gcode.count("\n")>line_limit : # check limits to aviod infinite loop
+							self.process.to_rappid()
+							return self.process.gcode
 						
 
 				else : # triangle /\/\/\/\/\/\/\/\/\
@@ -595,6 +611,11 @@ class LineArc:
 					if t>=1 : 
 						i = (i+1)%len(self.items)
 						t = 0
+						
+					if self.process.gcode.count("\n")>line_limit : # check limits to aviod infinite loop
+						self.process.to_rappid()
+						return self.process.gcode
+						
 		self.process.to_rappid()
 		return self.process.gcode
 				
