@@ -501,7 +501,7 @@ class LineArc:
 			self.process.penetration_angle = 45./180.*pi
 		if self.process.penetration_angle*180./pi >= 90. : # bad penetration angle, penetrate at 90 degree
 			self.process.penetration_angle = 90./180.*pi
-			
+		
 		self.process.__init__()
 		l = 0 # current pass length
 		L = self.l() # total path length
@@ -584,6 +584,8 @@ class LineArc:
 					last_pass = self.process.z
 					# now reverse and go back
 					while i>=0 :
+						if (self.process.p()-self.items[0].st).l2()<1.e-8 : # check that we are at the start point 
+							break
 #						print "Fall back, %s %s"%(i,t)
 						self.process.gcode += "(i=%s t=%s)\n"%(i,t)
 						self.process.l = 0
