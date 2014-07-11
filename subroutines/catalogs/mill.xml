@@ -47,6 +47,8 @@
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
+		<sub name="G41 Cutter Compensation to the left" src="gcode/g41.ini" icon="images/g41.png"/>
+		<sub name="G42 Cutter Compensation to the right" src="gcode/g42.ini" icon="images/g42.png"/>
 		<sub name="Custom Gcode" src="gcode.ini" icon="images/gcode.png"/>
 	</group>
 

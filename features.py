@@ -281,6 +281,11 @@ class Feature():
 				if call == p.attr["call"] :
 					return p.attr['value']
 		return None
+
+	def not_empty_param(self, call) :
+		v = self.get_param_value(call)
+		print v
+		return ( v!=None and v.strip()!="" )
 				
 	def process(self, s) :
 		def eval_callback(m) :
