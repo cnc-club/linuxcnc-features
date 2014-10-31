@@ -511,7 +511,6 @@ class LineArc:
 		i,t = 0,0.
 		w,w1 = 0,0
 		last_pass = None	
-		self.process.to_rappid()
 		self.process.rappid_move(self.items[0].st)
 			
 		while self.process.current_depth > self.process.depth and w<15 :
