@@ -71,75 +71,14 @@ O<draw-line-to> SUB
 	O<draw-line-if> ENDIF
 O<draw-line-to> ENDSUB
 
-
-
-
-(   Mill deafults )
-	G17
-
-	#<_global_surface> = 40
-	#<_global_depth> = -10
-	#<_global_depth_step> = 10
-	#<_global_feed> = 1000
-	#<_global_spindle> = 1000
-	#<_global_rappid> = 70
-
-	#<_global_final> = 1
-	#<_global_final_num> = 2
-	#<_global_final_feed> = 1000
-	#<_global_final_spindle> = 1000
-
-	F#<_global_feed>
-	S#<_global_spindle>
-( / Mill deafults )
-
-(   defaults.ngc )
-
-	(Probe defaults)
-	#<_global_probe_func> = 38.2
-	#<_paranoid> = 1
-	
-	#<_global_flood> = 1
-	#<_global_mist> = 0
-	
-	( Flood sub - turns on flood/mist depending on global parameters. )
-	O<flood> SUB  
-		O<flood-if-01>IF [#<_global_flood>]
-			M7
-		O<flood-if-01>ENDIF
-		O<flood-if-02>IF [#<_global_mist>]
-			M8
-		O<flood-if-02>ENDIF
-	O<flood> ENDSUB  
-
-( / defaults.ngc )
-O<flood> call
-
 #<_global_penetration> = 80
-#<_global_depth> = -10
-#<_global_depth_step> = 1000
 #<_draw_stage> = 1
 #<_draw_l> = 0
-G0 Z20
-G1 X0 Y0
-G1 X10
 #<_draw_z> = #<_global_surface>
 #<_draw_length> = 0
 #<_draw_last_pass> = 0
 O<draw> WHILE [[#<_z> GE #<_global_depth> OR #<_draw_l> GT 0]]
 	O<draw-line-to> CALL [10] [0]
-	O<draw-line-to> CALL [0] [10]
-	O<draw-line-to> CALL [-10] [-10]
-
-;	O<draw-line-to> CALL [10] [0]
-;	O<draw-line-to> CALL [0] [10]
-;	O<draw-line-to> CALL [10] [0]	
-;	O<draw-line-to> CALL [0] [-10]
-;	O<draw-line-to> CALL [10] [0]	
-;	O<draw-line-to> CALL [0] [20]
-;	O<draw-line-to> CALL [-30] [0]
-;	O<draw-line-to> CALL [0] [-20]
-
 	#<_draw_stage> = 2
 O<draw> ENDWHILE 
 

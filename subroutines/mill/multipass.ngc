@@ -9,6 +9,7 @@ O<multipass> SUB
 	#<x0> = #7
 	#<y0> = #8		
 
+	F#<_global_feed> S#<_global_spindle>
 	G0 Z#<rappid>
 	G0 X#<x0> Y#<y0>
 	#<z> = #<surface>
@@ -18,7 +19,8 @@ O<multipass> SUB
 		O<multipass-if> IF [#<z> LT [#<depth>+#<final>]]
 			#<z>=[#<depth>+#<final>]
 		O<multipass-if> ENDIF 
-		G1 Z#<z>	
+		G1 Z#<z>  F#<_global_penetration_feed>
+		F#<_global_feed>	
 		(call pass sub with the restof parameters)
 		#<sub> = #1
 		O#1 CALL [#7] [#8] [#9] [#10] [#11] [#12] [#13] [#14] [#15] [#16] [#17] [#18] [#19]
@@ -26,9 +28,11 @@ O<multipass> SUB
 	O<multipass-while> ENDWHILE
 	
 	(Make final cut)
-	G1 Z#<depth> 
-	O#1 CALL [#7] [#8] [#9] [#10] [#11] [#12] [#13] [#14] [#15] [#16] [#17] [#18] [#19]
-
+	O<multipass-if02> IF [#<final> GT 0]	
+		G1 Z#<depth>  F#<_global_penetration_feed>
+		F#<_global_feed> 
+		O#1 CALL [#7] [#8] [#9] [#10] [#11] [#12] [#13] [#14] [#15] [#16] [#17] [#18] [#19]
+	O<multipass-if02> ENDIF	
 	G0 Z#<rappid>	
 O<multipass> ENDSUB
 

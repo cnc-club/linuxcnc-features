@@ -1,12 +1,14 @@
 <xml>
 	<group name="Cutting" icon="images/rect.png">
 		<group name="Rectangles" icon="images/rect.png"> 
-			<sub name="Rectangle" icon="images/rect-corner.png" src="rect.ini"/>
-			<sub name="Rectangle from Center" icon="images/center-rect.png" src="rect-center.ini"/>
+			<sub name="Rectangle" icon="images/rect-corner.png" src="mill/rect.ini"/>
+			<sub name="Rectangle spiral" icon="images/rect-corner.png" src="mill/rect-spiral.ini"/>
+			<sub name="Rectangle from Center" icon="images/center-rect.png" src="mill/rect-center.ini"/>
 		</group>
 	
 		<group name="Circles" icon="images/circle.png"> 
 			<sub name="Circle" icon="images/circle.png" src="mill/circle.ini"/>
+			<sub name="Circle spiral" icon="images/circle.png" src="mill/circle-spiral.ini"/>
 			<sub name="Oval" icon="images/oval.png" src="mill/oval.ini"/>
 		</group>
 
@@ -20,40 +22,67 @@
 		<sub name="Draw" icon="images/draw.png" src="mill/draw/draw.ini" />	
 		<sub name="Line absolute" icon="images/line-abs.png" src="mill/draw/line-abs.ini" />
 		<sub name="Line relative" icon="images/line-rel.png" src="mill/draw/line-rel.ini" />
+		<sub name="Arc relative to" icon="images/arc.png" src="mill/draw/arc-xyij-rel.ini" />
+		<sub name="Arc to" icon="images/arc.png" src="mill/draw/arc-xyij.ini" />
 		<sub name="Close drawing" icon="images/close.png" src="mill/draw/close.ini" />
-		<sub name="Arc to" icon="images/arc.png" src="mill/draw/arc-to.ini" />
 	</group>
 
+	<group name="Lines" icon="images/draw.png">
+		<sub name="Line cartesian" icon="images/line-xy.png" src="mill/line-xy.ini" />
+		<sub name="Line polar" icon="images/line-ar.png" src="mill/line-ar.ini" />
+		<sub name="Arc 2 points + center" icon="images/arc-xyc.png" src="mill/arc-xyc.ini" />
+		<sub name="Arc 3 points" icon="images/arc-3points.png" src="mill/arc-3points.ini" />
+		<sub name="Arc 2 points + radius" icon="images/arc-to-xyr.png" src="mill/arc-to-xyr.ini" />
+	</group>
+
+	<group name="4axis XYZB" icon="images/lathe-chuck.png">
+		<sub name="Line cartesian" icon="images/line-xy.png" src="mill/chain4axis/line-yz.ini" />
+		<sub name="Arc 2 points + radius" icon="images/arc-to-xyr.png" src="mill/chain4axis/arc-yzr.ini" />
+		<sub name="Cutting parameters XYZB" icon="images/cutting-params.png" src="mill/chain4axis/cut-params.ini" />
+	</group>
+
+	<group name="Chains" icon="images/chain.png">
+		<sub name="Link up" icon="images/array.png" src="mill/chain/linkup.ini" />
+		<sub name="Linked Line cartesian" icon="images/line-xy.png" src="mill/chain/linked-line-xy.ini" />
+		<sub name="Linked Line polar" icon="images/line-ar.png" src="mill/chain/linked-line-ar.ini" />
+		<sub name="Linked Arc 2 points + center" icon="images/arc-xyc.png" src="mill/chain/linked-arc-xyc.ini" />
+		<sub name="Linked Arc 3 points" icon="images/arc-3points.png" src="mill/chain/linked-arc-3points.ini" />
+		<sub name="Linked Arc 2 points + radius" icon="images/arc-to-xyr.png" src="mill/chain/linked-arc-to-xyr.ini" />
+	</group>
 
 	<group name="Pocketing" icon="images/rect-pocket.png">
 		<sub name="Rectangular pocket" icon="images/rect-pocket.png" src="mill/rect-pocket.ini" />
+		<sub name="Circular pocket" icon="images/circle.png" src="mill/circle-pocket.ini" />
+		<sub name="Rectangular polish" icon="images/center-rect.png" src="mill/polish.ini" />
 	</group>
 
 	<group name="Grouping" icon="images/array.png"> 
-		<sub name="Group" icon="images/group.png" src="mill/group.ini"/>
+		<sub name="Group" icon="images/group.png" src="group.ini"/>
 		<sub name="Array" icon="images/array.png" src="mill/array.ini"/>
 		<sub name="Circular array" icon="images/circular-array.png" src="mill/circular-array.ini"/>
 	</group>
 	
 	<group name="Tool" icon="images/mill-tool.png">
 		<sub name="Tool change" icon="images/tool-change.png" src="tool-change.ini"/>
-		<sub name="Tool" icon="images/mill-tool.png" src="set-tool.ini"/>
-		<sub name="Set cuting params" icon="images/tool.png" src="mill/set-cutting-params.ini"/>
-		<sub name="Measure tool length" icon="images/probe-tool-l.png" src="probe-tool-l.ini"/> 
-		<sub name="Measure tool diameter" icon="images/probe-tool-d.png" src="probe-tool-d.ini"/> 
-		<sub name="Set tool probing params" icon="images/tool-probe.png" src="set-tool-probing-params.ini"/> 
+		<sub name="Tool" icon="images/mill-tool.png" src="mill/set-tool-params.ini"/>
+		<sub name="Set cuting params" icon="images/tool.png" src="mill/cutting-params.ini"/>
 	</group>
 
 	<group name="Gcode" icon="images/gcode.png">
-		<sub name="Custom Gcode" src="gcode.ini" icon="images/gcode.png"/>
+		<sub name="Custom Gcode" src="gcode/gcode.ini" icon="images/gcode.png"/>
 	</group>
 
 	<group name="Probing" icon="images/probe-cube.png">
 		<sub name="Probe down" src="probe-down.ini" icon="images/probe-down.png"/>
 		<sub name="Probe hole" src="probe-hole.ini" icon="images/probe-hole.png"/>
+		<sub name="Probe cylinder" src="probe-cylinder.ini" icon="images/probe-flat-out.png"/>
 		<sub name="Probe cube" src="probe-cube.ini" icon="images/probe-cube.png"/>
-		<sub name="Set probing params" icon="images/probe.png" src="set-probing-params.ini"/>
+		<sub name="Compensation Z" src="compensation_map.ini" icon="images/rect-array.png"/>
+		<sub name="Global probing params" icon="images/tool-probe.png" src="mill/global-probing-params.ini"/> 
 	</group>
+
+	<defaults src="mill/defaults.ngc"/>
+
 </xml>
 
 <!-- Do not forget to close <sub /> tags! -->
