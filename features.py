@@ -384,6 +384,10 @@ class Features(gtk.VBox):
 
 			try : 
 				PROGRAM_PREFIX = inifile.find('DISPLAY', 'PROGRAM_PREFIX') or ""					
+				# Support relative paths based on the ini file location
+				if not os.path.isabs(PROGRAM_PREFIX):
+					PROGRAM_PREFIX = os.path.normpath(
+										os.path.join(ini, PROGRAM_PREFIX))
 			except : 
 				print _("Warning! There's no PROGRAM_PREFIX in ini file!")
 		except :
@@ -1076,7 +1080,7 @@ class Features(gtk.VBox):
 		if self.autorefresh.get_active() :
 			if self.timeout != None :
 				gobject.source_remove(self.timeout)
-			self.timeout = gobject.timeout_add(self.autorefresh_timeout.get_value()*1000, self.autorefresh_call)
+			self.timeout = gobject.timeout_add(int(self.autorefresh_timeout.get_value()*1000), self.autorefresh_call)
 		
 	def undo(self, *arg) :
 		if self.undo_pointer>=0 and len(self.undo_list)>0:
