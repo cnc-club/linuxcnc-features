@@ -1,0 +1,30 @@
+	(info: drill -- drilling with chip break)
+	O<drill01-00> SUB
+			#<x>		= #1
+			#<y>		= #2
+			#<FeedZ>	= #3
+			#<SafeZ>	= #4
+			#<StartZ>	= #5
+			#<endz>		= #6
+			#<StepZ>	= #7
+	
+			O<drill01-00-001> if [#<StepZ> eq 0]
+				(MSG, StepZ == 0)
+				M2
+			O<drill01-00-001> endif
+			O<drill01-00-002> if [#<StepZ> lt 0]
+				#<StepZ> = [-1 * #<StepZ>]
+			O<drill01-00-002> endif
+			O<drill01-00-003> if [#<endz> gt #<StartZ>]
+				(MSG, Endz > StartZ)
+				M2
+			O<drill01-00-003> endif
+	
+			g0z#<SafeZ>
+			g0x#<x>y#<y>
+
+			F#<FeedZ> G83 Z#<endz>R#<StartZ>Q#<StepZ>
+			g0z#<SafeZ>
+
+	O<drill01-00> ENDSUB
+

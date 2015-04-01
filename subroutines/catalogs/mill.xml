@@ -10,6 +10,7 @@
 			<sub name="Circle" icon="images/circle.png" src="mill/circle.ini"/>
 			<sub name="Circle spiral" icon="images/circle.png" src="mill/circle-spiral.ini"/>
 			<sub name="Oval" icon="images/oval.png" src="mill/oval.ini"/>
+			<sub name="Drill" icon="images/mill-tool.png" src="mill/drill.ini"/>
 		</group>
 
 		<group name="Polygon" icon="images/hexagon.png">
