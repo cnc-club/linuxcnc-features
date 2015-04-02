@@ -28,6 +28,10 @@
 				F#<FeedZ> G83 Z[#<StartZ>-0.2]R#<StartZ>Q0.025
 			O<drill01-00-004> endif
 			
+			O<drill01-00-001> if [#<StepZ> eq 0]
+				#<StepZ> = [#<StartZ> - #<endz>]
+			O<drill01-00-001> endif
+			
 			F#<FeedZ> G83 Z#<endz>R#<StartZ>Q#<StepZ>
 			g0z#<SafeZ>
 
