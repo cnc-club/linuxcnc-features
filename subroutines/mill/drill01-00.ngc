@@ -2,11 +2,12 @@
 	O<drill01-00> SUB
 			#<x>		= #1
 			#<y>		= #2
-			#<FeedZ>	= #3
-			#<SafeZ>	= #4
-			#<StartZ>	= #5
-			#<endz>		= #6
-			#<StepZ>	= #7
+			#<kern>		= #3
+			#<FeedZ>	= #4
+			#<SafeZ>	= #5
+			#<StartZ>	= #6
+			#<endz>		= #7
+			#<StepZ>	= #8
 	
 			O<drill01-00-001> if [#<StepZ> eq 0]
 				(MSG, StepZ == 0)
@@ -23,6 +24,10 @@
 			g0z#<SafeZ>
 			g0x#<x>y#<y>
 
+			O<drill01-00-004> if [#<kern> eq 1]
+				F#<FeedZ> G83 Z[#<StartZ>-0.2]R#<StartZ>Q0.025
+			O<drill01-00-004> endif
+			
 			F#<FeedZ> G83 Z#<endz>R#<StartZ>Q#<StepZ>
 			g0z#<SafeZ>
 
