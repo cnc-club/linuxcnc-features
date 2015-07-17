@@ -20,7 +20,7 @@
 	</group> 	
 
 	<group name="Drilling" icon="images/drill.png">
-	
+			<sub name="Drill" icon="images/drill.png" src="mill/drill.ini"/>
 	</group>
 	
 	<group name="Draw" icon="images/draw.png">
