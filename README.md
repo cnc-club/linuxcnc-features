@@ -26,9 +26,9 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	Or better create links there:
 	```sh
 	cd /usr/share/pyshared/gladevcp/
-	sudo ln /full-path-to-git-repository/features.py -s
-	sudo ln /full-path-to-git-repository/features.glade -s
-	sudo ln /full-path-to-git-repository/subroutines -s
+	sudo ln /__full-path-to-git-repository__/features.py -s
+	sudo ln /__full-path-to-git-repository__/features.glade -s
+	sudo ln /__full-path-to-git-repository__/subroutines -s
 	```	
 
 
@@ -82,6 +82,13 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	cd /usr/share/locale/ru/LC_MESSAGES
 	sudo ln /home/nick/Design/cnc-club.ru/linuxcnc/features/locale/ru/LC_MESSAGES/linuxcnc-features.mo -s
 	```
+
+1.1	Usage
+--------------------------------------------------------------------------------
+
+After compliting install procedure, you can add features widget into any your gladevcp panel. 
+Or you can just use "features only" panel from this repository. 
+
 
 
 2.	Extending subroutines
