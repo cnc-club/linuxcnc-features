@@ -16,6 +16,10 @@
 		</group>
 	</group> 	
 
+	<group name="Drilling" icon="images/drill.png">
+	
+	</group>
+	
 	<group name="Draw" icon="images/draw.png">
 		<sub name="Draw" icon="images/draw.png" src="mill/draw/draw.ini" />	
 		<sub name="Line absolute" icon="images/line-abs.png" src="mill/draw/line-abs.ini" />
