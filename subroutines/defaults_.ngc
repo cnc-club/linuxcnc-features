@@ -1,0 +1,23 @@
+
+(   defaults.ngc )
+	;py,import interpreter
+	(Probe defaults)
+	#<_global_probe_func> = 38.2
+	#<_paranoid> = 1
+	F1000
+	
+	#<_global_flood> = 1
+	#<_global_mist> = 0
+	
+	( Flood sub - turns on flood/mist depending on global parameters. )
+	O<flood> SUB  
+		O<flood-if-01>IF [#<_global_flood>]
+			M7
+		O<flood-if-01>ENDIF
+		O<flood-if-02>IF [#<_global_mist>]
+			M8
+		O<flood-if-02>ENDIF
+	O<flood> ENDSUB  
+
+( / defaults.ngc )
+
