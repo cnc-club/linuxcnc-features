@@ -22,24 +22,24 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 1.	Install
 --------------------------------------------------------------------------------
 
-1. Move everything to /usr/share/pyshared/gladevcp/
-	Or better create links there:
-	```sh
-	cd /usr/share/pyshared/gladevcp/
-	sudo ln /__full-path-to-git-repository__/features.py -s
-	sudo ln /__full-path-to-git-repository__/features.glade -s
-	sudo ln /__full-path-to-git-repository__/subroutines -s
-	```	
 
-
-2. Install python-lxml 
+1. Install python-lxml 
 	```sh
 	sudo apt-get install python-lxml 
 	```
 
+2. Move everything to /usr/share/pyshared/gladevcp/
+	Or better create links there:
+	```sh
+	cd ___features_source_from_git_path___	
+	features_dir=`pwd`
+	cd /usr/share/pyshared/gladevcp/
+	sudo ln "$features_dir"/features.py -s
+	sudo ln "$features_dir"/features.glade -s
+	sudo ln "$features_dir"/subroutines -s
+	```	
+
 3. Create links into /usr/lib/pymodules/python2.6/gladevcp
-
-
 	```sh
 	cd /usr/lib/pymodules/python2.6/gladevcp
 	sudo ln /usr/share/pyshared/gladevcp/features.py -s
@@ -53,7 +53,7 @@ LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
 	from features import Features
 	```	
 
-5. Change hal_python.xml in /usr/share/glade3/catalogs glade3 can be glade2
+5. Change hal_python.xml in /usr/share/glade3/catalogs (Note depending on the system glade3 can be glade2! /usr/share/glade2/catalogs )
 	
 	Add (find first calculator add after :)):
 	```xml
