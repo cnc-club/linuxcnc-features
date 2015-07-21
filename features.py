@@ -76,6 +76,10 @@ DEFAULT_ADD_DIALOG_HEIGHT = 400
 # if False, NO_ICON_FILE will be used
 DEFAULT_USE_NO_ICON = False
 NO_ICON_FILE = 'no-icon.png'
+DEFAULT_ICONS = {
+	"enabled": "enable.png"
+}
+
 
 MAX_TOP_FEATURES = 15
 SUPER_TOP_FEATURES_COUNT = 10  # must be less than MAX_TOP_FEATURES
@@ -496,7 +500,11 @@ class Parameter() :
         return xml
 
     def get_icon(self) :
-        return get_pixbuf(self.get_attr("icon"), ICON_SIZE)
+    	icon = self.get_attr("icon")
+    	if icon == None or icon == "" :
+    		if self.get_name().lower() in DEFAULT_ICONS: 
+    			icon = DEFAULT_ICONS[self.get_name().lower()]
+        return get_pixbuf(icon, ICON_SIZE)
 
     def get_image(self) :
         return get_pixbuf(self.get_attr("image"), IMAGE_SIZE)
