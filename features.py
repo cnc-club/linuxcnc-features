@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 #
-# Copyright (c) 2012 Nick Drobchenko aka Nick from cnc-club.ru
+# Copyright (c) 2012: 
+#	Nick Drobchenko - Nick from both cnc-club.ru and linuxcnc.org forums,
+#	Fernand Veilleux - FernV from linuxcnc.org forum,
+#	Sergey - verser from both cnc-club.ru and linuxcnc.org forums,
+#	Meison Kim, Alexander Wigen, Konstantin Navrockiy, Fernand Veilleux. 
+#
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,7 +97,7 @@ DEFAULT_DIGITS = '3'
 APP_TITLE = "LinuxCNC-Features"
 APP_VERSION = "2.0"
 APP_COPYRIGHT = 'Copyright © 2012 Nick Drobchenko aka Nick from cnc-club.ru'
-APP_AUTHORS = ['Nick Drobchenko', 'meison kim', 'Alexander Wigen', 'Konstantin Navrockiy', 'Fernand Veilleux']
+APP_AUTHORS = ['Nick Drobchenko', 'Meison Kim', 'Alexander Wigen', 'Konstantin Navrockiy', 'Fernand Veilleux']
 APP_COMMENTS = 'A GUI to help create NGC files.'
 APP_LICENCE = '''This program is free software: you can redistribute
 it and/or modify it under the terms of the GNU General Public License
