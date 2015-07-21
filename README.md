@@ -1,4 +1,4 @@
-LinuxCNC Features - native realtime CAM for LinuxCNC - aka new NGCGUI
+LinuxCNC Features v1 - native realtime CAM for LinuxCNC - aka new NGCGUI
 
 
 0.	Simple usage
